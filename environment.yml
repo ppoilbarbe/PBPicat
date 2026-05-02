@@ -1,0 +1,22 @@
+name: pbpicat
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  # GUI
+  - pyside6
+  # Tests
+  - pytest
+  - pytest-qt
+  - pytest-cov
+  # Lint / hooks
+  - ruff
+  - pre-commit
+  # GitHub CLI
+  - gh
+  # Packaging
+  - pyinstaller
+  # Dev install (editable — lancez ensuite : make install)
+  - pip

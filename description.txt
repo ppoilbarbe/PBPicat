@@ -1,0 +1,55 @@
+Créer un programme graphique python/pyside6.
+Un fichier Makefile pilote toutes les opérations. La cible "help", cible par défaut, affiche une aide sur toutes les cibles.
+Le programme sert à renjommer des fichiers graphiques (png, jpeg) en fonction d'un shcéma.
+Chaque fichier graphique peut avoir de 0 à n fichiers sidecar.
+Un fichier sidecar est un fichier qui a la même base de fichiers avec l'extension graphique remplacée par une des extensions de fichiers sidecar définie dans les paramètres de l'application.
+Chaque opération de renommage d'un fichier graphique doit être effectuée de la même manière sur tous les fichiers sidecar en en conservant leur extension spécifique.
+La fenêtre principale a une barre de menus, une barre d'état et 4 zones distinctes alignées verticalement:
+- Une ligne de saisie pour le répertoire racine DEST_ROOTDIR qui recevra les fichiers renommées avec un bouton pour renommage général (fonction à définir)
+- Un cadre avec une ligne de 6 (nombre paramétrage dans la configuration) zones de saisie du schéma de renommage. Chaque zone de saisie à un titre (paramétré dans la configuration du programme) au dessus de celle-ci. Chaque zone de saisie a un historique (combobox éditable)
+- Un cadre avec décrivant les fichiers.
+- Une barre de boutons alignés sur la droite avec un bouton de renommage qui renomme tous les fichiers sélectionnés selon le schéma.
+
+Le cadre de description des fichiers est composé de:
+- sur la gauche, une liste arbrescente pour les répertoires du système,
+- sur la droite un affichage de la liste des fichiers graphiques du répertoire selectionné dans le cadre de gauche.
+
+L'affichage de la liste des fichiers graphiques se compose pour chaque fichier:
+- une miniature (taille définie dans les paramètres du programme) du fichier graphique
+- le nom du fichier
+- une marque indiquant si le fichier a des fichiers sidecar.
+
+Un double clic sur laminiature ouvre une fenêtre affichant l'image en plus grand.
+Un double clic sur la marque de fichier sidecar ouvre un éditeur de texte pour chaque fichiers sidecar lié si c'est un fichier texte.
+Un double clic sur le nom du fichier sélectionné renomme le fichier selon le schéma.
+Plusieurs lignes peuvent être sélectionnées dans la liste des fichiers graphiques.
+
+Définition du schéma:
+- chaque chaine saisie représente un niveau de sous répertoire de DEST_ROOTDIR
+- Aucune zone de saisie ne peut contenir de caractère "_".
+- Une chaîne vide élimine le niveau correspondant.
+- La dernière zone de saisie peut ne contenir que des '#'. Dans ce cas
+  c'est un schéma de valeur numérique pour numéroter les fichiers avec le nombre de '#'
+  étant le nombre minimal de chiffres.
+
+Exemples:
+- Schéma="abc", "def","","ghi", "", "".
+  fichiers à renommer=image01.jpeg + image01.sidecar.
+  Fichiers résultat: ROOT_DIR/abc/def/abc_def_ghi.jpeg + ROOT_DIR/abc/def/abc_def_ghi.sidecar
+- Schéma="abc", "def","","ghi", "", "###", "".
+  fichiers à renommer=image01.png + image01.sidecar.
+  Fichiers résultat: ROOT_DIR/abc/def/abc_def_ghi_001.jpeg + ROOT_DIR/abc/def/abc_def_ghi_001.sidecar
+  Si aucun fichier ne correspond au schéma dans le répertoire final.
+- Schéma="abc", "def","","ghi", "", "###", "".
+  fichiers à renommer=image01.png + image01.sidecar.
+  Fichiers résultat: ROOT_DIR/abc/def/abc_def_ghi_1003.jpeg + ROOT_DIR/abc/def/abc_def_ghi_1003.sidecar
+  Si le fichier dont le numéro max correspondant au schéma porte le numéro 1002.
+- Schéma="abc", "def","#","ghi", "", "###", "".
+  Erreur: deux zones numérotées.
+
+Lors de renommage de fichiers, créer les répertoires intermédiaires manquants. Supprimer le répertoire source si une fois le renommage effectué.
+Si un des fichiers destination existe déjà, annuler tout le renommage et afficher un message d'erreur.
+Lors de la recherche du numéro max utilisé dans un répertoire destination, utiliser les valeurs numériques, par des chaînes de caractères:
+l'ordre est: 1,13,101,121,2 et pas 1,101,121,13,2.
+
+Dans CLAUDE.md: indiquer qu'il faut maintenir à jour le fichier SPEC.md avec les spécification du programme dans un format compact destiné à CLAUDE minimisant le nombre de tokens.

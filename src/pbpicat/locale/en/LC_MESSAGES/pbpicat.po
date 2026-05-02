@@ -1,0 +1,592 @@
+# English translations for PBCategory (source language).
+# Copyright (C) 2026 Philippe Poilbarbe <philippe@cardolan.net>
+# License: GPLv3
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PBCategory 1.0.0\n"
+"Report-Msgid-Bugs-To: philippe@cardolan.net\n"
+"POT-Creation-Date: 2026-05-03 13:59+0200\n"
+"PO-Revision-Date: 2026-05-02 00:00+0000\n"
+"Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/pbpicat/ui/schema_frame.py:88
+msgid "<b>Rename schema</b>"
+msgstr "<b>Rename schema</b>"
+
+#: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
+#: src/pbpicat/ui/history_dialog.py:151 src/pbpicat/ui/settings_dialog.py:85
+#: src/pbpicat/ui/settings_dialog.py:87 src/pbpicat/ui/settings_dialog.py:93
+#: src/pbpicat/ui/file_list_widget.py:484
+#, python-brace-format
+msgid "Field {n}"
+msgstr "Field {n}"
+
+#: src/pbpicat/ui/schema_frame.py:116
+msgid "Video marker position"
+msgstr "Video marker position"
+
+#: src/pbpicat/ui/history_dialog.py:34
+#, python-brace-format
+msgid "History — {title}:"
+msgstr "History — {title}:"
+
+#: src/pbpicat/ui/history_dialog.py:49
+msgid "▲ Move up"
+msgstr "▲ Move up"
+
+#: src/pbpicat/ui/history_dialog.py:53
+msgid "▼ Move down"
+msgstr "▼ Move down"
+
+#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/settings_dialog.py:128
+#: src/pbpicat/ui/settings_dialog.py:233 src/pbpicat/ui/settings_dialog.py:318
+#: src/pbpicat/ui/file_list_widget.py:427
+msgid "Delete"
+msgstr "Delete"
+
+#: src/pbpicat/ui/history_dialog.py:63
+msgid "Clear all"
+msgstr "Clear all"
+
+#: src/pbpicat/ui/history_dialog.py:103
+msgid "Clear history"
+msgstr "Clear history"
+
+#: src/pbpicat/ui/history_dialog.py:104
+msgid "Clear all values from this history?"
+msgstr "Clear all values from this history?"
+
+#: src/pbpicat/ui/history_dialog.py:136
+msgid "Field histories"
+msgstr "Field histories"
+
+#: src/pbpicat/ui/history_dialog.py:158
+msgid "Sidecar filter"
+msgstr "Sidecar filter"
+
+#: src/pbpicat/ui/settings_dialog.py:41
+msgid "Number of fields:"
+msgstr "Number of fields:"
+
+#: src/pbpicat/ui/settings_dialog.py:51
+msgid "Max history entries:"
+msgstr "Max history entries:"
+
+#: src/pbpicat/ui/settings_dialog.py:55
+msgid ""
+"Maximum number of values kept per field history and sidecar filter history"
+msgstr ""
+"Maximum number of values kept per field history and sidecar filter history"
+
+#: src/pbpicat/ui/settings_dialog.py:61
+msgid "<b>Field titles:</b>"
+msgstr "<b>Field titles:</b>"
+
+#: src/pbpicat/ui/settings_dialog.py:88
+#, python-brace-format
+msgid "Field {n}:"
+msgstr "Field {n}:"
+
+#: src/pbpicat/ui/settings_dialog.py:108
+msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
+msgstr "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
+
+#: src/pbpicat/ui/settings_dialog.py:117
+msgid ".ext or .name.ext"
+msgstr ".ext or .name.ext"
+
+#: src/pbpicat/ui/settings_dialog.py:122 src/pbpicat/ui/settings_dialog.py:227
+#: src/pbpicat/ui/settings_dialog.py:312
+msgid "Add"
+msgstr "Add"
+
+#: src/pbpicat/ui/settings_dialog.py:142 src/pbpicat/ui/settings_dialog.py:267
+#: src/pbpicat/ui/settings_dialog.py:352
+msgid "Invalid extension"
+msgstr "Invalid extension"
+
+#: src/pbpicat/ui/settings_dialog.py:143
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
+msgstr "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
+
+#: src/pbpicat/ui/settings_dialog.py:173
+msgid ""
+"Maximum size of thumbnails displayed in the file list.\n"
+"A navigation restart is required for the change to take effect."
+msgstr ""
+"Maximum size of thumbnails displayed in the file list.\n"
+"A navigation restart is required for the change to take effect."
+
+#: src/pbpicat/ui/settings_dialog.py:188
+msgid "Max width:"
+msgstr "Max width:"
+
+#: src/pbpicat/ui/settings_dialog.py:194
+msgid "Max height:"
+msgstr "Max height:"
+
+#: src/pbpicat/ui/settings_dialog.py:213
+msgid "Recognised image extensions (thumbnail + rename):"
+msgstr "Recognised image extensions (thumbnail + rename):"
+
+#: src/pbpicat/ui/settings_dialog.py:246
+msgid "Enlargement/reduction factor per click or double-click"
+msgstr "Enlargement/reduction factor per click or double-click"
+
+#: src/pbpicat/ui/settings_dialog.py:248
+msgid "Zoom step:"
+msgstr "Zoom step:"
+
+#: src/pbpicat/ui/settings_dialog.py:254
+msgid "Maximum zoom allowed in the image viewer"
+msgstr "Maximum zoom allowed in the image viewer"
+
+#: src/pbpicat/ui/settings_dialog.py:256
+msgid "Max zoom:"
+msgstr "Max zoom:"
+
+#: src/pbpicat/ui/settings_dialog.py:268
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
+msgstr "'{ext}' is not a valid extension (e.g. .png, .heic)."
+
+#: src/pbpicat/ui/settings_dialog.py:298
+msgid "Recognised video extensions:"
+msgstr "Recognised video extensions:"
+
+#: src/pbpicat/ui/settings_dialog.py:327
+msgid ""
+"<b>Video marker</b><br>Inserted among the name components at the position "
+"chosen in the schema.<br>No '_' in the value. Empty = no marker."
+msgstr ""
+"<b>Video marker</b><br>Inserted among the name components at the position "
+"chosen in the schema.<br>No '_' in the value. Empty = no marker."
+
+#: src/pbpicat/ui/settings_dialog.py:339
+msgid "e.g. VID  (empty = none)"
+msgstr "e.g. VID  (empty = none)"
+
+#: src/pbpicat/ui/settings_dialog.py:341
+msgid "Marker:"
+msgstr "Marker:"
+
+#: src/pbpicat/ui/settings_dialog.py:353
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .mp4)."
+msgstr "'{ext}' is not a valid extension (e.g. .mp4)."
+
+#: src/pbpicat/ui/settings_dialog.py:388
+msgid "System default"
+msgstr "System default"
+
+#: src/pbpicat/ui/settings_dialog.py:397
+msgid "Interface language:"
+msgstr "Interface language:"
+
+#: src/pbpicat/ui/settings_dialog.py:400
+msgid "A restart is required for the language change to take effect."
+msgstr "A restart is required for the language change to take effect."
+
+#: src/pbpicat/ui/settings_dialog.py:410
+msgid "Configuration"
+msgstr "Configuration"
+
+#: src/pbpicat/ui/settings_dialog.py:426
+msgid "Rename schema"
+msgstr "Rename schema"
+
+#: src/pbpicat/ui/settings_dialog.py:427
+msgid "Sidecar extensions"
+msgstr "Sidecar extensions"
+
+#: src/pbpicat/ui/settings_dialog.py:428
+msgid "Images"
+msgstr "Images"
+
+#: src/pbpicat/ui/settings_dialog.py:429
+msgid "Video"
+msgstr "Video"
+
+#: src/pbpicat/ui/settings_dialog.py:430
+msgid "Thumbnails"
+msgstr "Thumbnails"
+
+#: src/pbpicat/ui/settings_dialog.py:431
+msgid "Language"
+msgstr "Language"
+
+#: src/pbpicat/ui/main_window.py:55
+msgid "&File"
+msgstr "&File"
+
+#: src/pbpicat/ui/main_window.py:56
+msgid "&Quit"
+msgstr "&Quit"
+
+#: src/pbpicat/ui/main_window.py:58
+msgid "&Catalog"
+msgstr "&Catalog"
+
+#: src/pbpicat/ui/main_window.py:59
+msgid "&New catalog…"
+msgstr "&New catalog…"
+
+#: src/pbpicat/ui/main_window.py:60
+msgid "&Delete catalog…"
+msgstr "&Delete catalog…"
+
+#: src/pbpicat/ui/main_window.py:64
+msgid "&View"
+msgstr "&View"
+
+#: src/pbpicat/ui/main_window.py:65
+msgid "&Refresh"
+msgstr "&Refresh"
+
+#: src/pbpicat/ui/main_window.py:67
+msgid "&Settings"
+msgstr "&Settings"
+
+#: src/pbpicat/ui/main_window.py:68
+msgid "&Configuration…"
+msgstr "&Configuration…"
+
+#: src/pbpicat/ui/main_window.py:69
+msgid "&History…"
+msgstr "&History…"
+
+#: src/pbpicat/ui/main_window.py:71
+msgid "&Help"
+msgstr "&Help"
+
+#: src/pbpicat/ui/main_window.py:72
+msgid "&About"
+msgstr "&About"
+
+#: src/pbpicat/ui/main_window.py:93
+msgid "Ready."
+msgstr "Ready."
+
+#: src/pbpicat/ui/main_window.py:111
+msgid "Destination:"
+msgstr "Destination:"
+
+#: src/pbpicat/ui/main_window.py:113
+msgid "Destination root directory (DEST_ROOTDIR)…"
+msgstr "Destination root directory (DEST_ROOTDIR)…"
+
+#: src/pbpicat/ui/main_window.py:117
+msgid "Browse…"
+msgstr "Browse…"
+
+#: src/pbpicat/ui/main_window.py:122
+msgid "Rename all"
+msgstr "Rename all"
+
+#: src/pbpicat/ui/main_window.py:125
+msgid "Rename all files in the current directory according to the schema"
+msgstr "Rename all files in the current directory according to the schema"
+
+#: src/pbpicat/ui/main_window.py:134
+msgid "Undo last rename"
+msgstr "Undo last rename"
+
+#: src/pbpicat/ui/main_window.py:135
+msgid "Undo last rename (restores files to their original location)"
+msgstr "Undo last rename (restores files to their original location)"
+
+#: src/pbpicat/ui/main_window.py:146
+msgid "Sidecar filter…"
+msgstr "Sidecar filter…"
+
+#: src/pbpicat/ui/main_window.py:149
+msgid ""
+"<b>Sidecar content filter</b><br>Python regular expression applied to the "
+"<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
+"whose content matches are shown.<br>Files with no sidecar are always hidden "
+"when a filter is active.<br><tt>.*</tt> matches across line breaks (re."
+"DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters."
+"<br>Leave empty to show all files."
+msgstr ""
+"<b>Sidecar content filter</b><br>Python regular expression applied to the "
+"<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
+"whose content matches are shown.<br>Files with no sidecar are always hidden "
+"when a filter is active.<br><tt>.*</tt> matches across line breaks (re."
+"DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters."
+"<br>Leave empty to show all files."
+
+#: src/pbpicat/ui/main_window.py:167
+msgid "Rename selection"
+msgstr "Rename selection"
+
+#: src/pbpicat/ui/main_window.py:168
+msgid "Rename selected files according to the schema"
+msgstr "Rename selected files according to the schema"
+
+#: src/pbpicat/ui/main_window.py:177
+msgid "Choose destination directory"
+msgstr "Choose destination directory"
+
+#: src/pbpicat/ui/main_window.py:237
+msgid "No file selected."
+msgstr "No file selected."
+
+#: src/pbpicat/ui/main_window.py:244
+msgid "No files to rename in the current directory."
+msgstr "No files to rename in the current directory."
+
+#: src/pbpicat/ui/main_window.py:248
+msgid "Confirm rename"
+msgstr "Confirm rename"
+
+#: src/pbpicat/ui/main_window.py:249
+#, python-brace-format
+msgid "Rename {n} file(s) according to the current schema?"
+msgstr "Rename {n} file(s) according to the current schema?"
+
+#: src/pbpicat/ui/main_window.py:258
+msgid "Missing destination"
+msgstr "Missing destination"
+
+#: src/pbpicat/ui/main_window.py:258
+msgid "Please specify a destination directory."
+msgstr "Please specify a destination directory."
+
+#: src/pbpicat/ui/main_window.py:276
+msgid "Rename error"
+msgstr "Rename error"
+
+#: src/pbpicat/ui/main_window.py:277
+msgid "Error: rename cancelled."
+msgstr "Error: rename cancelled."
+
+#: src/pbpicat/ui/main_window.py:288
+#, python-brace-format
+msgid "{n} file(s) renamed successfully."
+msgstr "{n} file(s) renamed successfully."
+
+#: src/pbpicat/ui/main_window.py:299
+msgid "Undo error"
+msgstr "Undo error"
+
+#: src/pbpicat/ui/main_window.py:300
+msgid "Error: undo failed."
+msgstr "Error: undo failed."
+
+#: src/pbpicat/ui/main_window.py:304
+msgid "Last rename undone."
+msgstr "Last rename undone."
+
+#: src/pbpicat/ui/main_window.py:313
+msgid "Settings saved."
+msgstr "Settings saved."
+
+#: src/pbpicat/ui/main_window.py:320
+msgid "History saved."
+msgstr "History saved."
+
+#: src/pbpicat/ui/main_window.py:324
+msgid "Template applied from history."
+msgstr "Template applied from history."
+
+#: src/pbpicat/ui/main_window.py:333
+msgid "PBPicat — Image & Video File Renamer"
+msgstr "PBPicat — Image & Video File Renamer"
+
+#: src/pbpicat/ui/main_window.py:335
+#, python-brace-format
+msgid "PBPicat — Image & Video File Renamer [{catalog}]"
+msgstr "PBPicat — Image & Video File Renamer [{catalog}]"
+
+#: src/pbpicat/ui/main_window.py:350
+msgid "New catalog"
+msgstr "New catalog"
+
+#: src/pbpicat/ui/main_window.py:350
+msgid "Catalog name (letters, digits, hyphens, underscores):"
+msgstr "Catalog name (letters, digits, hyphens, underscores):"
+
+#: src/pbpicat/ui/main_window.py:360
+msgid "Invalid name"
+msgstr "Invalid name"
+
+#: src/pbpicat/ui/main_window.py:361
+msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
+msgstr ""
+"Catalog name may only contain letters, digits, hyphens, or underscores."
+
+#: src/pbpicat/ui/main_window.py:367
+msgid "Already exists"
+msgstr "Already exists"
+
+#: src/pbpicat/ui/main_window.py:368
+#, python-brace-format
+msgid "A catalog named \"{name}\" already exists."
+msgstr "A catalog named \"{name}\" already exists."
+
+#: src/pbpicat/ui/main_window.py:379
+msgid "No catalogs"
+msgstr "No catalogs"
+
+#: src/pbpicat/ui/main_window.py:380
+msgid ""
+"There are no additional catalogs to delete (\"default\" cannot be deleted)."
+msgstr ""
+"There are no additional catalogs to delete (\"default\" cannot be deleted)."
+
+#: src/pbpicat/ui/main_window.py:383
+msgid "Delete catalog"
+msgstr "Delete catalog"
+
+#: src/pbpicat/ui/main_window.py:383
+msgid "Select catalog to delete:"
+msgstr "Select catalog to delete:"
+
+#: src/pbpicat/ui/main_window.py:388 src/pbpicat/ui/file_list_widget.py:454
+msgid "Confirm deletion"
+msgstr "Confirm deletion"
+
+#: src/pbpicat/ui/main_window.py:389
+#, python-brace-format
+msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
+msgstr "Delete catalog \"{name}\" and all its settings? This cannot be undone."
+
+#: src/pbpicat/ui/main_window.py:397
+#, python-brace-format
+msgid "Catalog \"{name}\" deleted."
+msgstr "Catalog \"{name}\" deleted."
+
+#: src/pbpicat/ui/main_window.py:420
+#, python-brace-format
+msgid "Switched to catalog \"{name}\"."
+msgstr "Switched to catalog \"{name}\"."
+
+#: src/pbpicat/ui/main_window.py:429
+msgid "About PBPicat"
+msgstr "About PBPicat"
+
+#: src/pbpicat/ui/main_window.py:431
+msgid ""
+"<b>PBPicat</b><br>Image and video file renaming tool using a structured "
+"schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos "
+"(MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+msgstr ""
+"<b>PBPicat</b><br>Image and video file renaming tool using a structured "
+"schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos "
+"(MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+
+#: src/pbpicat/ui/file_list_widget.py:41
+msgid "Proposed template"
+msgstr "Proposed template"
+
+#: src/pbpicat/ui/file_list_widget.py:45
+msgid "Detected template — confirm to apply to fields:"
+msgstr "Detected template — confirm to apply to fields:"
+
+#: src/pbpicat/ui/file_list_widget.py:148
+msgid "Preview"
+msgstr "Preview"
+
+#: src/pbpicat/ui/file_list_widget.py:148
+msgid "File name"
+msgstr "File name"
+
+#: src/pbpicat/ui/file_list_widget.py:148
+msgid "Sidecar"
+msgstr "Sidecar"
+
+#: src/pbpicat/ui/file_list_widget.py:272
+#, python-brace-format
+msgid "File name ({n})"
+msgstr "File name ({n})"
+
+#: src/pbpicat/ui/file_list_widget.py:426
+#: src/pbpicat/ui/file_list_widget.py:476
+msgid "Template"
+msgstr "Template"
+
+#: src/pbpicat/ui/file_list_widget.py:455
+#, python-brace-format
+msgid ""
+"Permanently delete:\n"
+"{names}"
+msgstr ""
+"Permanently delete:\n"
+"{names}"
+
+#: src/pbpicat/ui/file_list_widget.py:468
+msgid "Deletion error"
+msgstr "Deletion error"
+
+#: src/pbpicat/ui/file_list_widget.py:478
+#, python-brace-format
+msgid ""
+"Could not determine a template for '{name}'.\n"
+"No part of the file name matches any field history."
+msgstr ""
+"Could not determine a template for '{name}'.\n"
+"No part of the file name matches any field history."
+
+#: src/pbpicat/ui/image_viewer.py:120
+msgid "Actual size (1:1)  Ctrl+1"
+msgstr "Actual size (1:1)  Ctrl+1"
+
+#: src/pbpicat/ui/image_viewer.py:121
+msgid "Zoom in  Ctrl++"
+msgstr "Zoom in  Ctrl++"
+
+#: src/pbpicat/ui/image_viewer.py:122
+msgid "Zoom out  Ctrl+-"
+msgstr "Zoom out  Ctrl+-"
+
+#: src/pbpicat/ui/image_viewer.py:123
+msgid "Fit width  Ctrl+W"
+msgstr "Fit width  Ctrl+W"
+
+#: src/pbpicat/ui/image_viewer.py:124
+msgid "Fit height  Ctrl+H"
+msgstr "Fit height  Ctrl+H"
+
+#: src/pbpicat/ui/image_viewer.py:125
+msgid "Fit window  Ctrl+0"
+msgstr "Fit window  Ctrl+0"
+
+#: src/pbpicat/ui/image_viewer.py:180
+msgid "Cannot load image."
+msgstr "Cannot load image."
+
+#: src/pbpicat/ui/image_viewer.py:278
+msgid " (max)"
+msgstr " (max)"
+
+#: src/pbpicat/i18n.py:52
+msgid "language_name"
+msgstr "English"
+
+#~ msgid "PBCategory — Image & Video File Renamer"
+#~ msgstr "PBCategory — Image & Video File Renamer"
+
+#~ msgid "About PBCategory"
+#~ msgstr "About PBCategory"
+
+#~ msgid ""
+#~ "<b>PBCategory</b><br>Image and video file renaming tool using a "
+#~ "structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, "
+#~ "RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, "
+#~ "PP3…)."
+#~ msgstr ""
+#~ "<b>PBCategory</b><br>Image and video file renaming tool using a "
+#~ "structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, "
+#~ "RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, "
+#~ "PP3…)."
+
+#~ msgid "(empty)"
+#~ msgstr "(empty)"

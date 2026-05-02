@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+MANIFEST
+
+# Tests & couverture
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Outils Python
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# Distribution / packaging
+*.whl
+*.tar.gz
+
+# IDE — VS Code
+.vscode/
+*.code-workspace
+
+# IDE — JetBrains (PyCharm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE — Eclipse
+.project
+.pydevproject
+.classpath
+
+# IDE — Vim / Neovim
+*.swp
+*.swo
+*~
+
+# IDE — Emacs
+\#*\#
+.\#*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code
+.claude/settings.local.json
+
+# Données utilisateur générées à l'usage
+config/history.json
+
+# Fichiers générés par le build i18n
+src/pbpicat/locale/pbpicat.pot
+.translate.stamp
+
+# Divers
+*.log
+*.bak
+*.tmp
