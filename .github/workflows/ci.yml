@@ -28,6 +28,10 @@ jobs:
           activate-environment: pbpicat
           conda-remove-defaults: 'true'
 
+      - name: Install package
+        shell: bash -el {0}
+        run: pip install -e .
+
       - name: Run test suite
         shell: bash -el {0}
         env:
