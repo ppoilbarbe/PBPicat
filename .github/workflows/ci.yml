@@ -120,14 +120,25 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v5
+
       - name: Download all build artifacts
         uses: actions/download-artifact@v6
         with:
           path: dist
           merge-multiple: true
 
+      - name: Extract release notes
+        id: notes
+        run: |
+          body=$(python tools/changelog_notes.py "${GITHUB_REF_NAME#v}")
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$body" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
+          body: ${{ steps.notes.outputs.body }}
           files: dist/PBPicat-*
           fail_on_unmatched_files: true
