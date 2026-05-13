@@ -1,5 +1,18 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [1.1.0] - 2026-05-13
+
+### Fixed
+
+- Application icon (`pbpicat.svg`) not found when running from a PyInstaller bundle; resource path now resolves via `sys._MEIPASS` in frozen mode.
+
+### Removed
+
+- PNG icon generation script (`scripts/make_png.py`) and associated `make png` target; the SVG is used directly.
+
 ## [1.0.0] - 2026-05-03
 
 Initial release.

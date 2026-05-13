@@ -39,6 +39,8 @@ _locale_root = Path("src/pbpicat/locale")
 _datas = [
     (str(mo), f"pbpicat/locale/{mo.parts[-3]}/LC_MESSAGES")
     for mo in sorted(_locale_root.glob("*/LC_MESSAGES/pbpicat.mo"))
+] + [
+    ("src/pbpicat/resources/pbpicat.svg", "resources"),
 ]
 
 a = Analysis(
