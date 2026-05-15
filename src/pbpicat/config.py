@@ -24,6 +24,7 @@ DEFAULTS = {
     "zoom_step_percent": 25,
     "zoom_max_percent": 400,
     "language": "",
+    "sidecar_new_extension": ".xmp",
 }
 
 

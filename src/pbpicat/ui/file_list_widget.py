@@ -139,6 +139,7 @@ class FileListWidget(QTableWidget):
         self._video_exts: set[str] = set(config.get("video_extensions", []))
         self._video_marker: str = config.get("video_marker", "")
         self._sidecar_exts: list[str] = config.get("sidecar_extensions", [".xmp", ".dop", ".pp3"])
+        self._sidecar_new_extension: str = config.get("sidecar_new_extension", ".xmp")
         self._schema_field_count: int = config.get("schema_field_count", 6)
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
@@ -291,7 +292,7 @@ class FileListWidget(QTableWidget):
             self.setItem(row, self._NAME_COL, QTableWidgetItem(path.name))
 
             if sidecars:
-                exts = "  ".join(p.suffix for p in sidecars)
+                exts = "  ".join(sc.name[len(path.stem) :] for sc in sidecars)
                 sc_item = QTableWidgetItem(f"● {exts}")
                 sc_item.setForeground(Qt.blue)
                 sc_item.setToolTip("\n".join(str(p) for p in sidecars))
@@ -337,7 +338,13 @@ class FileListWidget(QTableWidget):
         path, sidecars = self._display_data[row]
 
         if col == self._SIDECAR_COL:
-            self._open_text_sidecars(sidecars)
+            if sidecars:
+                self._open_text_sidecars(sidecars)
+            elif self._sidecar_new_extension:
+                new_sc = path.parent / (path.stem + self._sidecar_new_extension)
+                new_sc.touch()
+                QDesktopServices.openUrl(QUrl.fromLocalFile(str(new_sc)))
+                self.refresh_and_select(row)
         elif path.suffix.lower() in self._image_exts:
             self._show_image(path)
         elif path.suffix.lower() in self._video_exts:
@@ -447,7 +454,17 @@ class FileListWidget(QTableWidget):
         drag.exec(Qt.CopyAction)
 
     def _delete_file(self, path: Path, sidecars: list[Path]) -> None:
-        all_files = [path] + sidecars
+        selected = set(self.get_selected_files())
+        if path in selected:
+            to_delete = [(p, scs) for p, scs in self._display_data if p in selected]
+        else:
+            to_delete = [(path, sidecars)]
+
+        all_files: list[Path] = []
+        for p, scs in to_delete:
+            all_files.append(p)
+            all_files.extend(scs)
+
         names = "\n".join(f.name for f in all_files)
         reply = QMessageBox.question(
             self,
@@ -457,16 +474,35 @@ class FileListWidget(QTableWidget):
         )
         if reply != QMessageBox.Yes:
             return
-        next_row = self.next_row_after_files([path])
+
+        next_row = self.next_row_after_files([p for p, _ in to_delete])
+        dirs_to_clean: set[Path] = set()
         errors = []
         for f in all_files:
+            dirs_to_clean.add(f.parent)
             try:
                 f.unlink()
             except OSError as exc:
                 errors.append(f"{f.name} : {exc}")
+
+        for d in sorted(dirs_to_clean, key=lambda p: len(p.parts), reverse=True):
+            self._remove_empty_parents(d)
+
         if errors:
             QMessageBox.warning(self, _("Deletion error"), "\n".join(errors))
         self.refresh_and_select(next_row)
+
+    def _remove_empty_parents(self, directory: Path) -> None:
+        d = directory
+        while d != d.parent:
+            try:
+                if d.exists() and not any(d.iterdir()):
+                    d.rmdir()
+                    d = d.parent
+                else:
+                    break
+            except OSError:
+                break
 
     def _propose_schema(self, path: Path) -> None:
         proposed = self._infer_schema(path)

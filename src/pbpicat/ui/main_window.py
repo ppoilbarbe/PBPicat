@@ -31,7 +31,14 @@ from pbpicat.config import (
     save_last_source_dir,
     set_current_catalog,
 )
-from pbpicat.renamer import build_rename_plan, execute_rename, undo_rename
+from pbpicat.renamer import (
+    build_rename_plan,
+    build_renumber_plan,
+    execute_rename,
+    execute_renumber,
+    undo_rename,
+    undo_renumber,
+)
 
 from .file_panel import FilePanel
 from .history_dialog import HistoryDialog
@@ -43,7 +50,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._config = load_config()
-        self._undo_stack: list[list[tuple]] = []
+        self._undo_stack: list[tuple[str, list[tuple]]] = []
         self._setup_ui()
         self._setup_menu()
         self._update_title()
@@ -96,7 +103,7 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.schema_proposed.connect(self._apply_proposed_schema)
         self._file_panel.file_list.set_schema_getter(self._schema_frame.get_fields)
         self._file_panel.file_list.set_video_marker_pos_getter(self._schema_frame.get_video_marker_pos)
-        self._file_panel.file_list.file_count_changed.connect(lambda n: self._rename_all_btn.setEnabled(n > 0))
+        self._file_panel.file_list.file_count_changed.connect(self._on_file_count_changed)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_rename_btn)
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
@@ -125,6 +132,13 @@ class MainWindow(QMainWindow):
         self._rename_all_btn.setToolTip(_("Rename all files in the current directory according to the schema"))
         self._rename_all_btn.setEnabled(False)
         layout.addWidget(self._rename_all_btn)
+
+        self._renumber_btn = QPushButton(_("Renumber from 1"))
+        self._renumber_btn.setFixedWidth(140)
+        self._renumber_btn.clicked.connect(self._renumber_all)
+        self._renumber_btn.setToolTip(_("Renumber all files in the current directory starting from 1"))
+        self._renumber_btn.setEnabled(False)
+        layout.addWidget(self._renumber_btn)
 
         return layout
 
@@ -171,6 +185,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._rename_btn)
 
         return layout
+
+    def _on_file_count_changed(self, n: int) -> None:
+        self._rename_all_btn.setEnabled(n > 0)
+        self._renumber_btn.setEnabled(n > 0)
 
     def _browse_dest(self) -> None:
         current = self._dest_edit.text().strip() or str(Path.home())
@@ -252,6 +270,46 @@ class MainWindow(QMainWindow):
         if reply == QMessageBox.Yes:
             self._rename_files(files)
 
+    def _renumber_all(self) -> None:
+        files = self._file_panel.file_list.get_all_files()
+        if not files:
+            return
+        schema_fields = self._schema_frame.get_fields()
+        try:
+            plan = build_renumber_plan(
+                schema_fields,
+                [Path(p) for p in files],
+                self._config.get("sidecar_extensions", []),
+                self._config.get("image_extensions", []),
+                self._config.get("video_extensions", []),
+                self._config.get("video_marker", ""),
+                self._schema_frame.get_video_marker_pos(),
+            )
+        except ValueError as exc:
+            QMessageBox.critical(self, _("Rename error"), str(exc))
+            return
+        if not plan:
+            self._status.showMessage(_("Files are already correctly numbered."))
+            return
+        reply = QMessageBox.question(
+            self,
+            _("Confirm renumber"),
+            _("Renumber {n} file(s) starting from 1?").format(n=len(files)),
+            QMessageBox.Yes | QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+        try:
+            execute_renumber(plan)
+        except RuntimeError as exc:
+            QMessageBox.critical(self, _("Rename error"), str(exc))
+            self._status.showMessage(_("Error: rename cancelled."))
+            return
+        self._undo_stack.append(("renumber", plan))
+        self._undo_btn.setEnabled(True)
+        self._status.showMessage(_("{n} file(s) renumbered successfully.").format(n=len(files)))
+        self._file_panel.file_list.refresh_and_select(0)
+
     def _rename_files(self, file_paths: list) -> None:
         dest_root = self._dest_edit.text().strip()
         if not dest_root:
@@ -280,7 +338,7 @@ class MainWindow(QMainWindow):
         self._schema_frame.push_history(schema_fields)
         save_last_dest(dest_root)
 
-        self._undo_stack.append(plan)
+        self._undo_stack.append(("rename", plan))
         self._undo_btn.setEnabled(True)
 
         media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
@@ -292,9 +350,12 @@ class MainWindow(QMainWindow):
     def _undo_last_rename(self) -> None:
         if not self._undo_stack:
             return
-        plan = self._undo_stack[-1]
+        kind, plan = self._undo_stack[-1]
         try:
-            undo_rename(plan)
+            if kind == "renumber":
+                undo_renumber(plan)
+            else:
+                undo_rename(plan)
         except (FileNotFoundError, FileExistsError, RuntimeError) as exc:
             QMessageBox.critical(self, _("Undo error"), str(exc))
             self._status.showMessage(_("Error: undo failed."))

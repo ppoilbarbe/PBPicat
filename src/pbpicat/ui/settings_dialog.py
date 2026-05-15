@@ -132,6 +132,28 @@ class _SidecarTab(QWidget):
 
         root.addLayout(add_row)
 
+        form = QFormLayout()
+        form.setSpacing(8)
+        self._new_ext_combo = QComboBox()
+        self._new_ext_combo.setToolTip(
+            _("Extension used when creating a new sidecar by double-clicking the sidecar column")
+        )
+        form.addRow(_("Default extension for new sidecar:"), self._new_ext_combo)
+        root.addLayout(form)
+
+        self._rebuild_new_ext_combo()
+
+    def _rebuild_new_ext_combo(self) -> None:
+        current = self._new_ext_combo.currentText()
+        self._new_ext_combo.clear()
+        for i in range(self._list.count()):
+            self._new_ext_combo.addItem(self._list.item(i).text())
+        saved = self._config.get("sidecar_new_extension", "")
+        target = current or saved
+        idx = self._new_ext_combo.findText(target)
+        if idx >= 0:
+            self._new_ext_combo.setCurrentIndex(idx)
+
     def _add_ext(self) -> None:
         raw = self._ext_edit.text().strip().lower()
         if not raw.startswith("."):
@@ -148,14 +170,17 @@ class _SidecarTab(QWidget):
             return
         self._list.addItem(raw)
         self._ext_edit.clear()
+        self._rebuild_new_ext_combo()
 
     def _del_ext(self) -> None:
         row = self._list.currentRow()
         if row >= 0:
             self._list.takeItem(row)
+            self._rebuild_new_ext_combo()
 
     def apply_to(self, config: dict) -> None:
         config["sidecar_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
+        config["sidecar_new_extension"] = self._new_ext_combo.currentText()
 
 
 class _ThumbnailTab(QWidget):

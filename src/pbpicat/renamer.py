@@ -1,4 +1,5 @@
 import re
+import uuid
 from pathlib import Path
 
 
@@ -124,6 +125,113 @@ def build_rename_plan(
                 pairs.append((sc_src, dest_subdir / f"{stem}{ext}"))
 
     return pairs
+
+
+def build_renumber_plan(
+    schema_fields: list[str],
+    source_paths: list[Path],
+    sidecar_extensions: list[str],
+    image_extensions: list[str],
+    video_extensions: list[str] | None = None,
+    video_marker: str = "",
+    video_marker_pos: int = 0,
+) -> list[tuple[Path, Path]]:
+    """
+    Build (src, dst) pairs for in-place renumbering starting from 1.
+    Images and videos have separate counters.
+    Only includes pairs where src != dst.
+    Raises ValueError if the schema has no numeric field.
+    """
+    dirs, parts, numeric_spec = validate_schema(schema_fields)
+    if not numeric_spec:
+        raise ValueError("Le schéma ne contient pas de champ numérique (utilisez '#' pour définir un compteur).")
+
+    min_digits = len(numeric_spec)
+    video_exts = {e.lower() for e in (video_extensions or [])}
+
+    if video_marker:
+        vid_parts: list[str] = list(parts)
+        vid_parts.insert(min(video_marker_pos, len(vid_parts)), video_marker)
+    else:
+        vid_parts = list(parts)
+
+    pairs: list[tuple[Path, Path]] = []
+    img_num = 1
+    vid_num = 1
+
+    for src in source_paths:
+        is_video = src.suffix.lower() in video_exts
+        if is_video:
+            num_str = str(vid_num).zfill(min_digits)
+            vid_num += 1
+        else:
+            num_str = str(img_num).zfill(min_digits)
+            img_num += 1
+
+        base_parts = vid_parts if is_video else list(parts)
+        comps = [c for c in base_parts + [num_str] if c]
+        stem = "_".join(comps)
+        dst = src.parent / f"{stem}{src.suffix.lower()}"
+        if src != dst:
+            pairs.append((src, dst))
+
+        for ext in sidecar_extensions:
+            sc_src = src.parent / (src.stem + ext)
+            if sc_src.exists():
+                sc_dst = src.parent / f"{stem}{ext}"
+                if sc_src != sc_dst:
+                    pairs.append((sc_src, sc_dst))
+
+    return pairs
+
+
+def execute_renumber(pairs: list[tuple[Path, Path]]) -> None:
+    """
+    Execute in-place renaming via a two-phase temp rename to avoid conflicts.
+    Rolls back on error.
+    """
+    if not pairs:
+        return
+
+    prefix = f".__pbpicat_{uuid.uuid4().hex[:8]}_"
+    tmp_map = [(src, src.parent / f"{prefix}{i:04d}{src.suffix}", dst) for i, (src, dst) in enumerate(pairs)]
+
+    done1: list[tuple[Path, Path]] = []
+    try:
+        for src, tmp, _dst in tmp_map:
+            src.rename(tmp)
+            done1.append((src, tmp))
+    except OSError as exc:
+        for src, tmp in reversed(done1):
+            try:
+                tmp.rename(src)
+            except OSError:
+                pass
+        raise RuntimeError(f"Erreur lors du renommage : {exc}") from exc
+
+    done2: list[tuple[Path, Path]] = []
+    try:
+        for _src, tmp, dst in tmp_map:
+            tmp.rename(dst)
+            done2.append((tmp, dst))
+    except OSError as exc:
+        for tmp, dst in reversed(done2):
+            try:
+                dst.rename(tmp)
+            except OSError:
+                pass
+        for src, tmp, _dst in reversed(tmp_map):
+            try:
+                tmp.rename(src)
+            except OSError:
+                pass
+        raise RuntimeError(f"Erreur lors du renommage : {exc}") from exc
+
+
+def undo_renumber(pairs: list[tuple[Path, Path]]) -> None:
+    """Reverse a renumber plan: new_dst → original_src via two-phase rename."""
+    reversed_pairs = [(dst, src) for src, dst in pairs if dst != src]
+    execute_renumber(reversed_pairs)
 
 
 def undo_rename(pairs: list[tuple[Path, Path]]) -> None:

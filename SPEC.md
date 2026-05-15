@@ -50,6 +50,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | `history_max` | int | 20 | Max history size per field |
 | `last_dest` | str | "" | Last destination directory used |
 | `language` | str | "" | Interface language code (e.g. "fr", "en"); empty = system default |
+| `sidecar_new_extension` | str | ".xmp" | Extension used when creating a new sidecar by double-clicking the sidecar column on a file with no sidecar |
 
 ## Rename Schema
 - N editable combobox fields with per-field history
@@ -85,7 +86,7 @@ Images and videos have **separate** counters: each starts from `max_existing + 1
 ## Main Window (4 vertical zones)
 
 ### Zone 1 — Destination
-`[Label Destination:] [QLineEdit DEST_ROOTDIR] [Btn Browse] [Btn Rename All]`
+`[Label Destination:] [QLineEdit DEST_ROOTDIR] [Btn Browse] [Btn Rename All] [Btn Renumber from 1]`
 
 ### Zone 2 — Schema
 `QFrame` with N editable `QComboBox` fields interleaved with N+1 `QRadioButton` (one before, one between each field, one after).
@@ -103,7 +104,7 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 |-----|---------|--------------|-------|
 | Preview | Async thumbnail (QThread) or ▶ for video | Opens ImageViewer (images) | — |
 | Name | Filename | — | Tooltip: previewed final name (number = 1) |
-| Sidecar | `●` + extensions if present, `○` otherwise | Opens text sidecars (QDesktopServices) | — |
+| Sidecar | `●` + extensions if present, `○` otherwise | If sidecar exists: opens text sidecars (QDesktopServices). If no sidecar: opens `<stem><sidecar_new_extension>` in the default editor (file need not exist). | — |
 
 Multi-selection (ExtendedSelection).
 
@@ -114,12 +115,14 @@ Multi-selection (ExtendedSelection).
 
 **Context menu (right-click on a file):**
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
-- **Delete**: permanently deletes the file and its sidecars after confirmation. Selects the next file automatically.
+- **Delete**: permanently deletes the file and its sidecars after confirmation. If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`
 
 **Sidecar filter**: editable QComboBox with history. Python regex applied to sidecar file content (re.DOTALL | re.IGNORECASE). Only files having at least one matching sidecar are shown; files with no sidecar are hidden when filter is active. History persisted in `history.json` under key `sidecar_filter`.
+
+**Renumber from 1**: renames all displayed files in-place (same directory), assigning sequential numbers starting from 1 according to the current schema's numeric field. Images and videos have separate counters. Requires a numeric field (`#`) in the schema. Uses two-phase rename (via temp names) to avoid circular conflicts. Result enters the undo stack like a regular rename. If all files are already correctly numbered, shows a status message without prompting.
 
 ## Rename Logic (`src/renamer.py`)
 1. `validate_schema(fields)` → `(dirs, parts, numeric_spec)` or `ValueError`
@@ -136,7 +139,7 @@ Multi-selection (ExtendedSelection).
 ### SettingsDialog (`ui/settings_dialog.py`)
 Menu **Settings → Preferences…** — tabs:
 - **Rename Schema**: QSpinBox (field count 1–12) + dynamic QFormLayout (titles)
-- **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported)
+- **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported); QComboBox "Default extension for new sidecar" populated from the list
 - **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer
 - **Video**: QListWidget extensions + marker field
 - **Thumbnails**: max width/height
