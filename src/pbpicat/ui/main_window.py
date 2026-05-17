@@ -22,6 +22,7 @@ from pbpicat.config import (
     delete_catalog,
     list_catalogs,
     load_config,
+    load_global_config,
     load_history,
     load_last_dest,
     load_last_source_dir,
@@ -43,7 +44,7 @@ from pbpicat.renamer import (
 from .file_panel import FilePanel
 from .history_dialog import HistoryDialog
 from .schema_frame import SchemaFrame
-from .settings_dialog import SettingsDialog
+from .settings_dialog import GlobalSettingsDialog, SettingsDialog
 
 
 class MainWindow(QMainWindow):
@@ -74,6 +75,8 @@ class MainWindow(QMainWindow):
         settings_menu = mb.addMenu(_("&Settings"))
         settings_menu.addAction(_("&Configuration…"), self._open_settings)
         settings_menu.addAction(_("&History…"), self._open_history)
+        settings_menu.addSeparator()
+        settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
 
         help_menu = mb.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self._about)
@@ -373,6 +376,11 @@ class MainWindow(QMainWindow):
             self._file_panel.reconfigure(self._config)
             self._status.showMessage(_("Settings saved."))
 
+    def _open_global_settings(self) -> None:
+        dlg = GlobalSettingsDialog(self)
+        if dlg.exec() == GlobalSettingsDialog.Accepted:
+            self._status.showMessage(_("Program settings saved."))
+
     def _open_history(self) -> None:
         dlg = HistoryDialog(self._config, self)
         if dlg.exec() == HistoryDialog.Accepted:
@@ -429,7 +437,9 @@ class MainWindow(QMainWindow):
                 _('A catalog named "{name}" already exists.').format(name=name),
             )
             return
-        create_catalog(name)
+        global_cfg = load_global_config()
+        initial = {"sidecar_extensions": global_cfg["default_sidecar_extensions"]}
+        create_catalog(name, initial)
         self._switch_to_catalog(name)
 
     def _delete_catalog_action(self) -> None:

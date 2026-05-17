@@ -8,6 +8,13 @@ from pbpicat import i18n
 from pbpicat.config import init_catalogs
 from pbpicat.ui.main_window import MainWindow
 
+try:
+    import pillow_heif
+
+    pillow_heif.register_heif_opener()
+except ImportError:
+    pass
+
 
 def _resource(relative: str) -> Path:
     # sys._MEIPASS is set by PyInstaller when running from a frozen bundle
@@ -20,7 +27,7 @@ def main() -> None:
     app = QApplication(sys.argv)
     app.setApplicationName("PBPicat")
     app.setOrganizationName("PBPicat")
-    app.setApplicationVersion("1.1.0")
+    app.setApplicationVersion("1.3.0")
 
     icon_path = _resource("resources/pbpicat.svg")
     app.setWindowIcon(QIcon(str(icon_path)))

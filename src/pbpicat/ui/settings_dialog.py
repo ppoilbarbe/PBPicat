@@ -21,7 +21,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pbpicat.config import DEFAULTS, save_config
+from pbpicat.config import (
+    DEFAULT_IMAGE_EXTENSIONS,
+    DEFAULT_SIDECAR_EXTENSIONS,
+    DEFAULT_VIDEO_EXTENSIONS,
+    DEFAULTS,
+    load_global_config,
+    save_config,
+    save_global_config,
+)
 
 _EXT_RE = re.compile(r"^(\.[a-zA-Z0-9]+)+$")
 
@@ -132,6 +140,11 @@ class _SidecarTab(QWidget):
 
         root.addLayout(add_row)
 
+        restore_btn = QPushButton(_("Restore missing defaults"))
+        restore_btn.setToolTip(_("Add extensions from the global default list that are not yet in the list above"))
+        restore_btn.clicked.connect(self._restore_missing_defaults)
+        root.addWidget(restore_btn)
+
         form = QFormLayout()
         form.setSpacing(8)
         self._new_ext_combo = QComboBox()
@@ -177,6 +190,19 @@ class _SidecarTab(QWidget):
         if row >= 0:
             self._list.takeItem(row)
             self._rebuild_new_ext_combo()
+
+    def _restore_missing_defaults(self) -> None:
+        defaults = load_global_config()["default_sidecar_extensions"]
+        current = {self._list.item(i).text() for i in range(self._list.count())}
+        added = 0
+        for ext in defaults:
+            if ext not in current:
+                self._list.addItem(ext)
+                added += 1
+        if added:
+            self._rebuild_new_ext_combo()
+        else:
+            QMessageBox.information(self, _("Restore defaults"), _("All default extensions are already in the list."))
 
     def apply_to(self, config: dict) -> None:
         config["sidecar_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
@@ -262,6 +288,11 @@ class _ImageTab(QWidget):
 
         root.addLayout(add_row)
 
+        restore_btn = QPushButton(_("Restore missing defaults"))
+        restore_btn.setToolTip(_("Add extensions from the built-in default list that are not yet in the list above"))
+        restore_btn.clicked.connect(self._restore_missing_defaults)
+        root.addWidget(restore_btn)
+
         form = QFormLayout()
         form.setSpacing(8)
 
@@ -303,6 +334,16 @@ class _ImageTab(QWidget):
         row = self._list.currentRow()
         if row >= 0:
             self._list.takeItem(row)
+
+    def _restore_missing_defaults(self) -> None:
+        current = {self._list.item(i).text() for i in range(self._list.count())}
+        added = 0
+        for ext in DEFAULT_IMAGE_EXTENSIONS:
+            if ext not in current:
+                self._list.addItem(ext)
+                added += 1
+        if added == 0:
+            QMessageBox.information(self, _("Restore defaults"), _("All default extensions are already in the list."))
 
     def apply_to(self, config: dict) -> None:
         config["image_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
@@ -346,6 +387,11 @@ class _VideoTab(QWidget):
         add_row.addWidget(del_btn)
         root.addLayout(add_row)
 
+        restore_btn = QPushButton(_("Restore missing defaults"))
+        restore_btn.setToolTip(_("Add extensions from the built-in default list that are not yet in the list above"))
+        restore_btn.clicked.connect(self._restore_missing_defaults)
+        root.addWidget(restore_btn)
+
         root.addWidget(
             QLabel(
                 _(
@@ -388,6 +434,16 @@ class _VideoTab(QWidget):
         row = self._list.currentRow()
         if row >= 0:
             self._list.takeItem(row)
+
+    def _restore_missing_defaults(self) -> None:
+        current = {self._list.item(i).text() for i in range(self._list.count())}
+        added = 0
+        for ext in DEFAULT_VIDEO_EXTENSIONS:
+            if ext not in current:
+                self._list.addItem(ext)
+                added += 1
+        if added == 0:
+            QMessageBox.information(self, _("Restore defaults"), _("All default extensions are already in the list."))
 
     def apply_to(self, config: dict) -> None:
         config["video_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
@@ -446,14 +502,12 @@ class SettingsDialog(QDialog):
         self._image_tab = _ImageTab(self._config)
         self._thumb_tab = _ThumbnailTab(self._config)
         self._video_tab = _VideoTab(self._config)
-        self._lang_tab = _LanguageTab(self._config)
 
         tabs.addTab(self._schema_tab, _("Rename schema"))
         tabs.addTab(self._sidecar_tab, _("Sidecar extensions"))
         tabs.addTab(self._image_tab, _("Images"))
         tabs.addTab(self._video_tab, _("Video"))
         tabs.addTab(self._thumb_tab, _("Thumbnails"))
-        tabs.addTab(self._lang_tab, _("Language"))
 
         root.addWidget(tabs)
 
@@ -468,9 +522,137 @@ class SettingsDialog(QDialog):
         self._image_tab.apply_to(self._config)
         self._video_tab.apply_to(self._config)
         self._thumb_tab.apply_to(self._config)
-        self._lang_tab.apply_to(self._config)
         save_config(self._config)
         self.accept()
 
     def updated_config(self) -> dict:
         return self._config
+
+
+class GlobalSettingsDialog(QDialog):
+    """Program-level settings (not per-catalog)."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(_("Program settings"))
+        self.setMinimumSize(460, 380)
+        self._global_config = load_global_config()
+        self._setup_ui()
+
+    def _setup_ui(self) -> None:
+        root = QVBoxLayout(self)
+
+        tabs = QTabWidget()
+        tabs.addTab(self._build_sidecar_tab(), _("Sidecar extensions"))
+        tabs.addTab(self._build_language_tab(), _("Language"))
+        root.addWidget(tabs)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self._accept)
+        buttons.rejected.connect(self.reject)
+        root.addWidget(buttons)
+
+    def _build_sidecar_tab(self) -> QWidget:
+        w = QWidget()
+        layout = QVBoxLayout(w)
+        layout.setSpacing(8)
+
+        layout.addWidget(QLabel(_("<b>Default sidecar extensions for new catalogs</b>")))
+        layout.addWidget(QLabel(_("(e.g. .xmp, .dop, .prompt.txt)")))
+
+        self._list = QListWidget()
+        for ext in self._global_config.get("default_sidecar_extensions", []):
+            self._list.addItem(ext)
+        layout.addWidget(self._list, stretch=1)
+
+        add_row = QHBoxLayout()
+        self._ext_edit = QLineEdit()
+        self._ext_edit.setPlaceholderText(_(".ext or .name.ext"))
+        self._ext_edit.setMaximumWidth(140)
+        self._ext_edit.returnPressed.connect(self._add_ext)
+        add_row.addWidget(self._ext_edit)
+
+        add_btn = QPushButton(_("Add"))
+        add_btn.setFixedWidth(90)
+        add_btn.clicked.connect(self._add_ext)
+        add_row.addWidget(add_btn)
+        add_row.addStretch()
+
+        del_btn = QPushButton(_("Delete"))
+        del_btn.setFixedWidth(90)
+        del_btn.clicked.connect(self._del_ext)
+        add_row.addWidget(del_btn)
+        layout.addLayout(add_row)
+
+        restore_btn = QPushButton(_("Restore built-in defaults"))
+        restore_btn.setToolTip(_("Reset the list to the built-in default sidecar extensions"))
+        restore_btn.clicked.connect(self._restore_defaults)
+        layout.addWidget(restore_btn)
+
+        return w
+
+    def _build_language_tab(self) -> QWidget:
+        from pbpicat.i18n import available_languages
+
+        w = QWidget()
+        layout = QVBoxLayout(w)
+        layout.setSpacing(10)
+
+        form = QFormLayout()
+        form.setSpacing(8)
+
+        self._lang_combo = QComboBox()
+        self._lang_combo.addItem(_("System default"), "")
+        for code, name in available_languages():
+            self._lang_combo.addItem(name, code)
+
+        current = self._global_config.get("language", "")
+        idx = self._lang_combo.findData(current)
+        if idx >= 0:
+            self._lang_combo.setCurrentIndex(idx)
+
+        form.addRow(_("Interface language:"), self._lang_combo)
+        layout.addLayout(form)
+
+        layout.addWidget(QLabel(_("A restart is required for the language change to take effect.")))
+        layout.addStretch()
+
+        return w
+
+    def _add_ext(self) -> None:
+        raw = self._ext_edit.text().strip().lower()
+        if not raw.startswith("."):
+            raw = "." + raw
+        if not _EXT_RE.match(raw):
+            QMessageBox.warning(
+                self,
+                _("Invalid extension"),
+                _("'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt).").format(ext=raw),
+            )
+            return
+        if self._list.findItems(raw, Qt.MatchExactly):
+            self._ext_edit.clear()
+            return
+        self._list.addItem(raw)
+        self._ext_edit.clear()
+
+    def _del_ext(self) -> None:
+        row = self._list.currentRow()
+        if row >= 0:
+            self._list.takeItem(row)
+
+    def _restore_defaults(self) -> None:
+        self._list.clear()
+        for ext in DEFAULT_SIDECAR_EXTENSIONS:
+            self._list.addItem(ext)
+
+    def _accept(self) -> None:
+        self._global_config["default_sidecar_extensions"] = [
+            self._list.item(i).text() for i in range(self._list.count())
+        ]
+        self._global_config["language"] = self._lang_combo.currentData()
+        save_global_config(self._global_config)
+        self.accept()
+
+    def updated_global_config(self) -> dict:
+        return self._global_config

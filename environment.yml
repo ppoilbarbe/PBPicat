@@ -7,6 +7,9 @@ dependencies:
   - python=3.12
   # GUI
   - pyside6
+  # Image support (Pillow fallback + HEIC/HEIF)
+  - pillow
+  - pillow-heif
   # Tests
   - pytest
   - pytest-qt

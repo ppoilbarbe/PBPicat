@@ -8,13 +8,103 @@ from PySide6.QtCore import QSettings
 _XDG_CONFIG_HOME = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
 _BASE_DIR = _XDG_CONFIG_HOME / "pbpicat"
 _CATALOG_CONF = _BASE_DIR / "catalog.conf"
+_GLOBAL_CONFIG_PATH = _BASE_DIR / "global_settings.json"
 
 _current_catalog: str = "default"
 
+DEFAULT_SIDECAR_EXTENSIONS = [".xmp", ".dop", ".pp3"]
+
+DEFAULT_VIDEO_EXTENSIONS = [
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".mts",
+    ".m2ts",
+    ".wmv",
+    ".flv",
+    ".webm",
+]
+
+DEFAULT_IMAGE_EXTENSIONS = [
+    # Common raster formats
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".tif",
+    ".tiff",
+    ".webp",
+    # Modern / recent formats
+    ".heic",
+    ".heif",
+    ".avif",
+    ".jxl",
+    # RAW — generic
+    ".raw",
+    ".dng",
+    # RAW — Canon
+    ".cr2",
+    ".cr3",
+    # RAW — Nikon
+    ".nef",
+    ".nrw",
+    # RAW — Sony
+    ".arw",
+    ".srf",
+    ".sr2",
+    # RAW — Olympus / OM System
+    ".orf",
+    # RAW — Panasonic
+    ".rw2",
+    # RAW — Pentax
+    ".pef",
+    # RAW — Fujifilm
+    ".raf",
+    # RAW — Hasselblad
+    ".3fr",
+    # RAW — Mamiya
+    ".mef",
+    # RAW — Minolta / Konica Minolta
+    ".mrw",
+    # RAW — Epson
+    ".erf",
+    # RAW — Kodak
+    ".kdc",
+    ".dcr",
+    # RAW — Leica
+    ".rwl",
+    # RAW — Samsung
+    ".srw",
+    # RAW — Sigma
+    ".x3f",
+    # HDR / high bit-depth
+    ".exr",
+    ".hdr",
+    # JPEG 2000
+    ".jp2",
+    ".j2k",
+    # JPEG XR
+    ".jxr",
+    # Legacy raster
+    ".tga",
+    ".pcx",
+    ".pnm",
+    ".pgm",
+    ".ppm",
+    ".pbm",
+    # Icons
+    ".ico",
+    # Adobe Photoshop
+    ".psd",
+    ".psb",
+]
+
 DEFAULTS = {
-    "sidecar_extensions": [".xmp", ".dop", ".pp3"],
-    "image_extensions": [".jpg", ".jpeg", ".png"],
-    "video_extensions": [".mp4", ".mov", ".avi", ".mkv", ".mts", ".m2ts", ".wmv", ".flv", ".webm"],
+    "sidecar_extensions": DEFAULT_SIDECAR_EXTENSIONS,
+    "image_extensions": DEFAULT_IMAGE_EXTENSIONS,
+    "video_extensions": DEFAULT_VIDEO_EXTENSIONS,
     "video_marker": "",
     "schema_field_count": 6,
     "schema_field_titles": ["Catégorie", "Sous-cat.", "Série", "Sujet", "Détail", "Numéro"],
@@ -25,6 +115,11 @@ DEFAULTS = {
     "zoom_max_percent": 400,
     "language": "",
     "sidecar_new_extension": ".xmp",
+}
+
+_DEFAULT_GLOBAL_CONFIG: dict = {
+    "default_sidecar_extensions": DEFAULT_SIDECAR_EXTENSIONS,
+    "language": "",
 }
 
 
@@ -83,8 +178,14 @@ def list_catalogs() -> list[str]:
     return sorted(p.name for p in _BASE_DIR.iterdir() if p.is_dir())
 
 
-def create_catalog(name: str) -> None:
-    (_BASE_DIR / name).mkdir(parents=True, exist_ok=True)
+def create_catalog(name: str, initial_config: dict | None = None) -> None:
+    catalog_dir = _BASE_DIR / name
+    catalog_dir.mkdir(parents=True, exist_ok=True)
+    if initial_config:
+        settings_path = catalog_dir / "settings.json"
+        if not settings_path.exists():
+            with open(settings_path, "w", encoding="utf-8") as f:
+                json.dump(initial_config, f, indent=2, ensure_ascii=False)
 
 
 def delete_catalog(name: str) -> None:
@@ -146,6 +247,26 @@ def save_config(config: dict) -> None:
     path = _config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+
+
+def load_global_config() -> dict:
+    config = {k: list(v) if isinstance(v, list) else v for k, v in _DEFAULT_GLOBAL_CONFIG.items()}
+    if _GLOBAL_CONFIG_PATH.exists():
+        try:
+            with open(_GLOBAL_CONFIG_PATH, encoding="utf-8") as f:
+                data = json.load(f)
+            for k, default in _DEFAULT_GLOBAL_CONFIG.items():
+                if k in data and type(data[k]) is type(default):
+                    config[k] = data[k]
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+    return config
+
+
+def save_global_config(config: dict) -> None:
+    _BASE_DIR.mkdir(parents=True, exist_ok=True)
+    with open(_GLOBAL_CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
 
 

@@ -58,9 +58,9 @@ def available_languages() -> list[tuple[str, str]]:
 
 def setup(app: QApplication) -> None:
     """Install translations for app. Safe to call multiple times."""
-    from pbpicat.config import load_config
+    from pbpicat.config import load_global_config
 
-    config = load_config()
+    config = load_global_config()
     override = config.get("language", "")
     lang = override if override else _system_language()
 

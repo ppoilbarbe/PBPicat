@@ -171,39 +171,39 @@ def test_available_languages_falls_back_to_code_when_name_untranslated(monkeypat
 
 
 def test_setup_installs_fr(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": "fr"})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "fr"})
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Prêt."
 
 
 def test_setup_installs_en(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": "en"})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "en"})
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Ready."
 
 
 def test_setup_uses_system_language_when_no_override(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": ""})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": ""})
     monkeypatch.setenv("LANGUAGE", "fr")
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Prêt."
 
 
 def test_setup_language_key_absent_from_config(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {})
     monkeypatch.setenv("LANGUAGE", "en")
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Ready."
 
 
 def test_setup_falls_back_to_null_for_unknown_lang(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": "xx"})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "xx"})
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Ready."
 
 
 def test_setup_installs_qt_translator(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": "en"})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "en"})
     with patch.object(qapp, "installTranslator") as mock_install:
         setup(qapp)
     mock_install.assert_called_once()
@@ -211,7 +211,7 @@ def test_setup_installs_qt_translator(qapp, monkeypatch):
 
 
 def test_setup_is_idempotent(qapp, monkeypatch):
-    monkeypatch.setattr("pbpicat.config.load_config", lambda: {"language": "fr"})
+    monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "fr"})
     setup(qapp)
     setup(qapp)
     assert builtins.__dict__["_"]("Ready.") == "Prêt."

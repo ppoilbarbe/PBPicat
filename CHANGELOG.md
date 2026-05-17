@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.0] - 2026-05-17
+
+### Added
+
+- **Global program settings** — new *Settings → Program settings…* dialog (separated from per-catalog configuration by a menu separator) for settings that apply to the whole program rather than a single catalog.
+- **Default sidecar extensions (global)** — the global settings dialog lets you define the list of sidecar extensions that new catalogs receive on creation; supports multi-dot extensions (e.g. `.prompt.txt`); includes a *Restore built-in defaults* button.
+- **Language selection moved to global settings** — the interface language is now a program-level preference (stored in `global_settings.json`, independent of any catalog); requires a restart.
+- **New catalog initialisation** — a newly created catalog inherits the global default sidecar extensions instead of the hard-coded built-in list.
+- **Restore missing defaults — Video** — new button in *Configuration → Video* tab to non-destructively add any missing built-in video extensions.
+- **Restore missing defaults — Sidecar** — new button in *Configuration → Sidecar extensions* tab to non-destructively add any missing global-default sidecar extensions.
+- **Pillow / pillow-heif image support** — Pillow and pillow-heif are now runtime dependencies; formats that Qt cannot decode natively (HEIC, HEIF, AVIF, JPEG 2000, PCX, …) are loaded via a Pillow fallback in both the thumbnail worker and the image viewer.
+- **Expanded default image extension list** — `DEFAULT_IMAGE_EXTENSIONS` now covers 46 formats including modern (HEIC, AVIF, JXL), RAW (Canon, Nikon, Sony, Fujifilm, …), HDR, JPEG 2000, and legacy raster formats.
+- **Multi-language UI** — translation files for German, Spanish, Italian, Russian, Vietnamese, and Simplified Chinese added alongside the existing English and French.
+- **`tools/bump_version.py`** — script to increment or force the project version (`major`, `minor`, `patch`, `set x.y.z`); updates `pyproject.toml`, `__main__.py`, and the EN/FR PO headers in one step. Exposed via `make bump-major / bump-minor / bump-patch / bump-set`.
+
+### Changed
+
+- **Settings menu layout** — *Program settings…* moved to the bottom of the *Settings* menu, separated by a divider to distinguish program-level settings from catalog-level ones (*Configuration…* and *History…*).
+- **Translation headers** — PO file headers corrected: project name changed from `PBCategory` to `PBPicat`, version aligned with the project version.
+- **Translation review markers** — all existing translated strings in non-English locales (DE, ES, FR, IT, RU, VI, ZH_CN) are now tagged `==AUTO==` to indicate they are pending human review.
 
 ## [1.2.0] - 2026-05-15
 

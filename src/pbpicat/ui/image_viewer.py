@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import DEFAULTS, qsettings
+from pbpicat.image_io import load_pixmap
 
 
 class _ZoomMode(Enum):
@@ -169,7 +170,7 @@ class ImageViewer(QWidget):
 
     def load_image(self, path: Path) -> None:
         self.setWindowTitle(path.name)
-        self._pixmap = QPixmap(str(path))
+        self._pixmap = load_pixmap(path)
         if not self._pixmap.isNull():
             w, h = self._pixmap.width(), self._pixmap.height()
             min_dim = min(w, h)

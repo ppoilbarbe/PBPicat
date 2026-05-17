@@ -7,7 +7,7 @@ endif
 SRC        := src
 LOCALE_DIR := src/pbpicat/locale
 POT_FILE   := $(LOCALE_DIR)/pbpicat.pot
-PO_LOCALES := en fr
+PO_LOCALES := en fr de es it ru vi zh_CN
 
 # Python sources
 PY_SOURCES := $(shell find $(SRC)/pbpicat -name "*.py" ! -path "*/__pycache__/*")

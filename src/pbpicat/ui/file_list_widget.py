@@ -4,7 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from PySide6.QtCore import QEvent, QMimeData, QSize, Qt, QThread, QUrl, Signal
-from PySide6.QtGui import QDesktopServices, QDrag, QFont, QImage, QImageReader, QPixmap
+from PySide6.QtGui import QDesktopServices, QDrag, QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDialog,
@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import load_all_history
+from pbpicat.image_io import load_qimage
 from pbpicat.renamer import validate_schema
 
 from .image_viewer import ImageViewer
@@ -82,12 +83,7 @@ class _ThumbnailWorker(QThread):
                 break
             if path.suffix.lower() not in self._image_exts:
                 continue
-            reader = QImageReader(str(path))
-            reader.setAutoTransform(True)
-            orig = reader.size()
-            if orig.isValid():
-                reader.setScaledSize(orig.scaled(self._w, self._h, Qt.KeepAspectRatio))
-            image = reader.read()
+            image = load_qimage(path, self._w, self._h)
             self.thumbnail_ready.emit(i, image)
 
 
