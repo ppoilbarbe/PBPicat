@@ -8,13 +8,12 @@
 Build with:  make dist
 """
 
+import os
 import platform
 import sys
-import tomllib
 from pathlib import Path
 
-with open("pyproject.toml", "rb") as _f:
-    _version = tomllib.load(_f)["project"]["version"]
+_version = os.environ.get("PBPICAT_VERSION", "dev")
 
 _machine = platform.machine().lower()
 _arch = {

@@ -23,7 +23,7 @@ C  := \033[36m
 
 .DEFAULT_GOAL := help
 .PHONY: all help venv venv-update install run test coverage lint format hooks \
-        translate force-translate new-lang dist clean
+        translate force-translate new-lang dist srcdist clean
 
 all: translate ## Build all generated artifacts (strings → .mo)
 
@@ -124,11 +124,21 @@ new-lang: ## Scaffold a new translation (usage: make new-lang LOCALE=de)
 # ── Distribution ──────────────────────────────────────────────────────────────
 
 dist: translate ## Build a standalone executable for the current platform
-	@printf "$(C)PyInstaller — platform: $(shell $(CONDA_RUN) python3 -c 'import sys; print(sys.platform)')$(R)\n"
-	$(CONDA_RUN) pyinstaller --clean --noconfirm \
+	$(eval PBPICAT_VERSION := $(shell bash tools/git_version.sh))
+	@printf "$(C)PyInstaller — version: $(PBPICAT_VERSION) — platform: $(shell $(CONDA_RUN) python3 -c 'import sys; print(sys.platform)')$(R)\n"
+	PBPICAT_VERSION=$(PBPICAT_VERSION) $(CONDA_RUN) pyinstaller --clean --noconfirm \
 	    --distpath dist --workpath build/pyinstaller \
 	    pbpicat.spec
 	@printf "$(G)Done.$(R) Executable in $(Y)dist/$(R)\n"
+
+srcdist: ## Build a source archive (git archive → dist/)
+	$(eval PBPICAT_VERSION := $(shell bash tools/git_version.sh))
+	@printf "$(C)Source archive — version: $(PBPICAT_VERSION)$(R)\n"
+	@mkdir -p dist
+	git archive --format=tar.gz \
+	    --prefix=PBPicat-$(PBPICAT_VERSION)/ \
+	    HEAD -o dist/PBPicat-$(PBPICAT_VERSION)-src.tar.gz
+	@printf "$(G)Done.$(R) Archive in $(Y)dist/PBPicat-$(PBPICAT_VERSION)-src.tar.gz$(R)\n"
 
 # ── Versioning ────────────────────────────────────────────────────────────────
 
