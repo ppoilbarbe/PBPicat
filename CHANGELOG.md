@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-05-23
+
+### Added
+
+- **Directory tree context menu** — right-clicking a folder in the directory tree now shows a context menu with an *Open* action that opens the folder in the system file manager.
+- **Auto-refresh on disk changes** — the file list now watches the current directory with `QFileSystemWatcher` and refreshes automatically (400 ms debounce) when files are added, removed, or renamed on disk.
+
+### Fixed
+
+- Directory tree scroll-to was unreliable when the widget was not yet visible at selection time; scrolling is now deferred through `showEvent` and re-triggered whenever an ancestor directory finishes loading, keeping the selected folder centred in view.
+
 ## [1.3.0] - 2026-05-17
 
 ### Added

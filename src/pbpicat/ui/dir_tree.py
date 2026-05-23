@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from PySide6.QtCore import QDir, QTimer, Signal
-from PySide6.QtWidgets import QFileSystemModel, QTreeView
+from PySide6.QtCore import QDir, Qt, QTimer, QUrl, Signal
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QAbstractItemView, QFileSystemModel, QMenu, QTreeView
 
 
 class DirTree(QTreeView):
@@ -10,6 +11,7 @@ class DirTree(QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._target_path: str | None = None
+        self._scroll_path: str | None = None
 
         self._model = QFileSystemModel()
         self._model.setRootPath(QDir.rootPath())
@@ -27,10 +29,11 @@ class DirTree(QTreeView):
 
         home_index = self._model.index(QDir.homePath())
         self.expand(home_index)
-        self.scrollTo(home_index)
         self.setCurrentIndex(home_index)
 
         self.selectionModel().currentChanged.connect(self._on_current_changed)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
 
     def current_path(self) -> str:
         idx = self.currentIndex()
@@ -40,6 +43,7 @@ class DirTree(QTreeView):
         if not Path(path).is_dir():
             return
         self._target_path = path
+        self._scroll_path = path
         self._try_select()
 
     def _try_select(self) -> None:
@@ -48,7 +52,6 @@ class DirTree(QTreeView):
         idx = self._model.index(self._target_path)
         if not idx.isValid():
             return
-        # Expand ancestors top-down so the item becomes visible
         ancestors: list = []
         p = idx.parent()
         while p.isValid():
@@ -57,20 +60,57 @@ class DirTree(QTreeView):
         for anc in reversed(ancestors):
             self.expand(anc)
         self.setCurrentIndex(idx)
-        QTimer.singleShot(0, lambda: self.scrollTo(idx))
         self.expand(idx)
+        # _target_path cleared by _on_current_changed; _scroll_path persists
+
+    def _do_scroll(self) -> None:
+        path = self._scroll_path
+        if path is None:
+            return
+        if self.isVisible():
+            QTimer.singleShot(0, lambda: self._scroll_to_path(path))
+        # else: showEvent will call _do_scroll when the widget becomes visible
+
+    def _scroll_to_path(self, path: str) -> None:
+        idx = self._model.index(path)
+        if idx.isValid():
+            self.scrollTo(idx, QAbstractItemView.ScrollHint.PositionAtCenter)
+
+    def showEvent(self, event) -> None:  # noqa: N802
+        super().showEvent(event)
+        self._do_scroll()
 
     def _on_directory_loaded(self, loaded_path: str) -> None:
-        if self._target_path is None:
+        if self._target_path is not None:
+            try:
+                Path(self._target_path).relative_to(loaded_path)
+                self._try_select()
+            except ValueError:
+                pass
+        # Re-scroll whenever an ancestor of the target finishes loading —
+        # new rows inserted above would otherwise push the target out of view.
+        if self._scroll_path is not None:
+            try:
+                Path(self._scroll_path).relative_to(loaded_path)
+                self._do_scroll()
+            except ValueError:
+                pass
+
+    def _show_context_menu(self, pos) -> None:
+        idx = self.indexAt(pos)
+        if not idx.isValid():
             return
-        # Retry whenever an ancestor directory (or the target itself) finishes loading
-        try:
-            Path(self._target_path).relative_to(loaded_path)
-            self._try_select()
-        except ValueError:
-            pass
+        path = self._model.filePath(idx)
+        menu = QMenu(self)
+        open_action = menu.addAction(_("Open"))
+        action = menu.exec(self.viewport().mapToGlobal(pos))
+        if action is open_action:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
     def _on_current_changed(self, current, _previous):
         if current.isValid():
-            self._target_path = None  # Navigation is done
-            self.directory_selected.emit(self._model.filePath(current))
+            path = self._model.filePath(current)
+            self._target_path = None
+            if path != self._scroll_path:
+                self._scroll_path = None
+            self.directory_selected.emit(path)

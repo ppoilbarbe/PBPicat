@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PBPicat 1.3.0\n"
+"Project-Id-Version: PBPicat 1.4.0\n"
 "Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-05-17 12:03+0200\n"
+"POT-Creation-Date: 2026-05-23 14:49+0200\n"
 "PO-Revision-Date: 2026-05-02 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language-Team: French <fr@li.org>\n"
@@ -16,21 +16,84 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/pbpicat/ui/schema_frame.py:88
-msgid "<b>Rename schema</b>"
-msgstr "<b>Schéma de renommage</b>"
+#: src/pbpicat/i18n.py:52
+msgid "language_name"
+msgstr "Français"
 
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/dir_tree.py:82
+msgid "Open"
+msgstr "Ouvrir"
+
+#: src/pbpicat/ui/file_list_widget.py:42
+msgid "Proposed template"
+msgstr "Modèle proposé"
+
+#: src/pbpicat/ui/file_list_widget.py:46
+msgid "Detected template — confirm to apply to fields:"
+msgstr "Modèle détecté — valider pour l'appliquer aux champs :"
+
+#: src/pbpicat/ui/file_list_widget.py:145
+msgid "Preview"
+msgstr "Aperçu"
+
+#: src/pbpicat/ui/file_list_widget.py:145
+msgid "File name"
+msgstr "Nom du fichier"
+
+#: src/pbpicat/ui/file_list_widget.py:145
+msgid "Sidecar"
+msgstr "Sidecar"
+
+#: src/pbpicat/ui/file_list_widget.py:269
+#, python-brace-format
+msgid "File name ({n})"
+msgstr "Nom du fichier ({n})"
+
+#: src/pbpicat/ui/file_list_widget.py:429
+#: src/pbpicat/ui/file_list_widget.py:508
+msgid "Template"
+msgstr "Modèle"
+
+#: src/pbpicat/ui/file_list_widget.py:430 src/pbpicat/ui/history_dialog.py:59
+#: src/pbpicat/ui/settings_dialog.py:136 src/pbpicat/ui/settings_dialog.py:284
+#: src/pbpicat/ui/settings_dialog.py:384 src/pbpicat/ui/settings_dialog.py:581
+msgid "Delete"
+msgstr "Supprimer"
+
+#: src/pbpicat/ui/file_list_widget.py:467 src/pbpicat/ui/main_window.py:459
+msgid "Confirm deletion"
+msgstr "Confirmer la suppression"
+
+#: src/pbpicat/ui/file_list_widget.py:468
+#, python-brace-format
+msgid ""
+"Permanently delete:\n"
+"{names}"
+msgstr ""
+"Supprimer définitivement :\n"
+"{names}"
+
+#: src/pbpicat/ui/file_list_widget.py:488
+msgid "Deletion error"
+msgstr "Erreur de suppression"
+
+#: src/pbpicat/ui/file_list_widget.py:510
+#, python-brace-format
+msgid ""
+"Could not determine a template for '{name}'.\n"
+"No part of the file name matches any field history."
+msgstr ""
+"Impossible de déterminer un modèle pour « {name} ».\n"
+"Aucune partie du nom de fichier ne correspond aux historiques des champs."
+
+#: src/pbpicat/ui/file_list_widget.py:516 src/pbpicat/ui/history_dialog.py:151
 #: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
-#: src/pbpicat/ui/history_dialog.py:151 src/pbpicat/ui/file_list_widget.py:516
 #: src/pbpicat/ui/settings_dialog.py:93 src/pbpicat/ui/settings_dialog.py:95
 #: src/pbpicat/ui/settings_dialog.py:101
 #, python-brace-format
 msgid "Field {n}"
 msgstr "Champ {n}"
-
-#: src/pbpicat/ui/schema_frame.py:116
-msgid "Video marker position"
-msgstr "Position du marqueur vidéo"
 
 #: src/pbpicat/ui/history_dialog.py:34
 #, python-brace-format
@@ -44,12 +107,6 @@ msgstr "▲ Monter"
 #: src/pbpicat/ui/history_dialog.py:53
 msgid "▼ Move down"
 msgstr "▼ Descendre"
-
-#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/file_list_widget.py:430
-#: src/pbpicat/ui/settings_dialog.py:136 src/pbpicat/ui/settings_dialog.py:284
-#: src/pbpicat/ui/settings_dialog.py:384 src/pbpicat/ui/settings_dialog.py:581
-msgid "Delete"
-msgstr "Supprimer"
 
 #: src/pbpicat/ui/history_dialog.py:63
 msgid "Clear all"
@@ -102,281 +159,6 @@ msgstr "Impossible de charger l'image."
 #: src/pbpicat/ui/image_viewer.py:279
 msgid " (max)"
 msgstr " (max)"
-
-#: src/pbpicat/ui/file_list_widget.py:42
-msgid "Proposed template"
-msgstr "Modèle proposé"
-
-#: src/pbpicat/ui/file_list_widget.py:46
-msgid "Detected template — confirm to apply to fields:"
-msgstr "Modèle détecté — valider pour l'appliquer aux champs :"
-
-#: src/pbpicat/ui/file_list_widget.py:145
-msgid "Preview"
-msgstr "Aperçu"
-
-#: src/pbpicat/ui/file_list_widget.py:145
-msgid "File name"
-msgstr "Nom du fichier"
-
-#: src/pbpicat/ui/file_list_widget.py:145
-msgid "Sidecar"
-msgstr "Sidecar"
-
-#: src/pbpicat/ui/file_list_widget.py:269
-#, python-brace-format
-msgid "File name ({n})"
-msgstr "Nom du fichier ({n})"
-
-#: src/pbpicat/ui/file_list_widget.py:429
-#: src/pbpicat/ui/file_list_widget.py:508
-msgid "Template"
-msgstr "Modèle"
-
-#: src/pbpicat/ui/file_list_widget.py:467 src/pbpicat/ui/main_window.py:459
-msgid "Confirm deletion"
-msgstr "Confirmer la suppression"
-
-#: src/pbpicat/ui/file_list_widget.py:468
-#, python-brace-format
-msgid ""
-"Permanently delete:\n"
-"{names}"
-msgstr ""
-"Supprimer définitivement :\n"
-"{names}"
-
-#: src/pbpicat/ui/file_list_widget.py:488
-msgid "Deletion error"
-msgstr "Erreur de suppression"
-
-#: src/pbpicat/ui/file_list_widget.py:510
-#, python-brace-format
-msgid ""
-"Could not determine a template for '{name}'.\n"
-"No part of the file name matches any field history."
-msgstr ""
-"Impossible de déterminer un modèle pour « {name} ».\n"
-"Aucune partie du nom de fichier ne correspond aux historiques des champs."
-
-#: src/pbpicat/ui/settings_dialog.py:49
-msgid "Number of fields:"
-msgstr "Nombre de champs :"
-
-#: src/pbpicat/ui/settings_dialog.py:59
-msgid "Max history entries:"
-msgstr "Nombre max d'entrées d'historique :"
-
-#: src/pbpicat/ui/settings_dialog.py:63
-msgid ""
-"Maximum number of values kept per field history and sidecar filter history"
-msgstr ""
-"Nombre maximum de valeurs conservées dans chaque historique de champ et du "
-"filtre sidecar"
-
-#: src/pbpicat/ui/settings_dialog.py:69
-msgid "<b>Field titles:</b>"
-msgstr "<b>Titres des champs :</b>"
-
-#: src/pbpicat/ui/settings_dialog.py:96
-#, python-brace-format
-msgid "Field {n}:"
-msgstr "Champ {n} :"
-
-#: src/pbpicat/ui/settings_dialog.py:116
-msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
-msgstr "Extensions des fichiers sidecar (ex. : .xmp, .prompt.txt) :"
-
-#: src/pbpicat/ui/settings_dialog.py:125 src/pbpicat/ui/settings_dialog.py:570
-msgid ".ext or .name.ext"
-msgstr ".ext ou .nom.ext"
-
-#: src/pbpicat/ui/settings_dialog.py:130 src/pbpicat/ui/settings_dialog.py:278
-#: src/pbpicat/ui/settings_dialog.py:378 src/pbpicat/ui/settings_dialog.py:575
-msgid "Add"
-msgstr "Ajouter"
-
-#: src/pbpicat/ui/settings_dialog.py:143 src/pbpicat/ui/settings_dialog.py:291
-#: src/pbpicat/ui/settings_dialog.py:390
-msgid "Restore missing defaults"
-msgstr "Restaurer les valeurs par défaut manquantes"
-
-#: src/pbpicat/ui/settings_dialog.py:144
-msgid ""
-"Add extensions from the global default list that are not yet in the list "
-"above"
-msgstr ""
-"Ajouter les extensions de la liste globale par défaut qui ne figurent pas "
-"encore dans la liste ci-dessus"
-
-#: src/pbpicat/ui/settings_dialog.py:152
-msgid ""
-"Extension used when creating a new sidecar by double-clicking the sidecar "
-"column"
-msgstr ""
-"Extension utilisée lors de la création d'un sidecar par double-clic sur la "
-"colonne sidecar"
-
-#: src/pbpicat/ui/settings_dialog.py:154
-msgid "Default extension for new sidecar:"
-msgstr "Extension par défaut pour nouveau sidecar :"
-
-#: src/pbpicat/ui/settings_dialog.py:177 src/pbpicat/ui/settings_dialog.py:323
-#: src/pbpicat/ui/settings_dialog.py:423 src/pbpicat/ui/settings_dialog.py:629
-msgid "Invalid extension"
-msgstr "Extension invalide"
-
-#: src/pbpicat/ui/settings_dialog.py:178 src/pbpicat/ui/settings_dialog.py:630
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
-msgstr "« {ext} » n'est pas une extension valide (ex. : .xmp, .prompt.txt)."
-
-#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
-#: src/pbpicat/ui/settings_dialog.py:446
-msgid "Restore defaults"
-msgstr "Restaurer les valeurs par défaut"
-
-#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
-#: src/pbpicat/ui/settings_dialog.py:446
-msgid "All default extensions are already in the list."
-msgstr "Toutes les extensions par défaut sont déjà dans la liste."
-
-#: src/pbpicat/ui/settings_dialog.py:224
-msgid ""
-"Maximum size of thumbnails displayed in the file list.\n"
-"A navigation restart is required for the change to take effect."
-msgstr ""
-"Taille maximale des miniatures affichées dans la liste des fichiers.\n"
-"Un redémarrage de la navigation est nécessaire pour appliquer le changement."
-
-#: src/pbpicat/ui/settings_dialog.py:239
-msgid "Max width:"
-msgstr "Largeur max :"
-
-#: src/pbpicat/ui/settings_dialog.py:245
-msgid "Max height:"
-msgstr "Hauteur max :"
-
-#: src/pbpicat/ui/settings_dialog.py:264
-msgid "Recognised image extensions (thumbnail + rename):"
-msgstr "Extensions d'images reconnues (miniature + renommage) :"
-
-#: src/pbpicat/ui/settings_dialog.py:292 src/pbpicat/ui/settings_dialog.py:391
-msgid ""
-"Add extensions from the built-in default list that are not yet in the list "
-"above"
-msgstr ""
-"Ajouter les extensions de la liste par défaut intégrée qui sont absentes de "
-"la liste ci-dessus"
-
-#: src/pbpicat/ui/settings_dialog.py:302
-msgid "Enlargement/reduction factor per click or double-click"
-msgstr "Facteur d'agrandissement/réduction à chaque clic ou double-clic"
-
-#: src/pbpicat/ui/settings_dialog.py:304
-msgid "Zoom step:"
-msgstr "Pas de zoom :"
-
-#: src/pbpicat/ui/settings_dialog.py:310
-msgid "Maximum zoom allowed in the image viewer"
-msgstr "Zoom maximum autorisé dans le visualiseur d'images"
-
-#: src/pbpicat/ui/settings_dialog.py:312
-msgid "Max zoom:"
-msgstr "Zoom max :"
-
-#: src/pbpicat/ui/settings_dialog.py:324
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
-msgstr "« {ext} » n'est pas une extension valide (ex. : .png, .heic)."
-
-#: src/pbpicat/ui/settings_dialog.py:364
-msgid "Recognised video extensions:"
-msgstr "Extensions vidéo reconnues :"
-
-#: src/pbpicat/ui/settings_dialog.py:398
-msgid ""
-"<b>Video marker</b><br>Inserted among the name components at the position "
-"chosen in the schema.<br>No '_' in the value. Empty = no marker."
-msgstr ""
-"<b>Marqueur pour les fichiers vidéo</b><br>Inséré parmi les composants du "
-"nom selon la position choisie dans le schéma.<br>Pas de « _ » dans la "
-"valeur. Vide = aucun marqueur."
-
-#: src/pbpicat/ui/settings_dialog.py:410
-msgid "e.g. VID  (empty = none)"
-msgstr "ex. : VID  (vide = aucun)"
-
-#: src/pbpicat/ui/settings_dialog.py:412
-msgid "Marker:"
-msgstr "Marqueur :"
-
-#: src/pbpicat/ui/settings_dialog.py:424
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .mp4)."
-msgstr "« {ext} » n'est pas une extension valide (ex. : .mp4)."
-
-#: src/pbpicat/ui/settings_dialog.py:469 src/pbpicat/ui/settings_dialog.py:605
-msgid "System default"
-msgstr "Système (défaut)"
-
-#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
-msgid "Interface language:"
-msgstr "Langue de l'interface :"
-
-#: src/pbpicat/ui/settings_dialog.py:481 src/pbpicat/ui/settings_dialog.py:617
-msgid "A restart is required for the language change to take effect."
-msgstr ""
-"Un redémarrage est nécessaire pour que le changement de langue prenne effet."
-
-#: src/pbpicat/ui/settings_dialog.py:491
-msgid "Configuration"
-msgstr "Configuration"
-
-#: src/pbpicat/ui/settings_dialog.py:506
-msgid "Rename schema"
-msgstr "Schéma de renommage"
-
-#: src/pbpicat/ui/settings_dialog.py:507 src/pbpicat/ui/settings_dialog.py:546
-msgid "Sidecar extensions"
-msgstr "Extensions sidecar"
-
-#: src/pbpicat/ui/settings_dialog.py:508
-msgid "Images"
-msgstr "Images"
-
-#: src/pbpicat/ui/settings_dialog.py:509
-msgid "Video"
-msgstr "Vidéo"
-
-#: src/pbpicat/ui/settings_dialog.py:510
-msgid "Thumbnails"
-msgstr "Miniatures"
-
-#: src/pbpicat/ui/settings_dialog.py:537
-msgid "Program settings"
-msgstr "Paramètres du programme"
-
-#: src/pbpicat/ui/settings_dialog.py:547
-msgid "Language"
-msgstr "Langue"
-
-#: src/pbpicat/ui/settings_dialog.py:560
-msgid "<b>Default sidecar extensions for new catalogs</b>"
-msgstr "<b>Extensions sidecar par défaut pour les nouveaux catalogues</b>"
-
-#: src/pbpicat/ui/settings_dialog.py:561
-msgid "(e.g. .xmp, .dop, .prompt.txt)"
-msgstr "(ex. .xmp, .dop, .prompt.txt)"
-
-#: src/pbpicat/ui/settings_dialog.py:587
-msgid "Restore built-in defaults"
-msgstr "Restaurer les valeurs par défaut intégrées"
-
-#: src/pbpicat/ui/settings_dialog.py:588
-msgid "Reset the list to the built-in default sidecar extensions"
-msgstr ""
-"Réinitialiser la liste avec les extensions sidecar par défaut intégrées"
 
 #: src/pbpicat/ui/main_window.py:63
 msgid "&File"
@@ -675,6 +457,229 @@ msgstr ""
 "schéma structuré.<br><br>Formats supportés : images (JPEG, PNG, HEIC, RAW…) "
 "et vidéos (MP4, MOV…),<br>avec fichiers sidecar associés (XMP, DOP, PP3…)."
 
-#: src/pbpicat/i18n.py:52
-msgid "language_name"
-msgstr "Français"
+#: src/pbpicat/ui/schema_frame.py:88
+msgid "<b>Rename schema</b>"
+msgstr "<b>Schéma de renommage</b>"
+
+#: src/pbpicat/ui/schema_frame.py:116
+msgid "Video marker position"
+msgstr "Position du marqueur vidéo"
+
+#: src/pbpicat/ui/settings_dialog.py:49
+msgid "Number of fields:"
+msgstr "Nombre de champs :"
+
+#: src/pbpicat/ui/settings_dialog.py:59
+msgid "Max history entries:"
+msgstr "Nombre max d'entrées d'historique :"
+
+#: src/pbpicat/ui/settings_dialog.py:63
+msgid ""
+"Maximum number of values kept per field history and sidecar filter history"
+msgstr ""
+"Nombre maximum de valeurs conservées dans chaque historique de champ et du "
+"filtre sidecar"
+
+#: src/pbpicat/ui/settings_dialog.py:69
+msgid "<b>Field titles:</b>"
+msgstr "<b>Titres des champs :</b>"
+
+#: src/pbpicat/ui/settings_dialog.py:96
+#, python-brace-format
+msgid "Field {n}:"
+msgstr "Champ {n} :"
+
+#: src/pbpicat/ui/settings_dialog.py:116
+msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
+msgstr "Extensions des fichiers sidecar (ex. : .xmp, .prompt.txt) :"
+
+#: src/pbpicat/ui/settings_dialog.py:125 src/pbpicat/ui/settings_dialog.py:570
+msgid ".ext or .name.ext"
+msgstr ".ext ou .nom.ext"
+
+#: src/pbpicat/ui/settings_dialog.py:130 src/pbpicat/ui/settings_dialog.py:278
+#: src/pbpicat/ui/settings_dialog.py:378 src/pbpicat/ui/settings_dialog.py:575
+msgid "Add"
+msgstr "Ajouter"
+
+#: src/pbpicat/ui/settings_dialog.py:143 src/pbpicat/ui/settings_dialog.py:291
+#: src/pbpicat/ui/settings_dialog.py:390
+msgid "Restore missing defaults"
+msgstr "Restaurer les valeurs par défaut manquantes"
+
+#: src/pbpicat/ui/settings_dialog.py:144
+msgid ""
+"Add extensions from the global default list that are not yet in the list "
+"above"
+msgstr ""
+"Ajouter les extensions de la liste globale par défaut qui ne figurent pas "
+"encore dans la liste ci-dessus"
+
+#: src/pbpicat/ui/settings_dialog.py:152
+msgid ""
+"Extension used when creating a new sidecar by double-clicking the sidecar "
+"column"
+msgstr ""
+"Extension utilisée lors de la création d'un sidecar par double-clic sur la "
+"colonne sidecar"
+
+#: src/pbpicat/ui/settings_dialog.py:154
+msgid "Default extension for new sidecar:"
+msgstr "Extension par défaut pour nouveau sidecar :"
+
+#: src/pbpicat/ui/settings_dialog.py:177 src/pbpicat/ui/settings_dialog.py:323
+#: src/pbpicat/ui/settings_dialog.py:423 src/pbpicat/ui/settings_dialog.py:629
+msgid "Invalid extension"
+msgstr "Extension invalide"
+
+#: src/pbpicat/ui/settings_dialog.py:178 src/pbpicat/ui/settings_dialog.py:630
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
+msgstr "« {ext} » n'est pas une extension valide (ex. : .xmp, .prompt.txt)."
+
+#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
+#: src/pbpicat/ui/settings_dialog.py:446
+msgid "Restore defaults"
+msgstr "Restaurer les valeurs par défaut"
+
+#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
+#: src/pbpicat/ui/settings_dialog.py:446
+msgid "All default extensions are already in the list."
+msgstr "Toutes les extensions par défaut sont déjà dans la liste."
+
+#: src/pbpicat/ui/settings_dialog.py:224
+msgid ""
+"Maximum size of thumbnails displayed in the file list.\n"
+"A navigation restart is required for the change to take effect."
+msgstr ""
+"Taille maximale des miniatures affichées dans la liste des fichiers.\n"
+"Un redémarrage de la navigation est nécessaire pour appliquer le changement."
+
+#: src/pbpicat/ui/settings_dialog.py:239
+msgid "Max width:"
+msgstr "Largeur max :"
+
+#: src/pbpicat/ui/settings_dialog.py:245
+msgid "Max height:"
+msgstr "Hauteur max :"
+
+#: src/pbpicat/ui/settings_dialog.py:264
+msgid "Recognised image extensions (thumbnail + rename):"
+msgstr "Extensions d'images reconnues (miniature + renommage) :"
+
+#: src/pbpicat/ui/settings_dialog.py:292 src/pbpicat/ui/settings_dialog.py:391
+msgid ""
+"Add extensions from the built-in default list that are not yet in the list "
+"above"
+msgstr ""
+"Ajouter les extensions de la liste par défaut intégrée qui sont absentes de "
+"la liste ci-dessus"
+
+#: src/pbpicat/ui/settings_dialog.py:302
+msgid "Enlargement/reduction factor per click or double-click"
+msgstr "Facteur d'agrandissement/réduction à chaque clic ou double-clic"
+
+#: src/pbpicat/ui/settings_dialog.py:304
+msgid "Zoom step:"
+msgstr "Pas de zoom :"
+
+#: src/pbpicat/ui/settings_dialog.py:310
+msgid "Maximum zoom allowed in the image viewer"
+msgstr "Zoom maximum autorisé dans le visualiseur d'images"
+
+#: src/pbpicat/ui/settings_dialog.py:312
+msgid "Max zoom:"
+msgstr "Zoom max :"
+
+#: src/pbpicat/ui/settings_dialog.py:324
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
+msgstr "« {ext} » n'est pas une extension valide (ex. : .png, .heic)."
+
+#: src/pbpicat/ui/settings_dialog.py:364
+msgid "Recognised video extensions:"
+msgstr "Extensions vidéo reconnues :"
+
+#: src/pbpicat/ui/settings_dialog.py:398
+msgid ""
+"<b>Video marker</b><br>Inserted among the name components at the position "
+"chosen in the schema.<br>No '_' in the value. Empty = no marker."
+msgstr ""
+"<b>Marqueur pour les fichiers vidéo</b><br>Inséré parmi les composants du "
+"nom selon la position choisie dans le schéma.<br>Pas de « _ » dans la "
+"valeur. Vide = aucun marqueur."
+
+#: src/pbpicat/ui/settings_dialog.py:410
+msgid "e.g. VID  (empty = none)"
+msgstr "ex. : VID  (vide = aucun)"
+
+#: src/pbpicat/ui/settings_dialog.py:412
+msgid "Marker:"
+msgstr "Marqueur :"
+
+#: src/pbpicat/ui/settings_dialog.py:424
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .mp4)."
+msgstr "« {ext} » n'est pas une extension valide (ex. : .mp4)."
+
+#: src/pbpicat/ui/settings_dialog.py:469 src/pbpicat/ui/settings_dialog.py:605
+msgid "System default"
+msgstr "Système (défaut)"
+
+#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
+msgid "Interface language:"
+msgstr "Langue de l'interface :"
+
+#: src/pbpicat/ui/settings_dialog.py:481 src/pbpicat/ui/settings_dialog.py:617
+msgid "A restart is required for the language change to take effect."
+msgstr ""
+"Un redémarrage est nécessaire pour que le changement de langue prenne effet."
+
+#: src/pbpicat/ui/settings_dialog.py:491
+msgid "Configuration"
+msgstr "Configuration"
+
+#: src/pbpicat/ui/settings_dialog.py:506
+msgid "Rename schema"
+msgstr "Schéma de renommage"
+
+#: src/pbpicat/ui/settings_dialog.py:507 src/pbpicat/ui/settings_dialog.py:546
+msgid "Sidecar extensions"
+msgstr "Extensions sidecar"
+
+#: src/pbpicat/ui/settings_dialog.py:508
+msgid "Images"
+msgstr "Images"
+
+#: src/pbpicat/ui/settings_dialog.py:509
+msgid "Video"
+msgstr "Vidéo"
+
+#: src/pbpicat/ui/settings_dialog.py:510
+msgid "Thumbnails"
+msgstr "Miniatures"
+
+#: src/pbpicat/ui/settings_dialog.py:537
+msgid "Program settings"
+msgstr "Paramètres du programme"
+
+#: src/pbpicat/ui/settings_dialog.py:547
+msgid "Language"
+msgstr "Langue"
+
+#: src/pbpicat/ui/settings_dialog.py:560
+msgid "<b>Default sidecar extensions for new catalogs</b>"
+msgstr "<b>Extensions sidecar par défaut pour les nouveaux catalogues</b>"
+
+#: src/pbpicat/ui/settings_dialog.py:561
+msgid "(e.g. .xmp, .dop, .prompt.txt)"
+msgstr "(ex. .xmp, .dop, .prompt.txt)"
+
+#: src/pbpicat/ui/settings_dialog.py:587
+msgid "Restore built-in defaults"
+msgstr "Restaurer les valeurs par défaut intégrées"
+
+#: src/pbpicat/ui/settings_dialog.py:588
+msgid "Reset the list to the built-in default sidecar extensions"
+msgstr ""
+"Réinitialiser la liste avec les extensions sidecar par défaut intégrées"

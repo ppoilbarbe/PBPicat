@@ -3,7 +3,7 @@ import unicodedata
 from collections.abc import Callable
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QMimeData, QSize, Qt, QThread, QUrl, Signal
+from PySide6.QtCore import QEvent, QFileSystemWatcher, QMimeData, QSize, Qt, QThread, QTimer, QUrl, Signal
 from PySide6.QtGui import QDesktopServices, QDrag, QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -121,6 +121,13 @@ class FileListWidget(QTableWidget):
         self.cellDoubleClicked.connect(self._on_double_click)
         self.itemSelectionChanged.connect(self._on_selection_changed)
 
+        self._watcher = QFileSystemWatcher(self)
+        self._watcher.directoryChanged.connect(self._on_dir_changed_on_disk)
+        self._refresh_debounce = QTimer(self)
+        self._refresh_debounce.setSingleShot(True)
+        self._refresh_debounce.setInterval(400)
+        self._refresh_debounce.timeout.connect(self.refresh)
+
     def set_schema_getter(self, getter: Callable[[], list[str]]) -> None:
         self._get_schema_fields = getter
 
@@ -165,8 +172,15 @@ class FileListWidget(QTableWidget):
     # ------------------------------------------------------------------
 
     def load_directory(self, dir_path: str) -> None:
+        watched = self._watcher.directories()
+        if watched:
+            self._watcher.removePaths(watched)
         self._current_dir = Path(dir_path)
+        self._watcher.addPath(dir_path)
         self.refresh()
+
+    def _on_dir_changed_on_disk(self) -> None:
+        self._refresh_debounce.start()
 
     def refresh(self) -> None:
         if self._current_dir is None:
@@ -581,5 +595,6 @@ class FileListWidget(QTableWidget):
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(sc)))
 
     def closeEvent(self, event) -> None:  # noqa: N802
+        self._refresh_debounce.stop()
         self._stop_worker()
         super().closeEvent(event)
