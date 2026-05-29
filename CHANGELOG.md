@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-05-29
+
+### Added
+
+- **Delete empty sidecar files on load** — new option *Delete empty sidecar files when loading a directory* in *Configuration → Sidecar Extensions* (checked by default); zero-byte sidecar files, including orphans, are automatically deleted when entering a directory.
+- **Close image viewer with Escape** — pressing Escape when the image viewer window has focus closes it.
+
+### Fixed
+
+- A sidecar created by double-clicking the sidecar column was immediately deleted by the empty-file cleanup triggered on refresh; newly created sidecars are now protected until the editor writes content.
+
 ## [1.4.0] - 2026-05-23
 
 ### Added

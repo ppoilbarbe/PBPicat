@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pbpicat"
-version = "1.4.0"
+version = "1.5.0"
 description = "Picture catalog tool that organizes images by renaming them into a template-driven directory structure"
 readme = "README.md"
 license = { file = "LICENSE" }
