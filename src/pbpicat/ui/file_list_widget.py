@@ -120,6 +120,7 @@ class FileListWidget(QTableWidget):
         self._get_schema_fields: Callable[[], list[str]] | None = None
         self._get_video_marker_pos: Callable[[], int] | None = None
         self._rebuilding: bool = False
+        self._sidecars_pending_edit: set[Path] = set()
         self._apply_config(config)
         self._setup_table()
         self.cellDoubleClicked.connect(self._on_double_click)
@@ -273,7 +274,7 @@ class FileListWidget(QTableWidget):
         if self._delete_empty_sidecars:
             survivors = []
             for f in all_files:
-                if self._is_sidecar_name(f.name.lower()):
+                if self._is_sidecar_name(f.name.lower()) and f not in self._sidecars_pending_edit:
                     try:
                         if f.stat().st_size == 0:
                             f.unlink()
@@ -282,6 +283,9 @@ class FileListWidget(QTableWidget):
                         pass
                 survivors.append(f)
             all_files = survivors
+            self._sidecars_pending_edit = {
+                p for p in self._sidecars_pending_edit if p.exists() and p.stat().st_size == 0
+            }
 
         candidates = [f for f in all_files if f.suffix.lower() in all_media_exts]
         if self._sort_by_date:
@@ -411,6 +415,7 @@ class FileListWidget(QTableWidget):
                 self._open_text_sidecars(sidecars)
             elif self._sidecar_new_extension:
                 new_sc = path.parent / (path.stem + self._sidecar_new_extension)
+                self._sidecars_pending_edit.add(new_sc)
                 new_sc.touch()
                 QDesktopServices.openUrl(QUrl.fromLocalFile(str(new_sc)))
                 self.refresh_and_select(row)
