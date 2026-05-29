@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pbpicat\n"
-"Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-05-23 14:49+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-29 16:02+0200\n"
 "PO-Revision-Date: 2026-05-17 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language-Team: Chinese (Simplified)\n"
@@ -23,7 +23,7 @@ msgid "language_name"
 msgstr "简体中文"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/dir_tree.py:82
+#: src/pbpicat/ui/dir_tree.py:105
 msgid "Open"
 msgstr "打开"
 
@@ -38,46 +38,47 @@ msgid "Detected template — confirm to apply to fields:"
 msgstr "检测到模板 — 确认以应用于字段："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:145
+#: src/pbpicat/ui/file_list_widget.py:157
 msgid "Preview"
 msgstr "预览"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:145
+#: src/pbpicat/ui/file_list_widget.py:157
 msgid "File name"
 msgstr "文件名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:145
+#: src/pbpicat/ui/file_list_widget.py:157
 msgid "Sidecar"
 msgstr "Sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:269
+#: src/pbpicat/ui/file_list_widget.py:345
 #, python-brace-format
 msgid "File name ({n})"
 msgstr "文件名 ({n})"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:429
-#: src/pbpicat/ui/file_list_widget.py:508
+#: src/pbpicat/ui/file_list_widget.py:505
+#: src/pbpicat/ui/file_list_widget.py:584
 msgid "Template"
 msgstr "模板"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:430 src/pbpicat/ui/history_dialog.py:59
-#: src/pbpicat/ui/settings_dialog.py:136 src/pbpicat/ui/settings_dialog.py:284
-#: src/pbpicat/ui/settings_dialog.py:384 src/pbpicat/ui/settings_dialog.py:581
+#: src/pbpicat/ui/file_list_widget.py:506 src/pbpicat/ui/history_dialog.py:59
+#: src/pbpicat/ui/settings_dialog.py:137 src/pbpicat/ui/settings_dialog.py:293
+#: src/pbpicat/ui/settings_dialog.py:393 src/pbpicat/ui/settings_dialog.py:590
 msgid "Delete"
 msgstr "删除"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:467 src/pbpicat/ui/main_window.py:459
+#: src/pbpicat/ui/file_list_widget.py:543 src/pbpicat/ui/main_window.py:118
+#: src/pbpicat/ui/main_window.py:586
 msgid "Confirm deletion"
 msgstr "确认删除"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:468
+#: src/pbpicat/ui/file_list_widget.py:544 src/pbpicat/ui/main_window.py:119
 #, python-brace-format
 msgid ""
 "Permanently delete:\n"
@@ -87,12 +88,12 @@ msgstr ""
 "{names}"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:488
+#: src/pbpicat/ui/file_list_widget.py:564 src/pbpicat/ui/main_window.py:135
 msgid "Deletion error"
 msgstr "删除错误"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:510
+#: src/pbpicat/ui/file_list_widget.py:586
 #, python-brace-format
 msgid ""
 "Could not determine a template for '{name}'.\n"
@@ -102,10 +103,10 @@ msgstr ""
 "文件名的任何部分均与字段历史记录不匹配。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:516 src/pbpicat/ui/history_dialog.py:151
+#: src/pbpicat/ui/file_list_widget.py:592 src/pbpicat/ui/history_dialog.py:151
 #: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
-#: src/pbpicat/ui/settings_dialog.py:93 src/pbpicat/ui/settings_dialog.py:95
-#: src/pbpicat/ui/settings_dialog.py:101
+#: src/pbpicat/ui/settings_dialog.py:94 src/pbpicat/ui/settings_dialog.py:96
+#: src/pbpicat/ui/settings_dialog.py:102
 #, python-brace-format
 msgid "Field {n}"
 msgstr "字段 {n}"
@@ -192,127 +193,173 @@ msgid " (max)"
 msgstr "（最大）"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:63
+#: src/pbpicat/ui/main_window.py:57 src/pbpicat/ui/main_window.py:286
+msgid "Orphan sidecars"
+msgstr "孤立旁注文件"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:75
+msgid "Delete selected"
+msgstr "删除所选"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:79
+msgid "Delete all"
+msgstr "全部删除"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:85
+msgid "Close"
+msgstr "关闭"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:97
+#, python-brace-format
+msgid "{n} orphan sidecar file(s):"
+msgstr "{n} 个孤立旁注文件："
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:154
 msgid "&File"
 msgstr "文件(&F)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:64
+#: src/pbpicat/ui/main_window.py:155
 msgid "&Quit"
 msgstr "退出(&Q)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:66
+#: src/pbpicat/ui/main_window.py:157
 msgid "&Catalog"
 msgstr "目录(&C)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:67
+#: src/pbpicat/ui/main_window.py:158
 msgid "&New catalog…"
 msgstr "新建目录(&N)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:68
+#: src/pbpicat/ui/main_window.py:159
 msgid "&Delete catalog…"
 msgstr "删除目录(&D)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:72
+#: src/pbpicat/ui/main_window.py:163
 msgid "&View"
 msgstr "视图(&V)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:73
+#: src/pbpicat/ui/main_window.py:164
 msgid "&Refresh"
 msgstr "刷新(&R)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:75
+#: src/pbpicat/ui/main_window.py:166
 msgid "&Settings"
 msgstr "设置(&S)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:76
+#: src/pbpicat/ui/main_window.py:167
 msgid "&Configuration…"
 msgstr "配置(&C)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:77
+#: src/pbpicat/ui/main_window.py:168
 msgid "&History…"
 msgstr "历史记录(&H)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:79
+#: src/pbpicat/ui/main_window.py:170
 msgid "&Program settings…"
 msgstr "程序设置(&P)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:81
+#: src/pbpicat/ui/main_window.py:172
 msgid "&Help"
 msgstr "帮助(&H)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:82
+#: src/pbpicat/ui/main_window.py:173
 msgid "&About"
 msgstr "关于(&A)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:103
+#: src/pbpicat/ui/main_window.py:194
 msgid "Ready."
 msgstr "就绪。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:121
+#: src/pbpicat/ui/main_window.py:213
 msgid "Destination:"
 msgstr "目标："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:123
+#: src/pbpicat/ui/main_window.py:215
 msgid "Destination root directory (DEST_ROOTDIR)…"
 msgstr "目标根目录 (DEST_ROOTDIR)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:127
+#: src/pbpicat/ui/main_window.py:219
 msgid "Browse…"
 msgstr "浏览…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:132
+#: src/pbpicat/ui/main_window.py:224
 msgid "Rename all"
 msgstr "全部重命名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:135
+#: src/pbpicat/ui/main_window.py:227
 msgid "Rename all files in the current directory according to the schema"
 msgstr "根据方案重命名当前目录中的所有文件"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:139
+#: src/pbpicat/ui/main_window.py:231
 msgid "Renumber from 1"
 msgstr "从 1 开始重新编号"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:142
+#: src/pbpicat/ui/main_window.py:234
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "从 1 开始重新编号当前目录中的所有文件"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:151
+#: src/pbpicat/ui/main_window.py:243
 msgid "Undo last rename"
 msgstr "撤销上次重命名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:152
+#: src/pbpicat/ui/main_window.py:244
 msgid "Undo last rename (restores files to their original location)"
 msgstr "撤销上次重命名（将文件恢复到原始位置）"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:163
+#: src/pbpicat/ui/main_window.py:251
+msgid "Sort by date"
+msgstr "按日期排序"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:252
+msgid "Sort files by modification date (unchecked: sort by name)"
+msgstr "按修改日期排列文件（未勾选：按名称排序）"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:257
+msgid "Reverse sort"
+msgstr "反向排序"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:258
+msgid "Reverse the sort order"
+msgstr "反转排序顺序"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:267
 msgid "Sidecar filter…"
 msgstr "Sidecar 过滤器…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:166
+#: src/pbpicat/ui/main_window.py:270
 msgid ""
 "<b>Sidecar content filter</b><br>Python regular expression applied to the "
 "<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
@@ -327,213 +374,218 @@ msgstr ""
 "(re.IGNORECASE)，包括带重音的字符。<br>留空以显示所有文件。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:184
+#: src/pbpicat/ui/main_window.py:287
+msgid "Show orphan sidecar files (no matching image or video)"
+msgstr "显示孤立旁注文件（无对应图像或视频）"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:294
 msgid "Rename selection"
 msgstr "重命名所选"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:185
+#: src/pbpicat/ui/main_window.py:295
 msgid "Rename selected files according to the schema"
 msgstr "根据方案重命名所选文件"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:198
+#: src/pbpicat/ui/main_window.py:308
 msgid "Choose destination directory"
 msgstr "选择目标目录"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:258
+#: src/pbpicat/ui/main_window.py:385
 msgid "No file selected."
 msgstr "未选择文件。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:265
+#: src/pbpicat/ui/main_window.py:392
 msgid "No files to rename in the current directory."
 msgstr "当前目录中没有可重命名的文件。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:269
+#: src/pbpicat/ui/main_window.py:396
 msgid "Confirm rename"
 msgstr "确认重命名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:270
+#: src/pbpicat/ui/main_window.py:397
 #, python-brace-format
 msgid "Rename {n} file(s) according to the current schema?"
 msgstr "根据当前方案重命名 {n} 个文件？"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:292 src/pbpicat/ui/main_window.py:308
-#: src/pbpicat/ui/main_window.py:337
+#: src/pbpicat/ui/main_window.py:419 src/pbpicat/ui/main_window.py:435
+#: src/pbpicat/ui/main_window.py:464
 msgid "Rename error"
 msgstr "重命名错误"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:295
+#: src/pbpicat/ui/main_window.py:422
 msgid "Files are already correctly numbered."
 msgstr "文件已正确编号。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:299
+#: src/pbpicat/ui/main_window.py:426
 msgid "Confirm renumber"
 msgstr "确认重新编号"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:300
+#: src/pbpicat/ui/main_window.py:427
 #, python-brace-format
 msgid "Renumber {n} file(s) starting from 1?"
 msgstr "从 1 开始重新编号 {n} 个文件？"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:309 src/pbpicat/ui/main_window.py:338
+#: src/pbpicat/ui/main_window.py:436 src/pbpicat/ui/main_window.py:465
 msgid "Error: rename cancelled."
 msgstr "错误：重命名已取消。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:313
+#: src/pbpicat/ui/main_window.py:440
 #, python-brace-format
 msgid "{n} file(s) renumbered successfully."
 msgstr "{n} 个文件已成功重新编号。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:319
+#: src/pbpicat/ui/main_window.py:446
 msgid "Missing destination"
 msgstr "目标未指定"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:319
+#: src/pbpicat/ui/main_window.py:446
 msgid "Please specify a destination directory."
 msgstr "请指定目标目录。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:349
+#: src/pbpicat/ui/main_window.py:476
 #, python-brace-format
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} 个文件已成功重命名。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:363
+#: src/pbpicat/ui/main_window.py:490
 msgid "Undo error"
 msgstr "撤销错误"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:364
+#: src/pbpicat/ui/main_window.py:491
 msgid "Error: undo failed."
 msgstr "错误：撤销失败。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:368
+#: src/pbpicat/ui/main_window.py:495
 msgid "Last rename undone."
 msgstr "上次重命名已撤销。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:377
+#: src/pbpicat/ui/main_window.py:504
 msgid "Settings saved."
 msgstr "设置已保存。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:382
+#: src/pbpicat/ui/main_window.py:509
 msgid "Program settings saved."
 msgstr "程序设置已保存。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:389
+#: src/pbpicat/ui/main_window.py:516
 msgid "History saved."
 msgstr "历史记录已保存。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:393
+#: src/pbpicat/ui/main_window.py:520
 msgid "Template applied from history."
 msgstr "已从历史记录应用模板。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:402
+#: src/pbpicat/ui/main_window.py:529
 msgid "PBPicat — Image & Video File Renamer"
 msgstr "PBPicat — 图像与视频文件重命名工具"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:404
+#: src/pbpicat/ui/main_window.py:531
 #, python-brace-format
 msgid "PBPicat — Image & Video File Renamer [{catalog}]"
 msgstr "PBPicat — 图像与视频文件重命名工具 [{catalog}]"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:419
+#: src/pbpicat/ui/main_window.py:546
 msgid "New catalog"
 msgstr "新建目录"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:419
+#: src/pbpicat/ui/main_window.py:546
 msgid "Catalog name (letters, digits, hyphens, underscores):"
 msgstr "目录名称（字母、数字、连字符、下划线）："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:429
+#: src/pbpicat/ui/main_window.py:556
 msgid "Invalid name"
 msgstr "名称无效"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:430
+#: src/pbpicat/ui/main_window.py:557
 msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
 msgstr "目录名称只能包含字母、数字、连字符或下划线。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:436
+#: src/pbpicat/ui/main_window.py:563
 msgid "Already exists"
 msgstr "已存在"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:437
+#: src/pbpicat/ui/main_window.py:564
 #, python-brace-format
 msgid "A catalog named \"{name}\" already exists."
 msgstr "名为「{name}」的目录已存在。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:450
+#: src/pbpicat/ui/main_window.py:577
 msgid "No catalogs"
 msgstr "无目录"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:451
+#: src/pbpicat/ui/main_window.py:578
 msgid ""
 "There are no additional catalogs to delete (\"default\" cannot be deleted)."
 msgstr "没有可删除的额外目录（「default」不能删除）。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:454
+#: src/pbpicat/ui/main_window.py:581
 msgid "Delete catalog"
 msgstr "删除目录"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:454
+#: src/pbpicat/ui/main_window.py:581
 msgid "Select catalog to delete:"
 msgstr "选择要删除的目录："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:460
+#: src/pbpicat/ui/main_window.py:587
 #, python-brace-format
 msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
 msgstr "删除目录「{name}」及其所有设置？此操作无法撤销。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:468
+#: src/pbpicat/ui/main_window.py:595
 #, python-brace-format
 msgid "Catalog \"{name}\" deleted."
 msgstr "目录「{name}」已删除。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:491
+#: src/pbpicat/ui/main_window.py:618
 #, python-brace-format
 msgid "Switched to catalog \"{name}\"."
 msgstr "已切换到目录「{name}」。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:500
+#: src/pbpicat/ui/main_window.py:627
 msgid "About PBPicat"
 msgstr "关于 PBPicat"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:502
+#: src/pbpicat/ui/main_window.py:629
 msgid ""
 "<b>PBPicat</b><br>Image and video file renaming tool using a structured "
 "schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos "
@@ -554,99 +606,111 @@ msgid "Video marker position"
 msgstr "视频标记位置"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:49
+#: src/pbpicat/ui/settings_dialog.py:50
 msgid "Number of fields:"
 msgstr "字段数量："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:59
+#: src/pbpicat/ui/settings_dialog.py:60
 msgid "Max history entries:"
 msgstr "最大历史条目数："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:63
+#: src/pbpicat/ui/settings_dialog.py:64
 msgid ""
 "Maximum number of values kept per field history and sidecar filter history"
 msgstr "每个字段历史记录和 sidecar 过滤器历史记录中保留的最大值数"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:69
+#: src/pbpicat/ui/settings_dialog.py:70
 msgid "<b>Field titles:</b>"
 msgstr "<b>字段标题：</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:96
+#: src/pbpicat/ui/settings_dialog.py:97
 #, python-brace-format
 msgid "Field {n}:"
 msgstr "字段 {n}："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:116
+#: src/pbpicat/ui/settings_dialog.py:117
 msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
 msgstr "Sidecar 文件扩展名（例如 .xmp、.prompt.txt）："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:125 src/pbpicat/ui/settings_dialog.py:570
+#: src/pbpicat/ui/settings_dialog.py:126 src/pbpicat/ui/settings_dialog.py:579
 msgid ".ext or .name.ext"
 msgstr ".ext 或 .名称.ext"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:130 src/pbpicat/ui/settings_dialog.py:278
-#: src/pbpicat/ui/settings_dialog.py:378 src/pbpicat/ui/settings_dialog.py:575
+#: src/pbpicat/ui/settings_dialog.py:131 src/pbpicat/ui/settings_dialog.py:287
+#: src/pbpicat/ui/settings_dialog.py:387 src/pbpicat/ui/settings_dialog.py:584
 msgid "Add"
 msgstr "添加"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:143 src/pbpicat/ui/settings_dialog.py:291
-#: src/pbpicat/ui/settings_dialog.py:390
+#: src/pbpicat/ui/settings_dialog.py:144 src/pbpicat/ui/settings_dialog.py:300
+#: src/pbpicat/ui/settings_dialog.py:399
 msgid "Restore missing defaults"
 msgstr "恢复缺失的默认值"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:144
+#: src/pbpicat/ui/settings_dialog.py:145
 msgid ""
 "Add extensions from the global default list that are not yet in the list "
 "above"
 msgstr "添加全局默认列表中尚未出现在上方列表中的扩展名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:152
+#: src/pbpicat/ui/settings_dialog.py:149
+msgid "Delete empty sidecar files when loading a directory"
+msgstr "加载目录时删除空的附属文件"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:151
+msgid ""
+"Automatically delete zero-byte sidecar files (including orphans) when "
+"entering a directory"
+msgstr "进入目录时自动删除零字节的附属文件（包括孤立文件）"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:160
 msgid ""
 "Extension used when creating a new sidecar by double-clicking the sidecar "
 "column"
 msgstr "双击 sidecar 列创建新 sidecar 时使用的扩展名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:154
+#: src/pbpicat/ui/settings_dialog.py:162
 msgid "Default extension for new sidecar:"
 msgstr "新 sidecar 的默认扩展名："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:177 src/pbpicat/ui/settings_dialog.py:323
-#: src/pbpicat/ui/settings_dialog.py:423 src/pbpicat/ui/settings_dialog.py:629
+#: src/pbpicat/ui/settings_dialog.py:185 src/pbpicat/ui/settings_dialog.py:332
+#: src/pbpicat/ui/settings_dialog.py:432 src/pbpicat/ui/settings_dialog.py:638
 msgid "Invalid extension"
 msgstr "扩展名无效"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:178 src/pbpicat/ui/settings_dialog.py:630
+#: src/pbpicat/ui/settings_dialog.py:186 src/pbpicat/ui/settings_dialog.py:639
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
 msgstr "「{ext}」不是有效扩展名（例如 .xmp、.prompt.txt）。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
-#: src/pbpicat/ui/settings_dialog.py:446
+#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
+#: src/pbpicat/ui/settings_dialog.py:455
 msgid "Restore defaults"
 msgstr "恢复默认值"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:205 src/pbpicat/ui/settings_dialog.py:346
-#: src/pbpicat/ui/settings_dialog.py:446
+#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
+#: src/pbpicat/ui/settings_dialog.py:455
 msgid "All default extensions are already in the list."
 msgstr "所有默认扩展名均已在列表中。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:224
+#: src/pbpicat/ui/settings_dialog.py:233
 msgid ""
 "Maximum size of thumbnails displayed in the file list.\n"
 "A navigation restart is required for the change to take effect."
@@ -655,60 +719,60 @@ msgstr ""
 "更改生效需要重新启动导航。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:239
+#: src/pbpicat/ui/settings_dialog.py:248
 msgid "Max width:"
 msgstr "最大宽度："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:245
+#: src/pbpicat/ui/settings_dialog.py:254
 msgid "Max height:"
 msgstr "最大高度："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:264
+#: src/pbpicat/ui/settings_dialog.py:273
 msgid "Recognised image extensions (thumbnail + rename):"
 msgstr "识别的图像扩展名（缩略图 + 重命名）："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:292 src/pbpicat/ui/settings_dialog.py:391
+#: src/pbpicat/ui/settings_dialog.py:301 src/pbpicat/ui/settings_dialog.py:400
 msgid ""
 "Add extensions from the built-in default list that are not yet in the list "
 "above"
 msgstr "将内置默认列表中尚未出现在上方列表中的扩展名添加进来"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:302
+#: src/pbpicat/ui/settings_dialog.py:311
 msgid "Enlargement/reduction factor per click or double-click"
 msgstr "每次单击或双击的放大/缩小系数"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:304
+#: src/pbpicat/ui/settings_dialog.py:313
 msgid "Zoom step:"
 msgstr "缩放步长："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:310
+#: src/pbpicat/ui/settings_dialog.py:319
 msgid "Maximum zoom allowed in the image viewer"
 msgstr "图像查看器允许的最大缩放比例"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:312
+#: src/pbpicat/ui/settings_dialog.py:321
 msgid "Max zoom:"
 msgstr "最大缩放："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:324
+#: src/pbpicat/ui/settings_dialog.py:333
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "「{ext}」不是有效扩展名（例如 .png、.heic）。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:364
+#: src/pbpicat/ui/settings_dialog.py:373
 msgid "Recognised video extensions:"
 msgstr "识别的视频扩展名："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:398
+#: src/pbpicat/ui/settings_dialog.py:407
 msgid ""
 "<b>Video marker</b><br>Inserted among the name components at the position "
 "chosen in the schema.<br>No '_' in the value. Empty = no marker."
@@ -717,92 +781,92 @@ msgstr ""
 "留空 = 无标记。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:410
+#: src/pbpicat/ui/settings_dialog.py:419
 msgid "e.g. VID  (empty = none)"
 msgstr "例如 VID（留空 = 无）"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:412
+#: src/pbpicat/ui/settings_dialog.py:421
 msgid "Marker:"
 msgstr "标记："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:424
+#: src/pbpicat/ui/settings_dialog.py:433
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .mp4)."
 msgstr "「{ext}」不是有效扩展名（例如 .mp4）。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:469 src/pbpicat/ui/settings_dialog.py:605
+#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
 msgid "System default"
 msgstr "系统默认"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
+#: src/pbpicat/ui/settings_dialog.py:487 src/pbpicat/ui/settings_dialog.py:623
 msgid "Interface language:"
 msgstr "界面语言："
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:481 src/pbpicat/ui/settings_dialog.py:617
+#: src/pbpicat/ui/settings_dialog.py:490 src/pbpicat/ui/settings_dialog.py:626
 msgid "A restart is required for the language change to take effect."
 msgstr "语言更改需要重新启动才能生效。"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:491
+#: src/pbpicat/ui/settings_dialog.py:500
 msgid "Configuration"
 msgstr "配置"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:506
+#: src/pbpicat/ui/settings_dialog.py:515
 msgid "Rename schema"
 msgstr "重命名方案"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:507 src/pbpicat/ui/settings_dialog.py:546
+#: src/pbpicat/ui/settings_dialog.py:516 src/pbpicat/ui/settings_dialog.py:555
 msgid "Sidecar extensions"
 msgstr "Sidecar 扩展名"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:508
+#: src/pbpicat/ui/settings_dialog.py:517
 msgid "Images"
 msgstr "图像"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:509
+#: src/pbpicat/ui/settings_dialog.py:518
 msgid "Video"
 msgstr "视频"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:510
+#: src/pbpicat/ui/settings_dialog.py:519
 msgid "Thumbnails"
 msgstr "缩略图"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:537
+#: src/pbpicat/ui/settings_dialog.py:546
 msgid "Program settings"
 msgstr "程序设置"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:547
+#: src/pbpicat/ui/settings_dialog.py:556
 msgid "Language"
 msgstr "语言"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:560
+#: src/pbpicat/ui/settings_dialog.py:569
 msgid "<b>Default sidecar extensions for new catalogs</b>"
 msgstr "<b>新建目录的默认 sidecar 扩展名</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:561
+#: src/pbpicat/ui/settings_dialog.py:570
 msgid "(e.g. .xmp, .dop, .prompt.txt)"
 msgstr "（例如 .xmp、.dop、.prompt.txt）"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:587
+#: src/pbpicat/ui/settings_dialog.py:596
 msgid "Restore built-in defaults"
 msgstr "恢复内置默认值"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:588
+#: src/pbpicat/ui/settings_dialog.py:597
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "将列表重置为内置默认 sidecar 扩展名"

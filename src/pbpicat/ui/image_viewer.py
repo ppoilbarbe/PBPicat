@@ -159,6 +159,7 @@ class ImageViewer(QWidget):
             (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_H)), self._act_fit_height),
             (QKeySequence(Qt.Key_Up), self.navigate_prev),
             (QKeySequence(Qt.Key_Down), self.navigate_next),
+            (QKeySequence(Qt.Key_Escape), self.close),
         ]
         for seq, slot in pairs:
             sc = QShortcut(seq, self)

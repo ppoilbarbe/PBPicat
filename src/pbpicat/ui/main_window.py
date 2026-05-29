@@ -2,12 +2,16 @@ import re
 from pathlib import Path
 
 from PySide6.QtWidgets import (
+    QAbstractItemView,
+    QCheckBox,
     QComboBox,
+    QDialog,
     QFileDialog,
     QHBoxLayout,
     QInputDialog,
     QLabel,
     QLineEdit,
+    QListWidget,
     QMainWindow,
     QMessageBox,
     QPushButton,
@@ -47,11 +51,98 @@ from .schema_frame import SchemaFrame
 from .settings_dialog import GlobalSettingsDialog, SettingsDialog
 
 
+class _OrphanSidecarsDialog(QDialog):
+    def __init__(self, orphans: list, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(_("Orphan sidecars"))
+        self.setMinimumWidth(420)
+        self._orphans: list = list(orphans)
+        self._setup_ui()
+
+    def _setup_ui(self) -> None:
+        root = QVBoxLayout(self)
+        root.setSpacing(8)
+
+        self._label = QLabel()
+        root.addWidget(self._label)
+
+        self._list = QListWidget()
+        self._list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        root.addWidget(self._list)
+
+        btn_layout = QHBoxLayout()
+
+        self._del_sel_btn = QPushButton(_("Delete selected"))
+        self._del_sel_btn.clicked.connect(self._delete_selected)
+        btn_layout.addWidget(self._del_sel_btn)
+
+        del_all_btn = QPushButton(_("Delete all"))
+        del_all_btn.clicked.connect(self._delete_all)
+        btn_layout.addWidget(del_all_btn)
+
+        btn_layout.addStretch()
+
+        close_btn = QPushButton(_("Close"))
+        close_btn.clicked.connect(self.reject)
+        btn_layout.addWidget(close_btn)
+
+        root.addLayout(btn_layout)
+        self._refresh_list()
+
+    def refresh(self, orphans: list) -> None:
+        self._orphans = list(orphans)
+        self._refresh_list()
+
+    def _refresh_list(self) -> None:
+        self._label.setText(_("{n} orphan sidecar file(s):").format(n=len(self._orphans)))
+        self._list.clear()
+        for path in self._orphans:
+            self._list.addItem(path.name)
+        self._del_sel_btn.setEnabled(bool(self._orphans))
+
+    def _delete_selected(self) -> None:
+        rows = sorted({idx.row() for idx in self._list.selectedIndexes()})
+        if not rows:
+            return
+        self._confirm_and_delete([self._orphans[r] for r in rows])
+
+    def _delete_all(self) -> None:
+        if not self._orphans:
+            return
+        self._confirm_and_delete(list(self._orphans))
+
+    def _confirm_and_delete(self, files: list) -> None:
+        names = "\n".join(f.name for f in files)
+        reply = QMessageBox.question(
+            self,
+            _("Confirm deletion"),
+            _("Permanently delete:\n{names}").format(names=names),
+            QMessageBox.Yes | QMessageBox.No,
+        )
+        if reply != QMessageBox.Yes:
+            return
+        errors = []
+        deleted = set()
+        for f in files:
+            try:
+                f.unlink()
+                deleted.add(f)
+            except OSError as exc:
+                errors.append(f"{f.name}: {exc}")
+        self._orphans = [p for p in self._orphans if p not in deleted]
+        self._refresh_list()
+        if errors:
+            QMessageBox.warning(self, _("Deletion error"), "\n".join(errors))
+        if not self._orphans:
+            self.accept()
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._config = load_config()
         self._undo_stack: list[tuple[str, list[tuple]]] = []
+        self._orphan_dlg: _OrphanSidecarsDialog | None = None
         self._setup_ui()
         self._setup_menu()
         self._update_title()
@@ -108,6 +199,7 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.set_video_marker_pos_getter(self._schema_frame.get_video_marker_pos)
         self._file_panel.file_list.file_count_changed.connect(self._on_file_count_changed)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_rename_btn)
+        self._file_panel.file_list.orphan_sidecar_count_changed.connect(self._on_orphan_count_changed)
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
         self._file_panel.dir_tree.select_path(load_last_source_dir())
@@ -156,6 +248,18 @@ class MainWindow(QMainWindow):
 
         layout.addStretch()
 
+        self._sort_by_date_chk = QCheckBox(_("Sort by date"))
+        self._sort_by_date_chk.setToolTip(_("Sort files by modification date (unchecked: sort by name)"))
+        self._sort_by_date_chk.setChecked(False)
+        self._sort_by_date_chk.toggled.connect(self._on_sort_by_date_changed)
+        layout.addWidget(self._sort_by_date_chk)
+
+        self._sort_reverse_chk = QCheckBox(_("Reverse sort"))
+        self._sort_reverse_chk.setToolTip(_("Reverse the sort order"))
+        self._sort_reverse_chk.setChecked(False)
+        self._sort_reverse_chk.toggled.connect(self._on_sort_reverse_changed)
+        layout.addWidget(self._sort_reverse_chk)
+
         self._filter_edit = QComboBox()
         self._filter_edit.setEditable(True)
         self._filter_edit.setInsertPolicy(QComboBox.NoInsert)
@@ -178,6 +282,12 @@ class MainWindow(QMainWindow):
         self._filter_edit.currentTextChanged.connect(self._on_filter_changed)
         self._filter_edit.lineEdit().returnPressed.connect(self._save_filter_to_history)
         layout.addWidget(self._filter_edit)
+
+        self._orphan_btn = QPushButton(_("Orphan sidecars"))
+        self._orphan_btn.setToolTip(_("Show orphan sidecar files (no matching image or video)"))
+        self._orphan_btn.clicked.connect(self._show_orphan_dialog)
+        self._orphan_btn.setEnabled(False)
+        layout.addWidget(self._orphan_btn)
 
         layout.addStretch()
 
@@ -206,6 +316,12 @@ class MainWindow(QMainWindow):
     def _update_rename_btn(self) -> None:
         self._rename_btn.setEnabled(bool(self._file_panel.file_list.get_selected_files()))
 
+    def _on_sort_by_date_changed(self, checked: bool) -> None:
+        self._file_panel.file_list.set_sort_by_date(checked)
+
+    def _on_sort_reverse_changed(self, checked: bool) -> None:
+        self._file_panel.file_list.set_sort_reverse(checked)
+
     def _on_filter_changed(self, text: str) -> None:
         if text:
             try:
@@ -217,6 +333,17 @@ class MainWindow(QMainWindow):
         else:
             self._filter_edit.lineEdit().setStyleSheet("")
         self._file_panel.file_list.set_sidecar_filter(text)
+
+    def _on_orphan_count_changed(self, n: int) -> None:
+        self._orphan_btn.setEnabled(n > 0)
+        if self._orphan_dlg is not None and self._orphan_dlg.isVisible():
+            self._orphan_dlg.refresh(self._file_panel.file_list.get_orphan_sidecars())
+
+    def _show_orphan_dialog(self) -> None:
+        orphans = self._file_panel.file_list.get_orphan_sidecars()
+        self._orphan_dlg = _OrphanSidecarsDialog(orphans, self)
+        self._orphan_dlg.exec()
+        self._orphan_dlg = None
 
     def _save_filter_to_history(self) -> None:
         text = self._filter_edit.currentText().strip()

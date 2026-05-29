@@ -51,6 +51,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | `last_dest` | str | "" | Last destination directory used |
 | `language` | str | "" | Interface language code (e.g. "fr", "en"); empty = system default |
 | `sidecar_new_extension` | str | ".xmp" | Extension used when creating a new sidecar by double-clicking the sidecar column on a file with no sidecar |
+| `delete_empty_sidecars` | bool | true | If true, zero-byte sidecar files (including orphans) are deleted automatically when loading a directory |
 
 ## Rename Schema
 - N editable combobox fields with per-field history
@@ -123,6 +124,19 @@ Multi-selection (ExtendedSelection).
 **Sidecar filter**: editable QComboBox with history. Python regex applied to sidecar file content (re.DOTALL | re.IGNORECASE). Only files having at least one matching sidecar are shown; files with no sidecar are hidden when filter is active. History persisted in `history.json` under key `sidecar_filter`.
 
 **Renumber from 1**: renames all displayed files in-place (same directory), assigning sequential numbers starting from 1 according to the current schema's numeric field. Images and videos have separate counters. Requires a numeric field (`#`) in the schema. Uses two-phase rename (via temp names) to avoid circular conflicts. Result enters the undo stack like a regular rename. If all files are already correctly numbered, shows a status message without prompting.
+
+#### ImageViewer (`ui/image_viewer.py`)
+Non-modal window opened by double-clicking the preview column. Keyboard shortcuts:
+| Key | Action |
+|-----|--------|
+| Ctrl+1 | Actual size (1:1) |
+| Ctrl++ / Ctrl+= | Zoom in |
+| Ctrl+- | Zoom out |
+| Ctrl+0 | Fit window |
+| Ctrl+W | Fit width |
+| Ctrl+H | Fit height |
+| ↑ / ↓ | Navigate prev/next image |
+| Escape | Close window |
 
 ## Rename Logic (`src/renamer.py`)
 1. `validate_schema(fields)` → `(dirs, parts, numeric_spec)` or `ValueError`

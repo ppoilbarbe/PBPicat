@@ -100,6 +100,7 @@ class FileListWidget(QTableWidget):
     rename_requested = Signal(list)
     schema_proposed = Signal(list)
     file_count_changed = Signal(int)
+    orphan_sidecar_count_changed = Signal(int)
 
     _THUMB_COL = 0
     _NAME_COL = 1
@@ -110,7 +111,10 @@ class FileListWidget(QTableWidget):
         self._current_dir: Path | None = None
         self._file_data: list[tuple[Path, list[Path]]] = []
         self._display_data: list[tuple[Path, list[Path]]] = []
+        self._orphan_sidecars: list[Path] = []
         self._sidecar_filter: str = ""
+        self._sort_by_date: bool = False
+        self._sort_reverse: bool = False
         self._worker: _ThumbnailWorker | None = None
         self._image_viewer: ImageViewer | None = None
         self._get_schema_fields: Callable[[], list[str]] | None = None
@@ -143,6 +147,7 @@ class FileListWidget(QTableWidget):
         self._video_marker: str = config.get("video_marker", "")
         self._sidecar_exts: list[str] = config.get("sidecar_extensions", [".xmp", ".dop", ".pp3"])
         self._sidecar_new_extension: str = config.get("sidecar_new_extension", ".xmp")
+        self._delete_empty_sidecars: bool = config.get("delete_empty_sidecars", True)
         self._schema_field_count: int = config.get("schema_field_count", 6)
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
@@ -205,6 +210,20 @@ class FileListWidget(QTableWidget):
         self._populate_table()
         self._start_worker()
 
+    def set_sort_by_date(self, value: bool) -> None:
+        self._sort_by_date = value
+        self._stop_worker()
+        self._scan_directory()
+        self._populate_table()
+        self._start_worker()
+
+    def set_sort_reverse(self, value: bool) -> None:
+        self._sort_reverse = value
+        self._stop_worker()
+        self._scan_directory()
+        self._populate_table()
+        self._start_worker()
+
     def get_selected_files(self) -> list[Path]:
         rows = {idx.row() for idx in self.selectedIndexes()}
         return [self._display_data[r][0] for r in sorted(rows) if r < len(self._display_data)]
@@ -237,20 +256,60 @@ class FileListWidget(QTableWidget):
     # Private helpers
     # ------------------------------------------------------------------
 
+    def get_orphan_sidecars(self) -> list[Path]:
+        return list(self._orphan_sidecars)
+
+    def _is_sidecar_name(self, name_lower: str) -> bool:
+        return any(name_lower.endswith(ext.lower()) and len(name_lower) > len(ext) for ext in self._sidecar_exts)
+
     def _scan_directory(self) -> None:
         self._file_data = []
         all_media_exts = self._image_exts | self._video_exts
         try:
-            files = sorted(
-                (f for f in self._current_dir.iterdir() if f.is_file() and f.suffix.lower() in all_media_exts),
-                key=_natural_sort_key,
-            )
+            all_files = [f for f in self._current_dir.iterdir() if f.is_file()]
         except OSError:
-            files = []
+            all_files = []
+
+        if self._delete_empty_sidecars:
+            survivors = []
+            for f in all_files:
+                if self._is_sidecar_name(f.name.lower()):
+                    try:
+                        if f.stat().st_size == 0:
+                            f.unlink()
+                            continue
+                    except OSError:
+                        pass
+                survivors.append(f)
+            all_files = survivors
+
+        candidates = [f for f in all_files if f.suffix.lower() in all_media_exts]
+        if self._sort_by_date:
+            files = sorted(candidates, key=lambda f: f.stat().st_mtime, reverse=self._sort_reverse)
+        else:
+            files = sorted(candidates, key=_natural_sort_key, reverse=self._sort_reverse)
 
         for f in files:
             sidecars = [f.parent / (f.stem + ext) for ext in self._sidecar_exts if (f.parent / (f.stem + ext)).exists()]
             self._file_data.append((f, sidecars))
+
+        media_stems = {f.stem.lower() for f in candidates}
+        orphans = []
+        seen = set()
+        for f in all_files:
+            if f in seen:
+                continue
+            name_lower = f.name.lower()
+            for ext in self._sidecar_exts:
+                ext_lower = ext.lower()
+                if name_lower.endswith(ext_lower) and len(name_lower) > len(ext_lower):
+                    sc_stem = name_lower[: -len(ext_lower)]
+                    if sc_stem not in media_stems:
+                        orphans.append(f)
+                        seen.add(f)
+                    break
+        self._orphan_sidecars = sorted(orphans, key=lambda p: p.name.lower())
+        self.orphan_sidecar_count_changed.emit(len(self._orphan_sidecars))
 
     def _apply_filter(self) -> list[tuple[Path, list[Path]]]:
         if not self._sidecar_filter:

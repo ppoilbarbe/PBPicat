@@ -115,6 +115,7 @@ DEFAULTS = {
     "zoom_max_percent": 400,
     "language": "",
     "sidecar_new_extension": ".xmp",
+    "delete_empty_sidecars": True,
 }
 
 _DEFAULT_GLOBAL_CONFIG: dict = {

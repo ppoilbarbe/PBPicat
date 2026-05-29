@@ -3,6 +3,7 @@ import re
 from PySide6.QtCore import QRegularExpression, Qt
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -145,6 +146,13 @@ class _SidecarTab(QWidget):
         restore_btn.clicked.connect(self._restore_missing_defaults)
         root.addWidget(restore_btn)
 
+        self._delete_empty_cb = QCheckBox(_("Delete empty sidecar files when loading a directory"))
+        self._delete_empty_cb.setToolTip(
+            _("Automatically delete zero-byte sidecar files (including orphans) when entering a directory")
+        )
+        self._delete_empty_cb.setChecked(self._config.get("delete_empty_sidecars", True))
+        root.addWidget(self._delete_empty_cb)
+
         form = QFormLayout()
         form.setSpacing(8)
         self._new_ext_combo = QComboBox()
@@ -207,6 +215,7 @@ class _SidecarTab(QWidget):
     def apply_to(self, config: dict) -> None:
         config["sidecar_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
         config["sidecar_new_extension"] = self._new_ext_combo.currentText()
+        config["delete_empty_sidecars"] = self._delete_empty_cb.isChecked()
 
 
 class _ThumbnailTab(QWidget):
