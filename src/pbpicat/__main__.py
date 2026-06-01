@@ -27,7 +27,7 @@ def main() -> None:
     app = QApplication(sys.argv)
     app.setApplicationName("PBPicat")
     app.setOrganizationName("PBPicat")
-    app.setApplicationVersion("1.6.2")
+    app.setApplicationVersion("1.6.3")
 
     icon_path = _resource("resources/pbpicat.svg")
     app.setWindowIcon(QIcon(str(icon_path)))

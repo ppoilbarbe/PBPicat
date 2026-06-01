@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-06-01
+
+### Changed
+
+- **Build toolchain migrated to pybabel** — `xgettext`, `msgmerge`, `msgfmt`, and `msginit` replaced by `pybabel extract`, `update`, `compile`, and `init`. Removes the system `gettext` dependency; `babel` is now the sole i18n build tool.
+- **Dist artifact names lowercased** — executables are now named `pbpicat-<version>-<os>-<arch>` (was `PBPicat-…`).
+
+### Removed
+
+- Compiled `.mo` files are no longer tracked in git; they are generated at build time.
+
 ## [1.6.2] - 2026-06-01
 
 ### Added

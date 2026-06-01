@@ -10,8 +10,6 @@ Usage:
 Files updated:
     pyproject.toml
     src/pbpicat/__main__.py
-    src/pbpicat/locale/en/LC_MESSAGES/pbpicat.po
-    src/pbpicat/locale/fr/LC_MESSAGES/pbpicat.po
 """
 
 import re
@@ -25,16 +23,6 @@ _FILES = [
     (
         ROOT / "src/pbpicat/__main__.py",
         re.compile(r'(setApplicationVersion\(")[0-9]+\.[0-9]+\.[0-9]+("\))'),
-        r"\g<1>{version}\g<2>",
-    ),
-    (
-        ROOT / "src/pbpicat/locale/en/LC_MESSAGES/pbpicat.po",
-        re.compile(r'("Project-Id-Version: PBPicat )[0-9]+\.[0-9]+\.[0-9]+(\\n")'),
-        r"\g<1>{version}\g<2>",
-    ),
-    (
-        ROOT / "src/pbpicat/locale/fr/LC_MESSAGES/pbpicat.po",
-        re.compile(r'("Project-Id-Version: PBPicat )[0-9]+\.[0-9]+\.[0-9]+(\\n")'),
         r"\g<1>{version}\g<2>",
     ),
 ]
