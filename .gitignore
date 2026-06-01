@@ -76,6 +76,7 @@ config/history.json
 
 # Fichiers générés par le build i18n
 src/pbpicat/locale/pbpicat.pot
+*.mo
 .translate.stamp
 
 # Divers

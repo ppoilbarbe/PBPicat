@@ -136,9 +136,9 @@ srcdist: ## Build a source archive (git archive → dist/)
 	@printf "$(C)Source archive — version: $(PBPICAT_VERSION)$(R)\n"
 	@mkdir -p dist
 	git archive --format=tar.gz \
-	    --prefix=PBPicat-$(PBPICAT_VERSION)/ \
-	    HEAD -o dist/PBPicat-$(PBPICAT_VERSION)-src.tar.gz
-	@printf "$(G)Done.$(R) Archive in $(Y)dist/PBPicat-$(PBPICAT_VERSION)-src.tar.gz$(R)\n"
+	    --prefix=pbpicat-$(PBPICAT_VERSION)/ \
+	    HEAD -o dist/pbpicat-$(PBPICAT_VERSION)-src.tar.gz
+	@printf "$(G)Done.$(R) Archive in $(Y)dist/pbpicat-$(PBPICAT_VERSION)-src.tar.gz$(R)\n"
 
 # ── Versioning ────────────────────────────────────────────────────────────────
 

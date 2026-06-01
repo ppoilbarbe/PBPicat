@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 """PyInstaller spec for PBPicat.
 
-  Linux   → dist/PBPicat-<version>-linux-x86_64
-  Windows → dist/PBPicat-<version>-windows-x86_64.exe
-  macOS   → dist/PBPicat-<version>-macos-arm64.app
+  Linux   → dist/pbpicat-<version>-linux-x86_64
+  Windows → dist/pbpicat-<version>-windows-x86_64.exe
+  macOS   → dist/pbpicat-<version>-macos-arm64.app
 
 Build with:  make dist
 """
@@ -32,7 +32,7 @@ elif sys.platform == "darwin":
 else:
     _os = sys.platform
 
-_artifact_name = f"PBPicat-{_version}-{_os}-{_arch}"
+_artifact_name = f"pbpicat-{_version}-{_os}-{_arch}"
 
 _locale_root = Path("src/pbpicat/locale")
 _datas = [
