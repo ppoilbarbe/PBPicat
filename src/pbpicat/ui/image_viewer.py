@@ -56,6 +56,7 @@ class ImageViewer(QWidget):
 
     navigate_prev = Signal()
     navigate_next = Signal()
+    delete_requested = Signal()
 
     def __init__(
         self,
@@ -159,6 +160,7 @@ class ImageViewer(QWidget):
             (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_H)), self._act_fit_height),
             (QKeySequence(Qt.Key_Up), self.navigate_prev),
             (QKeySequence(Qt.Key_Down), self.navigate_next),
+            (QKeySequence(Qt.Key_Delete), self.delete_requested),
             (QKeySequence(Qt.Key_Escape), self.close),
         ]
         for seq, slot in pairs:

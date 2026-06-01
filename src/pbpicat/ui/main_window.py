@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -16,6 +17,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QStatusBar,
+    QTextBrowser,
     QVBoxLayout,
     QWidget,
 )
@@ -49,6 +51,73 @@ from .file_panel import FilePanel
 from .history_dialog import HistoryDialog
 from .schema_frame import SchemaFrame
 from .settings_dialog import GlobalSettingsDialog, SettingsDialog
+
+
+class _KeyboardShortcutsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(_("Keyboard shortcuts"))
+        self.setMinimumSize(520, 440)
+        root = QVBoxLayout(self)
+        root.setSpacing(8)
+        browser = QTextBrowser()
+        browser.setReadOnly(True)
+        browser.setOpenExternalLinks(False)
+        browser.setHtml(self._build_html())
+        root.addWidget(browser)
+        close_btn = QPushButton(_("Close"))
+        close_btn.clicked.connect(self.accept)
+        root.addWidget(close_btn, alignment=Qt.AlignRight)
+
+    @staticmethod
+    def _build_html() -> str:
+        def row(key: str, desc: str) -> str:
+            return f"<tr><td>{key}</td><td>{desc}</td></tr>"
+
+        style = (
+            "<style>"
+            "body{font-family:sans-serif;margin:0;padding:8px;}"
+            "h2{color:#2c5f9e;font-size:12pt;margin:14px 0 4px 0;"
+            "border-bottom:1px solid #aac;padding-bottom:3px;}"
+            "table{border-collapse:collapse;width:100%;margin-bottom:6px;}"
+            "td{padding:4px 10px;vertical-align:top;}"
+            "td:first-child{font-family:monospace;font-weight:bold;color:#444;"
+            "white-space:nowrap;width:170px;}"
+            "tr:nth-child(even){background:#f0f4f8;}"
+            "</style>"
+        )
+
+        title_main = _("Main window")
+        title_viewer = _("Image viewer")
+
+        main_rows = "".join(
+            [
+                row("Del", _("Delete selected file(s) and their sidecars")),
+            ]
+        )
+
+        viewer_rows = "".join(
+            [
+                row("Ctrl+1", _("Actual size (1:1)")),
+                row("Ctrl++ / Ctrl+=", _("Zoom in")),
+                row("Ctrl+-", _("Zoom out")),
+                row("Ctrl+0", _("Fit window")),
+                row("Ctrl+W", _("Fit width")),
+                row("Ctrl+H", _("Fit height")),
+                row("↑ / ↓", _("Navigate to previous / next image")),
+                row("Del", _("Delete current image and its sidecars")),
+                row("Escape", _("Close image viewer")),
+            ]
+        )
+
+        return (
+            f"<html><head>{style}</head><body>"
+            f"<h2>{title_main}</h2>"
+            f"<table>{main_rows}</table>"
+            f"<h2>{title_viewer}</h2>"
+            f"<table>{viewer_rows}</table>"
+            "</body></html>"
+        )
 
 
 class _OrphanSidecarsDialog(QDialog):
@@ -170,6 +239,8 @@ class MainWindow(QMainWindow):
         settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
 
         help_menu = mb.addMenu(_("&Help"))
+        help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts)
+        help_menu.addSeparator()
         help_menu.addAction(_("&About"), self._about)
 
     def _setup_ui(self) -> None:
@@ -620,6 +691,10 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event) -> None:  # noqa: N802
         self._save_current_catalog_state()
         super().closeEvent(event)
+
+    def _show_keyboard_shortcuts(self) -> None:
+        dlg = _KeyboardShortcutsDialog(self)
+        dlg.exec()
 
     def _about(self) -> None:
         QMessageBox.about(

@@ -131,7 +131,7 @@ class FileListWidget(QTableWidget):
         self._refresh_debounce = QTimer(self)
         self._refresh_debounce.setSingleShot(True)
         self._refresh_debounce.setInterval(400)
-        self._refresh_debounce.timeout.connect(self.refresh)
+        self._refresh_debounce.timeout.connect(self._refresh_preserve_selection)
 
     def set_schema_getter(self, getter: Callable[[], list[str]]) -> None:
         self._get_schema_fields = getter
@@ -187,6 +187,17 @@ class FileListWidget(QTableWidget):
 
     def _on_dir_changed_on_disk(self) -> None:
         self._refresh_debounce.start()
+
+    def _refresh_preserve_selection(self) -> None:
+        rows = {idx.row() for idx in self.selectedIndexes()}
+        selected_paths = {self._display_data[r][0] for r in rows if r < len(self._display_data)}
+        self.refresh()
+        if selected_paths and self._display_data:
+            for row, (path, _) in enumerate(self._display_data):
+                if path in selected_paths:
+                    self.selectRow(row)
+                    self.scrollTo(self.model().index(row, 0))
+                    break
 
     def refresh(self) -> None:
         if self._current_dir is None:
@@ -429,6 +440,7 @@ class FileListWidget(QTableWidget):
             self._image_viewer = ImageViewer(path, self, self._zoom_step_percent, self._zoom_max_percent)
             self._image_viewer.navigate_prev.connect(lambda: self._navigate_viewer(-1))
             self._image_viewer.navigate_next.connect(lambda: self._navigate_viewer(+1))
+            self._image_viewer.delete_requested.connect(self._delete_from_viewer)
             self._image_viewer.show()
         else:
             self._image_viewer.load_image(path)
@@ -496,6 +508,12 @@ class FileListWidget(QTableWidget):
         except Exception:  # noqa: BLE001
             return ""
 
+    def keyPressEvent(self, event) -> None:  # noqa: N802
+        if event.key() == Qt.Key_Delete:
+            self._delete_selection()
+        else:
+            super().keyPressEvent(event)
+
     def contextMenuEvent(self, event) -> None:  # noqa: N802
         pos = self.viewport().mapFromGlobal(event.globalPos())
         row = self.rowAt(pos.y())
@@ -505,7 +523,7 @@ class FileListWidget(QTableWidget):
         path, sidecars = self._display_data[row]
         menu = QMenu(self)
         infer_action = menu.addAction(_("Template"))
-        delete_action = menu.addAction(_("Delete"))
+        delete_action = menu.addAction(_("Delete") + "\tDel")
         chosen = menu.exec(event.globalPos())
         if chosen == infer_action:
             self._propose_schema(path)
@@ -527,7 +545,26 @@ class FileListWidget(QTableWidget):
         drag.setMimeData(mime)
         drag.exec(Qt.CopyAction)
 
-    def _delete_file(self, path: Path, sidecars: list[Path]) -> None:
+    def _delete_selection(self) -> None:
+        files = self.get_selected_files()
+        if not files:
+            return
+        entry = next(((p, s) for p, s in self._display_data if p == files[0]), None)
+        if entry:
+            self._delete_file(*entry)
+
+    def _delete_from_viewer(self) -> None:
+        rows = {idx.row() for idx in self.selectedIndexes()}
+        if len(rows) != 1:
+            return
+        row = next(iter(rows))
+        if row >= len(self._display_data):
+            return
+        path, sidecars = self._display_data[row]
+        self._delete_file(path, sidecars, dialog_parent=self._image_viewer)
+
+    def _delete_file(self, path: Path, sidecars: list[Path], dialog_parent=None) -> None:
+        parent = dialog_parent if dialog_parent is not None else self
         selected = set(self.get_selected_files())
         if path in selected:
             to_delete = [(p, scs) for p, scs in self._display_data if p in selected]
@@ -541,7 +578,7 @@ class FileListWidget(QTableWidget):
 
         names = "\n".join(f.name for f in all_files)
         reply = QMessageBox.question(
-            self,
+            parent,
             _("Confirm deletion"),
             _("Permanently delete:\n{names}").format(names=names),
             QMessageBox.Yes | QMessageBox.No,
@@ -563,7 +600,7 @@ class FileListWidget(QTableWidget):
             self._remove_empty_parents(d)
 
         if errors:
-            QMessageBox.warning(self, _("Deletion error"), "\n".join(errors))
+            QMessageBox.warning(parent, _("Deletion error"), "\n".join(errors))
         self.refresh_and_select(next_row)
 
     def _remove_empty_parents(self, directory: Path) -> None:

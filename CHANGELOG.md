@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-06-01
+
+### Added
+
+- **Delete key shortcut** — pressing `Del` in the file list deletes the selected file(s) and their sidecars; the shortcut is shown in the context menu alongside the *Delete* action.
+- **Delete from image viewer** — pressing `Del` while the image viewer is open deletes the currently displayed image and its sidecars; the confirmation dialog is parented to the viewer so it stays in the foreground.
+- **Keyboard shortcuts help** — new *Help → Keyboard shortcuts…* menu entry opens an HTML dialog listing all shortcuts for both the main window and the image viewer.
+- **Auto-select next file after deletion** — after deleting file(s), the file immediately following the last deleted entry is automatically selected (or the last file if the deleted entry was the last one).
+
+### Fixed
+
+- After deleting a file, the `QFileSystemWatcher`-triggered auto-refresh (400 ms debounce) was clearing the selection; the debounced refresh now preserves the current selection by path.
+
 ## [1.5.0] - 2026-05-29
 
 ### Added
