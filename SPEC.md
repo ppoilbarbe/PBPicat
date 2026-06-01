@@ -207,7 +207,8 @@ Menu **Settings → Histories…**
 ## Distribution (`pbpicat.spec`)
 PyInstaller one-file build; artifact named `PBPicat-<version>-<os>-<arch>`.
 `.mo` files and all `resources/*.svg` bundled as datas. macOS builds as `.app` bundle.
-Version string: `tools/git_version.sh` (exact tag + clean tree → `x.y.z`, else `dev`).
+Version string: `tools/git_version.sh` locally (exact tag + clean tree → `x.y.z`, else `dev`);
+CI reads `github.ref_name` and sets `PBPICAT_VERSION` before calling PyInstaller.
 Build via: `make dist`
 
 ## File Structure

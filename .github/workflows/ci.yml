@@ -88,7 +88,11 @@ jobs:
         # .mo files are committed; call PyInstaller directly to avoid GNU Make
         # and gettext portability issues on Windows runners.
         shell: bash -el {0}
+        env:
+          # Use the tag name (strip leading 'v') on tag runs; fall back to 'dev'.
+          PBPICAT_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
         run: |
+          export PBPICAT_VERSION="${PBPICAT_VERSION#v}"
           pyinstaller --clean --noconfirm \
             --distpath dist --workpath build/pyinstaller \
             pbpicat.spec

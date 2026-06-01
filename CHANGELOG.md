@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2026-06-01
+
+### Added
+
+- **markdownlint-cli2 pre-commit hook** — Markdown files are now linted automatically on commit.
+
+### Fixed
+
+- **CI release asset names** — the build workflow now passes `PBPICAT_VERSION` to PyInstaller via `github.ref_name`, so release assets are correctly named `PBPicat-<version>-…` instead of `PBPicat-dev-…`.
+
+### Changed
+
+- Updated `SPEC.md` with v1.6.1 specifications.
+
 ## [1.6.1] - 2026-06-01
 
 ### Added
