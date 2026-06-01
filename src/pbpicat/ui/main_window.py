@@ -100,12 +100,11 @@ class _KeyboardShortcutsDialog(QDialog):
 
         viewer_rows = "".join(
             [
-                row("Ctrl+1", _("Actual size (1:1)")),
-                row("Ctrl++ / Ctrl+=", _("Zoom in")),
-                row("Ctrl+-", _("Zoom out")),
-                row("Ctrl+0", _("Fit window")),
-                row("Ctrl+W", _("Fit width")),
-                row("Ctrl+H", _("Fit height")),
+                row("0", _("Fit window")),
+                row("1", _("Actual size (1:1)")),
+                row("W", _("Fit width")),
+                row("H", _("Fit height")),
+                row("+ / −", _("Zoom in / Zoom out")),
                 row("↑ / ↓", _("Navigate to previous / next image")),
                 row("Del", _("Delete current image and its sidecars")),
                 row("Escape", _("Close image viewer")),

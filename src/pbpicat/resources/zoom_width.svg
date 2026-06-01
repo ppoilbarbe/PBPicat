@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- vertical edge bars -->
+  <line x1="1" y1="5" x2="1" y2="19"/>
+  <line x1="23" y1="5" x2="23" y2="19"/>
+  <!-- horizontal double-headed arrow -->
+  <line x1="1" y1="12" x2="23" y2="12"/>
+  <polyline points="5,8 1,12 5,16"/>
+  <polyline points="19,8 23,12 19,16"/>
+</svg>

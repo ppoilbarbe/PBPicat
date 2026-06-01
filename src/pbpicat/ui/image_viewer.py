@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QKeyCombination, QPoint, QSize, Qt, Signal
+from PySide6.QtCore import QEvent, QPoint, QSize, Qt, Signal
 from PySide6.QtGui import QIcon, QKeySequence, QPainter, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -26,11 +26,29 @@ class _ZoomMode(Enum):
 
 
 _ICON_SIZE = 22
+_ICON_DIR = Path(__file__).parent.parent / "resources"
+
+# Mapping: logical name → FreeDesktop theme name
+_THEME_MAP = {
+    "zoom_fit": "zoom-fit-best",
+    "zoom_original": "zoom-original",
+    "zoom_width": "zoom-fit-width",
+    "zoom_height": "zoom-fit-height",
+    "zoom_in": "zoom-in",
+    "zoom_out": "zoom-out",
+}
 
 
-def _theme_icon(name: str, fallback: str) -> QIcon:
-    icon = QIcon.fromTheme(name)
-    return icon if not icon.isNull() else _text_icon(fallback)
+def _get_icon(name: str, fallback: str) -> QIcon:
+    theme_icon = QIcon.fromTheme(_THEME_MAP.get(name, ""))
+    if not theme_icon.isNull():
+        return theme_icon
+    svg_path = _ICON_DIR / f"{name}.svg"
+    if svg_path.exists():
+        icon = QIcon(str(svg_path))
+        if not icon.isNull():
+            return icon
+    return _text_icon(fallback)
 
 
 def _text_icon(text: str, size: int = _ICON_SIZE) -> QIcon:
@@ -119,18 +137,16 @@ class ImageViewer(QWidget):
         tb.setSpacing(2)
 
         specs = [
-            ("zoom-original", "1:1", _("Actual size (1:1)  Ctrl+1"), self._act_1to1),
-            ("zoom-in", "＋", _("Zoom in  Ctrl++"), self._act_zoom_in),
-            ("zoom-out", "－", _("Zoom out  Ctrl+-"), self._act_zoom_out),
-            (None, "↔", _("Fit width  Ctrl+W"), self._act_fit_width),
-            (None, "↕", _("Fit height  Ctrl+H"), self._act_fit_height),
-            ("zoom-fit-best", "⊡", _("Fit window  Ctrl+0"), self._act_fit_window),
+            ("zoom_fit", "⊡", _("Fit window  0"), self._act_fit_window),
+            ("zoom_original", "1:1", _("Actual size (1:1)  1"), self._act_1to1),
+            ("zoom_width", "↔", _("Fit width  W"), self._act_fit_width),
+            ("zoom_height", "↕", _("Fit height  H"), self._act_fit_height),
         ]
 
         self._zoom_buttons: list[QToolButton] = []
-        for theme, fallback, tip, slot in specs:
+        for icon_name, fallback, tip, slot in specs:
             btn = QToolButton()
-            btn.setIcon(_theme_icon(theme, fallback) if theme else _text_icon(fallback))
+            btn.setIcon(_get_icon(icon_name, fallback))
             btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
             btn.setToolTip(tip)
             btn.setCheckable(True)
@@ -139,7 +155,24 @@ class ImageViewer(QWidget):
             self._zoom_buttons.append(btn)
 
         # The "fit window" button is active by default
-        self._zoom_buttons[-1].setChecked(True)
+        self._zoom_buttons[0].setChecked(True)
+
+        # Separator between mode buttons and zoom in/out
+        sep = QToolButton()
+        sep.setEnabled(False)
+        sep.setFixedWidth(8)
+        tb.addWidget(sep)
+
+        for icon_name, fallback, tip, slot in [
+            ("zoom_in", "＋", _("Zoom in  +"), self._act_zoom_in),
+            ("zoom_out", "－", _("Zoom out  −"), self._act_zoom_out),
+        ]:
+            btn = QToolButton()
+            btn.setIcon(_get_icon(icon_name, fallback))
+            btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+            btn.setToolTip(tip)
+            btn.clicked.connect(slot)
+            tb.addWidget(btn)
 
         tb.addStretch()
         self._zoom_label = QLabel()
@@ -151,17 +184,19 @@ class ImageViewer(QWidget):
 
     def _setup_shortcuts(self) -> None:
         pairs = [
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_1)), self._act_1to1),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_Plus)), self._act_zoom_in),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_Equal)), self._act_zoom_in),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_Minus)), self._act_zoom_out),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_0)), self._act_fit_window),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_W)), self._act_fit_width),
-            (QKeySequence(QKeyCombination(Qt.CTRL, Qt.Key_H)), self._act_fit_height),
-            (QKeySequence(Qt.Key_Up), self.navigate_prev),
-            (QKeySequence(Qt.Key_Down), self.navigate_next),
-            (QKeySequence(Qt.Key_Delete), self.delete_requested),
-            (QKeySequence(Qt.Key_Escape), self.close),
+            (QKeySequence(Qt.Key.Key_0), self._act_fit_window),
+            (QKeySequence(Qt.Key.Key_1), self._act_1to1),
+            (QKeySequence(Qt.Key.Key_W), self._act_fit_width),
+            (QKeySequence(Qt.Key.Key_H), self._act_fit_height),
+            (QKeySequence(Qt.Key.Key_Plus), self._act_zoom_in),
+            (QKeySequence(Qt.Key.Key_Equal), self._act_zoom_in),
+            (QKeySequence(Qt.KeyboardModifier.KeypadModifier | Qt.Key.Key_Plus), self._act_zoom_in),
+            (QKeySequence(Qt.Key.Key_Minus), self._act_zoom_out),
+            (QKeySequence(Qt.KeyboardModifier.KeypadModifier | Qt.Key.Key_Minus), self._act_zoom_out),
+            (QKeySequence(Qt.Key.Key_Up), self.navigate_prev),
+            (QKeySequence(Qt.Key.Key_Down), self.navigate_next),
+            (QKeySequence(Qt.Key.Key_Delete), self.delete_requested),
+            (QKeySequence(Qt.Key.Key_Escape), self.close),
         ]
         for seq, slot in pairs:
             sc = QShortcut(seq, self)
@@ -284,12 +319,10 @@ class ImageViewer(QWidget):
 
     def _update_button_states(self) -> None:
         mode_order = [
+            _ZoomMode.FIT_WINDOW,
             _ZoomMode.ONE_TO_ONE,
-            _ZoomMode.CUSTOM,  # zoom-in maps to CUSTOM
-            _ZoomMode.CUSTOM,  # zoom-out maps to CUSTOM
             _ZoomMode.FIT_WIDTH,
             _ZoomMode.FIT_HEIGHT,
-            _ZoomMode.FIT_WINDOW,
         ]
         for btn, mode in zip(self._zoom_buttons, mode_order):
             btn.setChecked(self._mode == mode)
