@@ -39,7 +39,7 @@ The destination directory and filename are built as follows:
 **Examples:**
 
 | Schema fields | Result |
-|---------------|--------|
+| ------------- | ------ |
 | `Paris`, `2024`, *(empty)*, `Street`, *(empty)*, *(empty)* | `ROOT/Paris/2024/Street/Paris_2024_Street.jpg` |
 | `Paris`, `2024`, *(empty)*, `Street`, *(empty)*, `###` | `ROOT/Paris/2024/Street/Paris_2024_Street_001.jpg` |
 | `Paris`, `2024`, *(empty)*, `Street`, *(empty)*, `###` (existing max = 12) | `ROOT/Paris/2024/Street/Paris_2024_Street_013.jpg` |
