@@ -118,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: build-${{ runner.os }}
-          path: dist/PBPicat-*
+          path: dist/pbpicat-*
           if-no-files-found: error
 
   # ── GitHub release ───────────────────────────────────────────────────────────
@@ -151,5 +151,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           body: ${{ steps.notes.outputs.body }}
-          files: dist/PBPicat-*
+          files: dist/pbpicat-*
           fail_on_unmatched_files: true

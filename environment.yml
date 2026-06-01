@@ -23,5 +23,7 @@ dependencies:
   - pyinstaller
   # i18n tools
   - gettext
+  # Build tooling (make needed on Windows runners)
+  - make
   # Dev install (editable — lancez ensuite : make install)
   - pip
