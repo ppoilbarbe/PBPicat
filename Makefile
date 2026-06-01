@@ -23,7 +23,7 @@ C  := \033[36m
 
 .DEFAULT_GOAL := help
 .PHONY: all help venv venv-update install run test coverage lint format hooks \
-        translate force-translate new-lang dist srcdist clean
+        translate compile-mo force-translate new-lang dist srcdist clean
 
 all: translate ## Build all generated artifacts (strings → .mo)
 
@@ -100,6 +100,13 @@ $(TRANSLATE_STAMP): $(PY_SOURCES) $(PO_FILES)
 	done
 	@printf "$(G)Done.$(R)\n"
 	@touch $@
+
+compile-mo: ## Compile .po → .mo without extracting strings (requires only msgfmt)
+	@for lang in $(PO_LOCALES); do \
+	    po=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.po; \
+	    mo=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.mo; \
+	    $(CONDA_RUN) msgfmt "$$po" -o "$$mo" && printf "  $(G)$$mo$(R)\n"; \
+	done
 
 force-translate: ## Force-rebuild translations regardless of source changes
 	@rm -f $(TRANSLATE_STAMP)

@@ -34,12 +34,7 @@ jobs:
 
       - name: Compile translations
         shell: bash -el {0}
-        run: |
-          LOCALE_DIR=src/pbpicat/locale
-          for lang in en fr de es it ru vi zh_CN; do
-            msgfmt "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.po" \
-                   -o "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.mo"
-          done
+        run: make compile-mo NOCONDA=1
 
       - name: Run test suite
         shell: bash -el {0}
@@ -95,12 +90,7 @@ jobs:
 
       - name: Compile translations
         shell: bash -el {0}
-        run: |
-          LOCALE_DIR=src/pbpicat/locale
-          for lang in en fr de es it ru vi zh_CN; do
-            msgfmt "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.po" \
-                   -o "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.mo"
-          done
+        run: make compile-mo NOCONDA=1
 
       - name: Build with PyInstaller
         # Call PyInstaller directly to avoid GNU Make portability issues on Windows runners.
