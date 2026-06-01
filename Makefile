@@ -78,35 +78,21 @@ translate: $(TRANSLATE_STAMP) ## Extract translatable strings, update .po files 
 
 $(TRANSLATE_STAMP): $(PY_SOURCES) $(PO_FILES)
 	@printf "$(C)Extracting from Python sources...$(R)\n"
-	$(CONDA_RUN) xgettext --language=Python --keyword=_ \
-	    --from-code=UTF-8 --package-name=pbpicat \
+	$(CONDA_RUN) pybabel extract -F babel.cfg --no-wrap \
+	    --project=pbpicat \
 	    --copyright-holder="Philippe Poilbarbe" \
 	    --msgid-bugs-address="philippe@cardolan.net" \
-	    --output=$(POT_FILE) \
-	    $(PY_SOURCES)
+	    -o $(POT_FILE) $(SRC)/pbpicat
 	@printf "$(C)Updating .po files...$(R)\n"
-	@for lang in $(PO_LOCALES); do \
-	    po=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.po; \
-	    if [ -f "$$po" ]; then \
-	        $(CONDA_RUN) msgmerge --update --no-fuzzy-matching --backup=none \
-	            "$$po" $(POT_FILE); \
-	    fi; \
-	done
+	$(CONDA_RUN) pybabel update -i $(POT_FILE) -d $(LOCALE_DIR) -D pbpicat \
+	    --no-fuzzy-matching --no-wrap
 	@printf "$(C)Compiling .mo files...$(R)\n"
-	@for lang in $(PO_LOCALES); do \
-	    po=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.po; \
-	    mo=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.mo; \
-	    $(CONDA_RUN) msgfmt "$$po" -o "$$mo" && printf "  $(G)$$mo$(R)\n"; \
-	done
+	$(CONDA_RUN) pybabel compile -d $(LOCALE_DIR) -D pbpicat
 	@printf "$(G)Done.$(R)\n"
 	@touch $@
 
-compile-mo: ## Compile .po → .mo without extracting strings (requires only msgfmt)
-	@for lang in $(PO_LOCALES); do \
-	    po=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.po; \
-	    mo=$(LOCALE_DIR)/$$lang/LC_MESSAGES/pbpicat.mo; \
-	    $(CONDA_RUN) msgfmt "$$po" -o "$$mo" && printf "  $(G)$$mo$(R)\n"; \
-	done
+compile-mo: ## Compile .po → .mo without extracting strings
+	$(CONDA_RUN) pybabel compile -d $(LOCALE_DIR) -D pbpicat
 
 force-translate: ## Force-rebuild translations regardless of source changes
 	@rm -f $(TRANSLATE_STAMP)
@@ -117,9 +103,8 @@ new-lang: ## Scaffold a new translation (usage: make new-lang LOCALE=de)
 	    printf "$(Y)Usage:$(R) make new-lang LOCALE=<lang-code>  (e.g. LOCALE=de)\n"; exit 1; }
 	@test -f $(POT_FILE) || { \
 	    printf "$(Y)Run 'make translate' first to generate the .pot template.$(R)\n"; exit 1; }
-	@mkdir -p $(LOCALE_DIR)/$(LOCALE)/LC_MESSAGES
-	$(CONDA_RUN) msginit --input=$(POT_FILE) --locale=$(LOCALE) --no-wrap \
-	    --output=$(LOCALE_DIR)/$(LOCALE)/LC_MESSAGES/pbpicat.po
+	$(CONDA_RUN) pybabel init -i $(POT_FILE) -d $(LOCALE_DIR) -D pbpicat \
+	    -l $(LOCALE) --no-wrap
 	@printf "\n$(G)Created:$(R) $(LOCALE_DIR)/$(LOCALE)/LC_MESSAGES/pbpicat.po\n\n"
 	@printf "$(Y)Next steps:$(R)\n"
 	@printf "  1. Edit the .po file and translate every msgstr entry.\n"

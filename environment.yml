@@ -22,7 +22,7 @@ dependencies:
   # Packaging
   - pyinstaller
   # i18n tools
-  - gettext
+  - babel
   # Build tooling (make needed on Windows runners)
   - make
   # Dev install (editable — lancez ensuite : make install)

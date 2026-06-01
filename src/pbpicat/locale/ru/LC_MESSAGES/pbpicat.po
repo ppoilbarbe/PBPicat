@@ -5,366 +5,28 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pbpicat\n"
+"Project-Id-Version:  pbpicat\n"
 "Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-06-01 19:01+0200\n"
+"POT-Creation-Date: 2026-06-01 20:40+0200\n"
 "PO-Revision-Date: 2026-05-17 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
-"Language-Team: Russian\n"
 "Language: ru\n"
+"Language-Team: Russian\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Generated-By: Babel 2.18.0\n"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:88
-msgid "<b>Rename schema</b>"
-msgstr "<b>Схема переименования</b>"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
-#: src/pbpicat/ui/history_dialog.py:151 src/pbpicat/ui/settings_dialog.py:94
-#: src/pbpicat/ui/settings_dialog.py:96 src/pbpicat/ui/settings_dialog.py:102
-#: src/pbpicat/ui/file_list_widget.py:631
-#, python-brace-format
-msgid "Field {n}"
-msgstr "Поле {n}"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:116
-msgid "Video marker position"
-msgstr "Позиция видеомаркера"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:34
-#, python-brace-format
-msgid "History — {title}:"
-msgstr "История — {title}:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:49
-msgid "▲ Move up"
-msgstr "▲ Переместить вверх"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:53
-msgid "▼ Move down"
-msgstr "▼ Переместить вниз"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/settings_dialog.py:137
-#: src/pbpicat/ui/settings_dialog.py:293 src/pbpicat/ui/settings_dialog.py:393
-#: src/pbpicat/ui/settings_dialog.py:590 src/pbpicat/ui/file_list_widget.py:526
-msgid "Delete"
-msgstr "Удалить"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:63
-msgid "Clear all"
-msgstr "Очистить всё"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:103
-msgid "Clear history"
-msgstr "Очистить историю"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:104
-msgid "Clear all values from this history?"
-msgstr "Очистить все значения из этой истории?"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:136
-msgid "Field histories"
-msgstr "История полей"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:158
-msgid "Sidecar filter"
-msgstr "Фильтр sidecar"
+#: src/pbpicat/i18n.py:52
+msgid "language_name"
+msgstr "Русский"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/dir_tree.py:105
 msgid "Open"
 msgstr "Открыть"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:50
-msgid "Number of fields:"
-msgstr "Количество полей:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:60
-msgid "Max history entries:"
-msgstr "Макс. записей истории:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:64
-msgid ""
-"Maximum number of values kept per field history and sidecar filter history"
-msgstr ""
-"Максимальное число значений, хранимых в истории каждого поля и фильтра "
-"sidecar"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:70
-msgid "<b>Field titles:</b>"
-msgstr "<b>Заголовки полей:</b>"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:97
-#, python-brace-format
-msgid "Field {n}:"
-msgstr "Поле {n}:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:117
-msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
-msgstr "Расширения sidecar-файлов (например .xmp, .prompt.txt):"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:126 src/pbpicat/ui/settings_dialog.py:579
-msgid ".ext or .name.ext"
-msgstr ".ext или .имя.ext"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:131 src/pbpicat/ui/settings_dialog.py:287
-#: src/pbpicat/ui/settings_dialog.py:387 src/pbpicat/ui/settings_dialog.py:584
-msgid "Add"
-msgstr "Добавить"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:144 src/pbpicat/ui/settings_dialog.py:300
-#: src/pbpicat/ui/settings_dialog.py:399
-msgid "Restore missing defaults"
-msgstr "Восстановить недостающие значения по умолчанию"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:145
-msgid ""
-"Add extensions from the global default list that are not yet in the list "
-"above"
-msgstr ""
-"Добавить расширения из глобального списка по умолчанию, которых ещё нет в "
-"списке выше"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:149
-msgid "Delete empty sidecar files when loading a directory"
-msgstr "Удалять пустые файлы sidecar при загрузке каталога"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:151
-msgid ""
-"Automatically delete zero-byte sidecar files (including orphans) when "
-"entering a directory"
-msgstr ""
-"Автоматически удалять файлы sidecar нулевого размера (включая осиротевшие) "
-"при входе в каталог"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:160
-msgid ""
-"Extension used when creating a new sidecar by double-clicking the sidecar "
-"column"
-msgstr ""
-"Расширение, используемое при создании нового sidecar двойным щелчком по "
-"колонке sidecar"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:162
-msgid "Default extension for new sidecar:"
-msgstr "Расширение по умолчанию для нового sidecar:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:185 src/pbpicat/ui/settings_dialog.py:332
-#: src/pbpicat/ui/settings_dialog.py:432 src/pbpicat/ui/settings_dialog.py:638
-msgid "Invalid extension"
-msgstr "Недопустимое расширение"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:186 src/pbpicat/ui/settings_dialog.py:639
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
-msgstr "«{ext}» — недопустимое расширение (например .xmp, .prompt.txt)."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
-#: src/pbpicat/ui/settings_dialog.py:455
-msgid "Restore defaults"
-msgstr "Восстановить значения по умолчанию"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
-#: src/pbpicat/ui/settings_dialog.py:455
-msgid "All default extensions are already in the list."
-msgstr "Все расширения по умолчанию уже есть в списке."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:233
-msgid ""
-"Maximum size of thumbnails displayed in the file list.\n"
-"A navigation restart is required for the change to take effect."
-msgstr ""
-"Максимальный размер миниатюр в списке файлов.\n"
-"Для применения изменения необходимо перезапустить навигацию."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:248
-msgid "Max width:"
-msgstr "Макс. ширина:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:254
-msgid "Max height:"
-msgstr "Макс. высота:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:273
-msgid "Recognised image extensions (thumbnail + rename):"
-msgstr "Распознаваемые расширения изображений (миниатюра + переименование):"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:301 src/pbpicat/ui/settings_dialog.py:400
-msgid ""
-"Add extensions from the built-in default list that are not yet in the list "
-"above"
-msgstr ""
-"Добавляет расширения из встроенного списка по умолчанию, которых ещё нет в "
-"списке выше"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:311
-msgid "Enlargement/reduction factor per click or double-click"
-msgstr "Коэффициент увеличения/уменьшения за один щелчок или двойной щелчок"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:313
-msgid "Zoom step:"
-msgstr "Шаг масштаба:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:319
-msgid "Maximum zoom allowed in the image viewer"
-msgstr "Максимально допустимый масштаб в просмотрщике изображений"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:321
-msgid "Max zoom:"
-msgstr "Макс. масштаб:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:333
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
-msgstr "«{ext}» — недопустимое расширение (например .png, .heic)."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:373
-msgid "Recognised video extensions:"
-msgstr "Распознаваемые расширения видеофайлов:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:407
-msgid ""
-"<b>Video marker</b><br>Inserted among the name components at the position "
-"chosen in the schema.<br>No '_' in the value. Empty = no marker."
-msgstr ""
-"<b>Видеомаркер</b><br>Вставляется среди компонентов имени на позиции, "
-"выбранной в схеме.<br>Знак «_» в значении недопустим. Пусто = нет маркера."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:419
-msgid "e.g. VID  (empty = none)"
-msgstr "например VID  (пусто = нет)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:421
-msgid "Marker:"
-msgstr "Маркер:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:433
-#, python-brace-format
-msgid "'{ext}' is not a valid extension (e.g. .mp4)."
-msgstr "«{ext}» — недопустимое расширение (например .mp4)."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
-msgid "System default"
-msgstr "Системный язык"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:487 src/pbpicat/ui/settings_dialog.py:623
-msgid "Interface language:"
-msgstr "Язык интерфейса:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:490 src/pbpicat/ui/settings_dialog.py:626
-msgid "A restart is required for the language change to take effect."
-msgstr "Для применения смены языка необходим перезапуск программы."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:500
-msgid "Configuration"
-msgstr "Конфигурация"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:515
-msgid "Rename schema"
-msgstr "Схема переименования"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:516 src/pbpicat/ui/settings_dialog.py:555
-msgid "Sidecar extensions"
-msgstr "Расширения sidecar"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:517
-msgid "Images"
-msgstr "Изображения"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:518
-msgid "Video"
-msgstr "Видео"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:519
-msgid "Thumbnails"
-msgstr "Миниатюры"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:546
-msgid "Program settings"
-msgstr "Настройки программы"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:556
-msgid "Language"
-msgstr "Язык"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:569
-msgid "<b>Default sidecar extensions for new catalogs</b>"
-msgstr "<b>Расширения sidecar по умолчанию для новых каталогов</b>"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:570
-msgid "(e.g. .xmp, .dop, .prompt.txt)"
-msgstr "(например, .xmp, .dop, .prompt.txt)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:596
-msgid "Restore built-in defaults"
-msgstr "Восстановить встроенные значения по умолчанию"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:597
-msgid "Reset the list to the built-in default sidecar extensions"
-msgstr "Сбросить список до встроенных расширений sidecar по умолчанию"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/file_list_widget.py:42
@@ -375,6 +37,10 @@ msgstr "Предложенный шаблон"
 #: src/pbpicat/ui/file_list_widget.py:46
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Обнаружен шаблон — подтвердите применение к полям:"
+
+#: src/pbpicat/ui/file_list_widget.py:54
+msgid "(empty)"
+msgstr ""
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/file_list_widget.py:158
@@ -402,6 +68,13 @@ msgstr "Имя файла ({n})"
 #: src/pbpicat/ui/file_list_widget.py:623
 msgid "Template"
 msgstr "Шаблон"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:526 src/pbpicat/ui/history_dialog.py:59
+#: src/pbpicat/ui/settings_dialog.py:137 src/pbpicat/ui/settings_dialog.py:293
+#: src/pbpicat/ui/settings_dialog.py:393 src/pbpicat/ui/settings_dialog.py:590
+msgid "Delete"
+msgstr "Удалить"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/file_list_widget.py:582 src/pbpicat/ui/main_window.py:188
@@ -433,6 +106,96 @@ msgid ""
 msgstr ""
 "Не удалось определить шаблон для «{name}».\n"
 "Ни одна часть имени файла не соответствует истории полей."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:631 src/pbpicat/ui/history_dialog.py:151
+#: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
+#: src/pbpicat/ui/settings_dialog.py:94 src/pbpicat/ui/settings_dialog.py:96
+#: src/pbpicat/ui/settings_dialog.py:102
+#, python-brace-format
+msgid "Field {n}"
+msgstr "Поле {n}"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:34
+#, python-brace-format
+msgid "History — {title}:"
+msgstr "История — {title}:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:49
+msgid "▲ Move up"
+msgstr "▲ Переместить вверх"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:53
+msgid "▼ Move down"
+msgstr "▼ Переместить вниз"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:63
+msgid "Clear all"
+msgstr "Очистить всё"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:103
+msgid "Clear history"
+msgstr "Очистить историю"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:104
+msgid "Clear all values from this history?"
+msgstr "Очистить все значения из этой истории?"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:136
+msgid "Field histories"
+msgstr "История полей"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:158
+msgid "Sidecar filter"
+msgstr "Фильтр sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:140
+msgid "Fit window  0"
+msgstr "По окну  0"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:141
+msgid "Actual size (1:1)  1"
+msgstr "Реальный размер (1:1)  1"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:142
+msgid "Fit width  W"
+msgstr "По ширине  W"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:143
+msgid "Fit height  H"
+msgstr "По высоте  H"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:167
+msgid "Zoom in  +"
+msgstr "Увеличить  +"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:168
+msgid "Zoom out  −"
+msgstr "Уменьшить  −"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:219
+msgid "Cannot load image."
+msgstr "Не удаётся загрузить изображение."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:317
+msgid " (max)"
+msgstr " (макс)"
 
 #: src/pbpicat/ui/main_window.py:60
 msgid "Keyboard shortcuts"
@@ -637,8 +400,7 @@ msgstr "Отменить последнее переименование"
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:320
 msgid "Undo last rename (restores files to their original location)"
-msgstr ""
-"Отменить последнее переименование (восстанавливает файлы на исходное место)"
+msgstr "Отменить последнее переименование (восстанавливает файлы на исходное место)"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:327
@@ -667,27 +429,13 @@ msgstr "Фильтр sidecar…"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:346
-msgid ""
-"<b>Sidecar content filter</b><br>Python regular expression applied to the "
-"<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
-"whose content matches are shown.<br>Files with no sidecar are always hidden "
-"when a filter is active.<br><tt>.*</tt> matches across line breaks (re."
-"DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters."
-"<br>Leave empty to show all files."
-msgstr ""
-"<b>Фильтр содержимого sidecar</b><br>Регулярное выражение Python, "
-"применяемое к <i>содержимому</i> sidecar-файлов.<br>Отображаются только "
-"файлы, у которых хотя бы один sidecar соответствует фильтру.<br>Файлы без "
-"sidecar всегда скрыты при активном фильтре.<br><tt>.*</tt> совпадает через "
-"переносы строк (re.DOTALL).<br>Без учёта регистра (re.IGNORECASE), включая "
-"символы с диакритикой.<br>Оставьте пустым для отображения всех файлов."
+msgid "<b>Sidecar content filter</b><br>Python regular expression applied to the <i>content</i> of sidecar files.<br>Only files with at least one sidecar whose content matches are shown.<br>Files with no sidecar are always hidden when a filter is active.<br><tt>.*</tt> matches across line breaks (re.DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters.<br>Leave empty to show all files."
+msgstr "<b>Фильтр содержимого sidecar</b><br>Регулярное выражение Python, применяемое к <i>содержимому</i> sidecar-файлов.<br>Отображаются только файлы, у которых хотя бы один sidecar соответствует фильтру.<br>Файлы без sidecar всегда скрыты при активном фильтре.<br><tt>.*</tt> совпадает через переносы строк (re.DOTALL).<br>Без учёта регистра (re.IGNORECASE), включая символы с диакритикой.<br>Оставьте пустым для отображения всех файлов."
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:363
 msgid "Show orphan sidecar files (no matching image or video)"
-msgstr ""
-"Показать осиротевшие sidecar-файлы (без соответствующего изображения или "
-"видео)"
+msgstr "Показать осиротевшие sidecar-файлы (без соответствующего изображения или видео)"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:370
@@ -838,9 +586,7 @@ msgstr "Недопустимое имя"
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:633
 msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
-msgstr ""
-"Имя каталога может содержать только буквы, цифры, дефисы или знаки "
-"подчёркивания."
+msgstr "Имя каталога может содержать только буквы, цифры, дефисы или знаки подчёркивания."
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:639
@@ -860,8 +606,7 @@ msgstr "Нет каталогов"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:654
-msgid ""
-"There are no additional catalogs to delete (\"default\" cannot be deleted)."
+msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
 msgstr "Нет дополнительных каталогов для удаления («default» удалить нельзя)."
 
 # ==AUTO== Automatically translated
@@ -878,8 +623,7 @@ msgstr "Выберите каталог для удаления:"
 #: src/pbpicat/ui/main_window.py:663
 #, python-brace-format
 msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
-msgstr ""
-"Удалить каталог «{name}» со всеми настройками? Это действие нельзя отменить."
+msgstr "Удалить каталог «{name}» со всеми настройками? Это действие нельзя отменить."
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:671
@@ -901,60 +645,271 @@ msgstr "О программе PBPicat"
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:710
 #, python-brace-format
+msgid "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+msgstr "<b>PBPicat</b> {version}<br>Инструмент для переименования файлов изображений и видео с помощью структурированной схемы.<br><br>Поддерживаемые форматы: изображения (JPEG, PNG, HEIC, RAW…) и видео (MP4, MOV…),<br>с сопутствующими sidecar-файлами (XMP, DOP, PP3…)."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/schema_frame.py:88
+msgid "<b>Rename schema</b>"
+msgstr "<b>Схема переименования</b>"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/schema_frame.py:116
+msgid "Video marker position"
+msgstr "Позиция видеомаркера"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:50
+msgid "Number of fields:"
+msgstr "Количество полей:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:60
+msgid "Max history entries:"
+msgstr "Макс. записей истории:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:64
+msgid "Maximum number of values kept per field history and sidecar filter history"
+msgstr "Максимальное число значений, хранимых в истории каждого поля и фильтра sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:70
+msgid "<b>Field titles:</b>"
+msgstr "<b>Заголовки полей:</b>"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:97
+#, python-brace-format
+msgid "Field {n}:"
+msgstr "Поле {n}:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:117
+msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
+msgstr "Расширения sidecar-файлов (например .xmp, .prompt.txt):"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:126 src/pbpicat/ui/settings_dialog.py:579
+msgid ".ext or .name.ext"
+msgstr ".ext или .имя.ext"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:131 src/pbpicat/ui/settings_dialog.py:287
+#: src/pbpicat/ui/settings_dialog.py:387 src/pbpicat/ui/settings_dialog.py:584
+msgid "Add"
+msgstr "Добавить"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:144 src/pbpicat/ui/settings_dialog.py:300
+#: src/pbpicat/ui/settings_dialog.py:399
+msgid "Restore missing defaults"
+msgstr "Восстановить недостающие значения по умолчанию"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:145
+msgid "Add extensions from the global default list that are not yet in the list above"
+msgstr "Добавить расширения из глобального списка по умолчанию, которых ещё нет в списке выше"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:149
+msgid "Delete empty sidecar files when loading a directory"
+msgstr "Удалять пустые файлы sidecar при загрузке каталога"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:151
+msgid "Automatically delete zero-byte sidecar files (including orphans) when entering a directory"
+msgstr "Автоматически удалять файлы sidecar нулевого размера (включая осиротевшие) при входе в каталог"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:160
+msgid "Extension used when creating a new sidecar by double-clicking the sidecar column"
+msgstr "Расширение, используемое при создании нового sidecar двойным щелчком по колонке sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:162
+msgid "Default extension for new sidecar:"
+msgstr "Расширение по умолчанию для нового sidecar:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:185 src/pbpicat/ui/settings_dialog.py:332
+#: src/pbpicat/ui/settings_dialog.py:432 src/pbpicat/ui/settings_dialog.py:638
+msgid "Invalid extension"
+msgstr "Недопустимое расширение"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:186 src/pbpicat/ui/settings_dialog.py:639
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
+msgstr "«{ext}» — недопустимое расширение (например .xmp, .prompt.txt)."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
+#: src/pbpicat/ui/settings_dialog.py:455
+msgid "Restore defaults"
+msgstr "Восстановить значения по умолчанию"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:213 src/pbpicat/ui/settings_dialog.py:355
+#: src/pbpicat/ui/settings_dialog.py:455
+msgid "All default extensions are already in the list."
+msgstr "Все расширения по умолчанию уже есть в списке."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:233
 msgid ""
-"<b>PBPicat</b> {version}<br>Image and video file renaming tool using a "
-"structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) "
-"and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+"Maximum size of thumbnails displayed in the file list.\n"
+"A navigation restart is required for the change to take effect."
 msgstr ""
-"<b>PBPicat</b> {version}<br>Инструмент для переименования файлов изображений "
-"и видео с помощью структурированной схемы.<br><br>Поддерживаемые форматы: "
-"изображения (JPEG, PNG, HEIC, RAW…) и видео (MP4, MOV…),<br>с сопутствующими "
-"sidecar-файлами (XMP, DOP, PP3…)."
+"Максимальный размер миниатюр в списке файлов.\n"
+"Для применения изменения необходимо перезапустить навигацию."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:140
-msgid "Fit window  0"
-msgstr "По окну  0"
+#: src/pbpicat/ui/settings_dialog.py:248
+msgid "Max width:"
+msgstr "Макс. ширина:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:141
-msgid "Actual size (1:1)  1"
-msgstr "Реальный размер (1:1)  1"
+#: src/pbpicat/ui/settings_dialog.py:254
+msgid "Max height:"
+msgstr "Макс. высота:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:142
-msgid "Fit width  W"
-msgstr "По ширине  W"
+#: src/pbpicat/ui/settings_dialog.py:273
+msgid "Recognised image extensions (thumbnail + rename):"
+msgstr "Распознаваемые расширения изображений (миниатюра + переименование):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:143
-msgid "Fit height  H"
-msgstr "По высоте  H"
+#: src/pbpicat/ui/settings_dialog.py:301 src/pbpicat/ui/settings_dialog.py:400
+msgid "Add extensions from the built-in default list that are not yet in the list above"
+msgstr "Добавляет расширения из встроенного списка по умолчанию, которых ещё нет в списке выше"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:167
-msgid "Zoom in  +"
-msgstr "Увеличить  +"
+#: src/pbpicat/ui/settings_dialog.py:311
+msgid "Enlargement/reduction factor per click or double-click"
+msgstr "Коэффициент увеличения/уменьшения за один щелчок или двойной щелчок"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:168
-msgid "Zoom out  −"
-msgstr "Уменьшить  −"
+#: src/pbpicat/ui/settings_dialog.py:313
+msgid "Zoom step:"
+msgstr "Шаг масштаба:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:219
-msgid "Cannot load image."
-msgstr "Не удаётся загрузить изображение."
+#: src/pbpicat/ui/settings_dialog.py:319
+msgid "Maximum zoom allowed in the image viewer"
+msgstr "Максимально допустимый масштаб в просмотрщике изображений"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:317
-msgid " (max)"
-msgstr " (макс)"
+#: src/pbpicat/ui/settings_dialog.py:321
+msgid "Max zoom:"
+msgstr "Макс. масштаб:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/i18n.py:52
-msgid "language_name"
-msgstr "Русский"
+#: src/pbpicat/ui/settings_dialog.py:333
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
+msgstr "«{ext}» — недопустимое расширение (например .png, .heic)."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:373
+msgid "Recognised video extensions:"
+msgstr "Распознаваемые расширения видеофайлов:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:407
+msgid "<b>Video marker</b><br>Inserted among the name components at the position chosen in the schema.<br>No '_' in the value. Empty = no marker."
+msgstr "<b>Видеомаркер</b><br>Вставляется среди компонентов имени на позиции, выбранной в схеме.<br>Знак «_» в значении недопустим. Пусто = нет маркера."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:419
+msgid "e.g. VID  (empty = none)"
+msgstr "например VID  (пусто = нет)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:421
+msgid "Marker:"
+msgstr "Маркер:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:433
+#, python-brace-format
+msgid "'{ext}' is not a valid extension (e.g. .mp4)."
+msgstr "«{ext}» — недопустимое расширение (например .mp4)."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:478 src/pbpicat/ui/settings_dialog.py:614
+msgid "System default"
+msgstr "Системный язык"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:487 src/pbpicat/ui/settings_dialog.py:623
+msgid "Interface language:"
+msgstr "Язык интерфейса:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:490 src/pbpicat/ui/settings_dialog.py:626
+msgid "A restart is required for the language change to take effect."
+msgstr "Для применения смены языка необходим перезапуск программы."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:500
+msgid "Configuration"
+msgstr "Конфигурация"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:515
+msgid "Rename schema"
+msgstr "Схема переименования"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:516 src/pbpicat/ui/settings_dialog.py:555
+msgid "Sidecar extensions"
+msgstr "Расширения sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:517
+msgid "Images"
+msgstr "Изображения"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:518
+msgid "Video"
+msgstr "Видео"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:519
+msgid "Thumbnails"
+msgstr "Миниатюры"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:546
+msgid "Program settings"
+msgstr "Настройки программы"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:556
+msgid "Language"
+msgstr "Язык"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:569
+msgid "<b>Default sidecar extensions for new catalogs</b>"
+msgstr "<b>Расширения sidecar по умолчанию для новых каталогов</b>"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:570
+msgid "(e.g. .xmp, .dop, .prompt.txt)"
+msgstr "(например, .xmp, .dop, .prompt.txt)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:596
+msgid "Restore built-in defaults"
+msgstr "Восстановить встроенные значения по умолчанию"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:597
+msgid "Reset the list to the built-in default sidecar extensions"
+msgstr "Сбросить список до встроенных расширений sidecar по умолчанию"
 
 # ==AUTO== Automatically translated
 #~ msgid "Actual size (1:1)  Ctrl+1"
@@ -989,12 +944,5 @@ msgstr "Русский"
 #~ msgstr "Уменьшить"
 
 # ==AUTO== Automatically translated
-#~ msgid ""
-#~ "<b>PBPicat</b><br>Image and video file renaming tool using a structured "
-#~ "schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and "
-#~ "videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
-#~ msgstr ""
-#~ "<b>PBPicat</b><br>Инструмент для переименования файлов изображений и "
-#~ "видео с помощью структурированной схемы.<br><br>Поддерживаемые форматы: "
-#~ "изображения (JPEG, PNG, HEIC, RAW…) и видео (MP4, MOV…),<br>с "
-#~ "сопутствующими sidecar-файлами (XMP, DOP, PP3…)."
+#~ msgid "<b>PBPicat</b><br>Image and video file renaming tool using a structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+#~ msgstr "<b>PBPicat</b><br>Инструмент для переименования файлов изображений и видео с помощью структурированной схемы.<br><br>Поддерживаемые форматы: изображения (JPEG, PNG, HEIC, RAW…) и видео (MP4, MOV…),<br>с сопутствующими sidecar-файлами (XMP, DOP, PP3…)."
