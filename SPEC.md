@@ -27,12 +27,27 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 - New catalogs start with default settings and empty history.
 - Valid catalog names: letters, digits, hyphens, underscores only.
 
-**Menu (Catalog):**
+**Menus and keyboard shortcuts:**
+| Menu | Item | Shortcut |
+|------|------|----------|
+| File | Quit | Ctrl+Q |
+| Catalog | New catalog… | Ctrl+N |
+| Catalog | Delete catalog… | — |
+| View | Refresh | F5 |
+| Settings | Configuration… | — |
+| Settings | History… | — |
+| Settings | Program settings… | — |
+| Help | Keyboard shortcuts… | F1 |
+| Help | About | — |
+
+**Catalog menu behaviour:**
 - **New catalog…** — prompts for a name, creates the directory, switches to it.
 - **Delete catalog…** — picks an existing non-default catalog; if it is current, switches to `default` first.
 - Separator + dynamic list of all catalogs (checkmark on the active one) for one-click switching.
 
 **Window title:** Shows `[catalog_name]` after the app title when not on `"default"`.
+
+**About dialog:** displays the application version (via `QCoreApplication.applicationVersion()`).
 
 ## Configuration (`$XDG_CONFIG_HOME/pbpicat/<catalog>/settings.json`)
 | Key | Type | Default | Description |
@@ -126,16 +141,18 @@ Multi-selection (ExtendedSelection).
 **Renumber from 1**: renames all displayed files in-place (same directory), assigning sequential numbers starting from 1 according to the current schema's numeric field. Images and videos have separate counters. Requires a numeric field (`#`) in the schema. Uses two-phase rename (via temp names) to avoid circular conflicts. Result enters the undo stack like a regular rename. If all files are already correctly numbered, shows a status message without prompting.
 
 #### ImageViewer (`ui/image_viewer.py`)
-Non-modal window opened by double-clicking the preview column. Keyboard shortcuts:
+Non-modal window opened by double-clicking the preview column.
+Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | stretch | zoom label.
+Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 | Key | Action |
 |-----|--------|
-| Ctrl+1 | Actual size (1:1) |
-| Ctrl++ / Ctrl+= | Zoom in |
-| Ctrl+- | Zoom out |
-| Ctrl+0 | Fit window |
-| Ctrl+W | Fit width |
-| Ctrl+H | Fit height |
+| 0 | Fit window (default) |
+| 1 | Actual size (1:1) |
+| W | Fit width |
+| H | Fit height |
+| + / − | Zoom in / out (also numpad) |
 | ↑ / ↓ | Navigate prev/next image |
+| Del | Delete current image and sidecars |
 | Escape | Close window |
 
 ## Rename Logic (`src/renamer.py`)
@@ -182,13 +199,15 @@ Menu **Settings → Histories…**
 `src/pbpicat/i18n.py` — call `i18n.setup(app)` once before creating any window.
 - Uses `gettext` + a `QTranslator` bridge (`_GettextTranslator`).
 - `.mo` files in `src/pbpicat/locale/<lang>/LC_MESSAGES/pbpicat.mo`.
+- Locales: `en`, `fr`, `de`, `es`, `it`, `ru`, `vi`, `zh_CN`.
 - Language resolved: config `language` key → system env vars → `locale.getlocale()` → "en".
 - `available_languages()` scans `.mo` files; `language_name` msgid holds the native name.
 - All UI strings wrapped in `_()` (installed by `gettext.NullTranslations.install()`).
 
 ## Distribution (`pbpicat.spec`)
 PyInstaller one-file build; artifact named `PBPicat-<version>-<os>-<arch>`.
-`.mo` files bundled as datas. macOS builds as `.app` bundle.
+`.mo` files and all `resources/*.svg` bundled as datas. macOS builds as `.app` bundle.
+Version string: `tools/git_version.sh` (exact tag + clean tree → `x.y.z`, else `dev`).
 Build via: `make dist`
 
 ## File Structure
@@ -204,9 +223,11 @@ PBPicat/
     ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf
     ├── i18n.py            # gettext bootstrap
     ├── renamer.py         # pure logic (no Qt)
-    ├── locale/
-    │   ├── en/LC_MESSAGES/pbpicat.{po,mo}
-    │   └── fr/LC_MESSAGES/pbpicat.{po,mo}
+    ├── locale/            # en fr de es it ru vi zh_CN
+    │   └── <lang>/LC_MESSAGES/pbpicat.{po,mo}
+    ├── resources/
+    │   ├── pbpicat.svg
+    │   └── zoom_{fit,original,width,height,in,out}.svg
     └── ui/
         ├── main_window.py
         ├── schema_frame.py       # SchemaFrame: get_fields / set_fields / push_history / rebuild
