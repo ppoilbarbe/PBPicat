@@ -32,6 +32,10 @@ jobs:
         shell: bash -el {0}
         run: pip install -e .
 
+      - name: Compile translations
+        shell: bash -el {0}
+        run: make translate NOCONDA=1
+
       - name: Run test suite
         shell: bash -el {0}
         env:
@@ -84,9 +88,17 @@ jobs:
           activate-environment: pbpicat
           conda-remove-defaults: 'true'
 
+      - name: Compile translations
+        shell: bash -el {0}
+        run: |
+          LOCALE_DIR=src/pbpicat/locale
+          for lang in en fr de es it ru vi zh_CN; do
+            msgfmt "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.po" \
+                   -o "$LOCALE_DIR/$lang/LC_MESSAGES/pbpicat.mo"
+          done
+
       - name: Build with PyInstaller
-        # .mo files are committed; call PyInstaller directly to avoid GNU Make
-        # and gettext portability issues on Windows runners.
+        # Call PyInstaller directly to avoid GNU Make portability issues on Windows runners.
         shell: bash -el {0}
         env:
           # Use the tag name (strip leading 'v') on tag runs; fall back to 'dev'.
