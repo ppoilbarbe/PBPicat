@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pbpicat\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-01 17:22+0200\n"
+"Report-Msgid-Bugs-To: philippe@cardolan.net\n"
+"POT-Creation-Date: 2026-06-01 18:29+0200\n"
 "PO-Revision-Date: 2026-05-17 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language-Team: Italian\n"
@@ -23,93 +23,23 @@ msgid "language_name"
 msgstr "Italiano"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/dir_tree.py:105
-msgid "Open"
-msgstr "Apri"
+#: src/pbpicat/ui/schema_frame.py:88
+msgid "<b>Rename schema</b>"
+msgstr "<b>Schema di rinominazione</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:42
-msgid "Proposed template"
-msgstr "Modello proposto"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:46
-msgid "Detected template — confirm to apply to fields:"
-msgstr "Modello rilevato — confermare per applicare ai campi:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:158
-msgid "Preview"
-msgstr "Anteprima"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:158
-msgid "File name"
-msgstr "Nome file"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:158
-msgid "Sidecar"
-msgstr "Sidecar"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:346
-#, python-brace-format
-msgid "File name ({n})"
-msgstr "Nome file ({n})"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:514
-#: src/pbpicat/ui/file_list_widget.py:611
-msgid "Template"
-msgstr "Modello"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:515 src/pbpicat/ui/history_dialog.py:59
-#: src/pbpicat/ui/settings_dialog.py:137 src/pbpicat/ui/settings_dialog.py:293
-#: src/pbpicat/ui/settings_dialog.py:393 src/pbpicat/ui/settings_dialog.py:590
-msgid "Delete"
-msgstr "Elimina"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:570 src/pbpicat/ui/main_window.py:183
-#: src/pbpicat/ui/main_window.py:653
-msgid "Confirm deletion"
-msgstr "Conferma eliminazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:571 src/pbpicat/ui/main_window.py:184
-#, python-brace-format
-msgid ""
-"Permanently delete:\n"
-"{names}"
-msgstr ""
-"Eliminare definitivamente:\n"
-"{names}"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:591 src/pbpicat/ui/main_window.py:200
-msgid "Deletion error"
-msgstr "Errore di eliminazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:613
-#, python-brace-format
-msgid ""
-"Could not determine a template for '{name}'.\n"
-"No part of the file name matches any field history."
-msgstr ""
-"Impossibile determinare un modello per «{name}».\n"
-"Nessuna parte del nome file corrisponde alla cronologia di alcun campo."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:619 src/pbpicat/ui/history_dialog.py:151
 #: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
-#: src/pbpicat/ui/settings_dialog.py:94 src/pbpicat/ui/settings_dialog.py:96
-#: src/pbpicat/ui/settings_dialog.py:102
+#: src/pbpicat/ui/history_dialog.py:151 src/pbpicat/ui/settings_dialog.py:94
+#: src/pbpicat/ui/settings_dialog.py:96 src/pbpicat/ui/settings_dialog.py:102
+#: src/pbpicat/ui/file_list_widget.py:631
 #, python-brace-format
 msgid "Field {n}"
 msgstr "Campo {n}"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/schema_frame.py:116
+msgid "Video marker position"
+msgstr "Posizione del marcatore video"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/history_dialog.py:34
@@ -126,6 +56,13 @@ msgstr "▲ Sposta su"
 #: src/pbpicat/ui/history_dialog.py:53
 msgid "▼ Move down"
 msgstr "▼ Sposta giù"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/settings_dialog.py:137
+#: src/pbpicat/ui/settings_dialog.py:293 src/pbpicat/ui/settings_dialog.py:393
+#: src/pbpicat/ui/settings_dialog.py:590 src/pbpicat/ui/file_list_widget.py:526
+msgid "Delete"
+msgstr "Elimina"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/history_dialog.py:63
@@ -153,534 +90,9 @@ msgid "Sidecar filter"
 msgstr "Filtro sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:122
-msgid "Actual size (1:1)  Ctrl+1"
-msgstr "Dimensione reale (1:1)  Ctrl+1"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:123
-msgid "Zoom in  Ctrl++"
-msgstr "Ingrandisci  Ctrl++"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:124
-msgid "Zoom out  Ctrl+-"
-msgstr "Riduci  Ctrl+-"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:125
-msgid "Fit width  Ctrl+W"
-msgstr "Adatta larghezza  Ctrl+W"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:126
-msgid "Fit height  Ctrl+H"
-msgstr "Adatta altezza  Ctrl+H"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:127
-msgid "Fit window  Ctrl+0"
-msgstr "Adatta finestra  Ctrl+0"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:184
-msgid "Cannot load image."
-msgstr "Impossibile caricare l'immagine."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:282
-msgid " (max)"
-msgstr " (max)"
-
-#: src/pbpicat/ui/main_window.py:59
-msgid "Keyboard shortcuts"
-msgstr "Scorciatoie da tastiera"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:68 src/pbpicat/ui/main_window.py:150
-msgid "Close"
-msgstr "Chiudi"
-
-# ==AUTO== Automatically translated
-#. ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:90
-msgid "Main window"
-msgstr "Finestra principale"
-
-#. ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:91
-msgid "Image viewer"
-msgstr "Visualizzatore di immagini"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:94
-msgid "Delete selected file(s) and their sidecars"
-msgstr "Eliminare i file selezionati e i loro sidecar"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:98
-msgid "Actual size (1:1)"
-msgstr "Dimensione reale (1:1)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:99
-msgid "Zoom in"
-msgstr "Ingrandire"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:100
-msgid "Zoom out"
-msgstr "Ridurre"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:101
-msgid "Fit window"
-msgstr "Adatta alla finestra"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:102
-msgid "Fit width"
-msgstr "Adatta alla larghezza"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:103
-msgid "Fit height"
-msgstr "Adatta all'altezza"
-
-#: src/pbpicat/ui/main_window.py:104
-msgid "Navigate to previous / next image"
-msgstr "Naviga all'immagine precedente / successiva"
-
-#: src/pbpicat/ui/main_window.py:105
-msgid "Delete current image and its sidecars"
-msgstr "Eliminare l'immagine corrente e i suoi sidecar"
-
-#: src/pbpicat/ui/main_window.py:106
-msgid "Close image viewer"
-msgstr "Chiudere il visualizzatore di immagini"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:122 src/pbpicat/ui/main_window.py:353
-msgid "Orphan sidecars"
-msgstr "Sidecar orfani"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:140
-msgid "Delete selected"
-msgstr "Elimina selezionati"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:144
-msgid "Delete all"
-msgstr "Elimina tutti"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:162
-#, python-brace-format
-msgid "{n} orphan sidecar file(s):"
-msgstr "{n} file sidecar orfano/i:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:219
-msgid "&File"
-msgstr "&File"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:220
-msgid "&Quit"
-msgstr "&Esci"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:222
-msgid "&Catalog"
-msgstr "&Catalogo"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:223
-msgid "&New catalog…"
-msgstr "&Nuovo catalogo…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:224
-msgid "&Delete catalog…"
-msgstr "&Elimina catalogo…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:228
-msgid "&View"
-msgstr "&Visualizza"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:229
-msgid "&Refresh"
-msgstr "&Aggiorna"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:231
-msgid "&Settings"
-msgstr "&Impostazioni"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:232
-msgid "&Configuration…"
-msgstr "&Configurazione…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:233
-msgid "&History…"
-msgstr "&Cronologia…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:235
-msgid "&Program settings…"
-msgstr "&Impostazioni del programma…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:237
-msgid "&Help"
-msgstr "&Aiuto"
-
-#: src/pbpicat/ui/main_window.py:238
-msgid "&Keyboard shortcuts…"
-msgstr "&Scorciatoie da tastiera…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:240
-msgid "&About"
-msgstr "&Informazioni"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:261
-msgid "Ready."
-msgstr "Pronto."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:280
-msgid "Destination:"
-msgstr "Destinazione:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:282
-msgid "Destination root directory (DEST_ROOTDIR)…"
-msgstr "Directory radice di destinazione (DEST_ROOTDIR)…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:286
-msgid "Browse…"
-msgstr "Sfoglia…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:291
-msgid "Rename all"
-msgstr "Rinomina tutto"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:294
-msgid "Rename all files in the current directory according to the schema"
-msgstr "Rinomina tutti i file della directory corrente secondo lo schema"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:298
-msgid "Renumber from 1"
-msgstr "Rinumera da 1"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:301
-msgid "Renumber all files in the current directory starting from 1"
-msgstr "Rinumera tutti i file della directory corrente a partire da 1"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:310
-msgid "Undo last rename"
-msgstr "Annulla ultima rinominazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:311
-msgid "Undo last rename (restores files to their original location)"
-msgstr ""
-"Annulla l'ultima rinominazione (ripristina i file nella posizione originale)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:318
-msgid "Sort by date"
-msgstr "Ordina per data"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:319
-msgid "Sort files by modification date (unchecked: sort by name)"
-msgstr "Ordina i file per data di modifica (non selezionato: ordina per nome)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:324
-msgid "Reverse sort"
-msgstr "Ordinamento inverso"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:325
-msgid "Reverse the sort order"
-msgstr "Inverti l'ordine di ordinamento"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:334
-msgid "Sidecar filter…"
-msgstr "Filtro sidecar…"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:337
-msgid ""
-"<b>Sidecar content filter</b><br>Python regular expression applied to the "
-"<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
-"whose content matches are shown.<br>Files with no sidecar are always hidden "
-"when a filter is active.<br><tt>.*</tt> matches across line breaks "
-"(re.DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented "
-"characters.<br>Leave empty to show all files."
-msgstr ""
-"<b>Filtro contenuto sidecar</b><br>Espressione regolare Python applicata al "
-"<i>contenuto</i> dei file sidecar.<br>Vengono mostrati solo i file con "
-"almeno un sidecar corrispondente.<br>I file senza sidecar sono sempre "
-"nascosti quando un filtro è attivo.<br><tt>.*</tt> corrisponde ai ritorni a "
-"capo (re.DOTALL).<br>Senza distinzione maiuscole/minuscole (re.IGNORECASE), "
-"inclusi caratteri accentati.<br>Lasciare vuoto per mostrare tutti i file."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:354
-msgid "Show orphan sidecar files (no matching image or video)"
-msgstr ""
-"Mostra i file sidecar orfani (nessuna immagine o video corrispondente)"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:361
-msgid "Rename selection"
-msgstr "Rinomina selezione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:362
-msgid "Rename selected files according to the schema"
-msgstr "Rinomina i file selezionati secondo lo schema"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:375
-msgid "Choose destination directory"
-msgstr "Scegli directory di destinazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:452
-msgid "No file selected."
-msgstr "Nessun file selezionato."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:459
-msgid "No files to rename in the current directory."
-msgstr "Nessun file da rinominare nella directory corrente."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:463
-msgid "Confirm rename"
-msgstr "Conferma rinominazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:464
-#, python-brace-format
-msgid "Rename {n} file(s) according to the current schema?"
-msgstr "Rinominare {n} file secondo lo schema corrente?"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:486 src/pbpicat/ui/main_window.py:502
-#: src/pbpicat/ui/main_window.py:531
-msgid "Rename error"
-msgstr "Errore di rinominazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:489
-msgid "Files are already correctly numbered."
-msgstr "I file sono già numerati correttamente."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:493
-msgid "Confirm renumber"
-msgstr "Conferma rinumerazione"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:494
-#, python-brace-format
-msgid "Renumber {n} file(s) starting from 1?"
-msgstr "Rinumerare {n} file a partire da 1?"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:503 src/pbpicat/ui/main_window.py:532
-msgid "Error: rename cancelled."
-msgstr "Errore: rinominazione annullata."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:507
-#, python-brace-format
-msgid "{n} file(s) renumbered successfully."
-msgstr "{n} file rinumerato/i con successo."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:513
-msgid "Missing destination"
-msgstr "Destinazione mancante"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:513
-msgid "Please specify a destination directory."
-msgstr "Specificare una directory di destinazione."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:543
-#, python-brace-format
-msgid "{n} file(s) renamed successfully."
-msgstr "{n} file rinominato/i con successo."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:557
-msgid "Undo error"
-msgstr "Errore durante l'annullamento"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:558
-msgid "Error: undo failed."
-msgstr "Errore: annullamento non riuscito."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:562
-msgid "Last rename undone."
-msgstr "Ultima rinominazione annullata."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:571
-msgid "Settings saved."
-msgstr "Impostazioni salvate."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:576
-msgid "Program settings saved."
-msgstr "Impostazioni del programma salvate."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:583
-msgid "History saved."
-msgstr "Cronologia salvata."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:587
-msgid "Template applied from history."
-msgstr "Modello applicato dalla cronologia."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:596
-msgid "PBPicat — Image & Video File Renamer"
-msgstr "PBPicat — Rinominatore di file immagine e video"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:598
-#, python-brace-format
-msgid "PBPicat — Image & Video File Renamer [{catalog}]"
-msgstr "PBPicat — Rinominatore di file immagine e video [{catalog}]"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:613
-msgid "New catalog"
-msgstr "Nuovo catalogo"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:613
-msgid "Catalog name (letters, digits, hyphens, underscores):"
-msgstr "Nome catalogo (lettere, cifre, trattini, underscore):"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:623
-msgid "Invalid name"
-msgstr "Nome non valido"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:624
-msgid ""
-"Catalog name may only contain letters, digits, hyphens, or underscores."
-msgstr ""
-"Il nome del catalogo può contenere solo lettere, cifre, trattini o "
-"underscore."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:630
-msgid "Already exists"
-msgstr "Già esistente"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:631
-#, python-brace-format
-msgid "A catalog named \"{name}\" already exists."
-msgstr "Esiste già un catalogo con il nome «{name}»."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:644
-msgid "No catalogs"
-msgstr "Nessun catalogo"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:645
-msgid ""
-"There are no additional catalogs to delete (\"default\" cannot be deleted)."
-msgstr ""
-"Non ci sono altri cataloghi da eliminare («default» non può essere "
-"eliminato)."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:648
-msgid "Delete catalog"
-msgstr "Elimina catalogo"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:648
-msgid "Select catalog to delete:"
-msgstr "Selezionare il catalogo da eliminare:"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:654
-#, python-brace-format
-msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
-msgstr ""
-"Eliminare il catalogo «{name}» e tutte le sue impostazioni? Questa "
-"operazione non può essere annullata."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:662
-#, python-brace-format
-msgid "Catalog \"{name}\" deleted."
-msgstr "Catalogo «{name}» eliminato."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:685
-#, python-brace-format
-msgid "Switched to catalog \"{name}\"."
-msgstr "Passato al catalogo «{name}»."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:698
-msgid "About PBPicat"
-msgstr "Informazioni su PBPicat"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:700
-msgid ""
-"<b>PBPicat</b><br>Image and video file renaming tool using a structured "
-"schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos "
-"(MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
-msgstr ""
-"<b>PBPicat</b><br>Strumento per rinominare file immagine e video tramite uno"
-" schema strutturato.<br><br>Formati supportati: immagini (JPEG, PNG, HEIC, "
-"RAW…) e video (MP4, MOV…),<br>con file sidecar associati (XMP, DOP, PP3…)."
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:88
-msgid "<b>Rename schema</b>"
-msgstr "<b>Schema di rinominazione</b>"
-
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:116
-msgid "Video marker position"
-msgstr "Posizione del marcatore video"
+#: src/pbpicat/ui/dir_tree.py:105
+msgid "Open"
+msgstr "Apri"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/settings_dialog.py:50
@@ -823,8 +235,8 @@ msgid ""
 "Add extensions from the built-in default list that are not yet in the list "
 "above"
 msgstr ""
-"Aggiunge le estensioni dell'elenco predefinito integrato che non sono ancora"
-" presenti nell'elenco sopra"
+"Aggiunge le estensioni dell'elenco predefinito integrato che non sono ancora "
+"presenti nell'elenco sopra"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/settings_dialog.py:311
@@ -863,8 +275,8 @@ msgid ""
 "<b>Video marker</b><br>Inserted among the name components at the position "
 "chosen in the schema.<br>No '_' in the value. Empty = no marker."
 msgstr ""
-"<b>Marcatore video</b><br>Inserito tra i componenti del nome nella posizione"
-" scelta nello schema.<br>Nessun «_» nel valore. Vuoto = nessun marcatore."
+"<b>Marcatore video</b><br>Inserito tra i componenti del nome nella posizione "
+"scelta nello schema.<br>Nessun «_» nel valore. Vuoto = nessun marcatore."
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/settings_dialog.py:419
@@ -956,3 +368,606 @@ msgstr "Ripristina i valori predefiniti integrati"
 #: src/pbpicat/ui/settings_dialog.py:597
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "Reimposta l'elenco con le estensioni sidecar predefinite integrate"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:122
+msgid "Actual size (1:1)  Ctrl+1"
+msgstr "Dimensione reale (1:1)  Ctrl+1"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:123
+msgid "Zoom in  Ctrl++"
+msgstr "Ingrandisci  Ctrl++"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:124
+msgid "Zoom out  Ctrl+-"
+msgstr "Riduci  Ctrl+-"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:125
+msgid "Fit width  Ctrl+W"
+msgstr "Adatta larghezza  Ctrl+W"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:126
+msgid "Fit height  Ctrl+H"
+msgstr "Adatta altezza  Ctrl+H"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:127
+msgid "Fit window  Ctrl+0"
+msgstr "Adatta finestra  Ctrl+0"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:184
+msgid "Cannot load image."
+msgstr "Impossibile caricare l'immagine."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/image_viewer.py:282
+msgid " (max)"
+msgstr " (max)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:42
+msgid "Proposed template"
+msgstr "Modello proposto"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:46
+msgid "Detected template — confirm to apply to fields:"
+msgstr "Modello rilevato — confermare per applicare ai campi:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:158
+msgid "Preview"
+msgstr "Anteprima"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:158
+msgid "File name"
+msgstr "Nome file"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:158
+msgid "Sidecar"
+msgstr "Sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:357
+#, python-brace-format
+msgid "File name ({n})"
+msgstr "Nome file ({n})"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:525
+#: src/pbpicat/ui/file_list_widget.py:623
+msgid "Template"
+msgstr "Modello"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:582 src/pbpicat/ui/main_window.py:189
+#: src/pbpicat/ui/main_window.py:661
+msgid "Confirm deletion"
+msgstr "Conferma eliminazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:583 src/pbpicat/ui/main_window.py:190
+#, python-brace-format
+msgid ""
+"Permanently delete:\n"
+"{names}"
+msgstr ""
+"Eliminare definitivamente:\n"
+"{names}"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:603 src/pbpicat/ui/main_window.py:206
+msgid "Deletion error"
+msgstr "Errore di eliminazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/file_list_widget.py:625
+#, python-brace-format
+msgid ""
+"Could not determine a template for '{name}'.\n"
+"No part of the file name matches any field history."
+msgstr ""
+"Impossibile determinare un modello per «{name}».\n"
+"Nessuna parte del nome file corrisponde alla cronologia di alcun campo."
+
+#: src/pbpicat/ui/main_window.py:60
+msgid "Keyboard shortcuts"
+msgstr "Scorciatoie da tastiera"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:69 src/pbpicat/ui/main_window.py:156
+msgid "Close"
+msgstr "Chiudi"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:91
+msgid "Main window"
+msgstr "Finestra principale"
+
+#: src/pbpicat/ui/main_window.py:92
+msgid "Image viewer"
+msgstr "Visualizzatore di immagini"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:96
+msgid "Refresh"
+msgstr "Aggiorna"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:97
+msgid "Delete selected file(s) and their sidecars"
+msgstr "Eliminare i file selezionati e i loro sidecar"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:103
+msgid "Actual size (1:1)"
+msgstr "Dimensione reale (1:1)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:104
+msgid "Zoom in"
+msgstr "Ingrandire"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:105
+msgid "Zoom out"
+msgstr "Ridurre"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:106
+msgid "Fit window"
+msgstr "Adatta alla finestra"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:107
+msgid "Fit width"
+msgstr "Adatta alla larghezza"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:108
+msgid "Fit height"
+msgstr "Adatta all'altezza"
+
+#: src/pbpicat/ui/main_window.py:109
+msgid "Navigate to previous / next image"
+msgstr "Naviga all'immagine precedente / successiva"
+
+#: src/pbpicat/ui/main_window.py:110
+msgid "Delete current image and its sidecars"
+msgstr "Eliminare l'immagine corrente e i suoi sidecar"
+
+#: src/pbpicat/ui/main_window.py:111
+msgid "Close image viewer"
+msgstr "Chiudere il visualizzatore di immagini"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:128 src/pbpicat/ui/main_window.py:361
+msgid "Orphan sidecars"
+msgstr "Sidecar orfani"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:146
+msgid "Delete selected"
+msgstr "Elimina selezionati"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:150
+msgid "Delete all"
+msgstr "Elimina tutti"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:168
+#, python-brace-format
+msgid "{n} orphan sidecar file(s):"
+msgstr "{n} file sidecar orfano/i:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:225
+msgid "&File"
+msgstr "&File"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:226
+msgid "&Quit"
+msgstr "&Esci"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:228
+msgid "&Catalog"
+msgstr "&Catalogo"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:229
+msgid "&New catalog…"
+msgstr "&Nuovo catalogo…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:230
+msgid "&Delete catalog…"
+msgstr "&Elimina catalogo…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:234
+msgid "&View"
+msgstr "&Visualizza"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:235
+msgid "&Refresh"
+msgstr "&Aggiorna"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:237
+msgid "&Settings"
+msgstr "&Impostazioni"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:238
+msgid "&Configuration…"
+msgstr "&Configurazione…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:239
+msgid "&History…"
+msgstr "&Cronologia…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:241
+msgid "&Program settings…"
+msgstr "&Impostazioni del programma…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:243
+msgid "&Help"
+msgstr "&Aiuto"
+
+#: src/pbpicat/ui/main_window.py:244
+msgid "&Keyboard shortcuts…"
+msgstr "&Scorciatoie da tastiera…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:248
+msgid "&About"
+msgstr "&Informazioni"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:269
+msgid "Ready."
+msgstr "Pronto."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:288
+msgid "Destination:"
+msgstr "Destinazione:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:290
+msgid "Destination root directory (DEST_ROOTDIR)…"
+msgstr "Directory radice di destinazione (DEST_ROOTDIR)…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:294
+msgid "Browse…"
+msgstr "Sfoglia…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:299
+msgid "Rename all"
+msgstr "Rinomina tutto"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:302
+msgid "Rename all files in the current directory according to the schema"
+msgstr "Rinomina tutti i file della directory corrente secondo lo schema"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:306
+msgid "Renumber from 1"
+msgstr "Rinumera da 1"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:309
+msgid "Renumber all files in the current directory starting from 1"
+msgstr "Rinumera tutti i file della directory corrente a partire da 1"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:318
+msgid "Undo last rename"
+msgstr "Annulla ultima rinominazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:319
+msgid "Undo last rename (restores files to their original location)"
+msgstr ""
+"Annulla l'ultima rinominazione (ripristina i file nella posizione originale)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:326
+msgid "Sort by date"
+msgstr "Ordina per data"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:327
+msgid "Sort files by modification date (unchecked: sort by name)"
+msgstr "Ordina i file per data di modifica (non selezionato: ordina per nome)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:332
+msgid "Reverse sort"
+msgstr "Ordinamento inverso"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:333
+msgid "Reverse the sort order"
+msgstr "Inverti l'ordine di ordinamento"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:342
+msgid "Sidecar filter…"
+msgstr "Filtro sidecar…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:345
+msgid ""
+"<b>Sidecar content filter</b><br>Python regular expression applied to the "
+"<i>content</i> of sidecar files.<br>Only files with at least one sidecar "
+"whose content matches are shown.<br>Files with no sidecar are always hidden "
+"when a filter is active.<br><tt>.*</tt> matches across line breaks (re."
+"DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters."
+"<br>Leave empty to show all files."
+msgstr ""
+"<b>Filtro contenuto sidecar</b><br>Espressione regolare Python applicata al "
+"<i>contenuto</i> dei file sidecar.<br>Vengono mostrati solo i file con "
+"almeno un sidecar corrispondente.<br>I file senza sidecar sono sempre "
+"nascosti quando un filtro è attivo.<br><tt>.*</tt> corrisponde ai ritorni a "
+"capo (re.DOTALL).<br>Senza distinzione maiuscole/minuscole (re.IGNORECASE), "
+"inclusi caratteri accentati.<br>Lasciare vuoto per mostrare tutti i file."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:362
+msgid "Show orphan sidecar files (no matching image or video)"
+msgstr "Mostra i file sidecar orfani (nessuna immagine o video corrispondente)"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:369
+msgid "Rename selection"
+msgstr "Rinomina selezione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:370
+msgid "Rename selected files according to the schema"
+msgstr "Rinomina i file selezionati secondo lo schema"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:383
+msgid "Choose destination directory"
+msgstr "Scegli directory di destinazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:460
+msgid "No file selected."
+msgstr "Nessun file selezionato."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:467
+msgid "No files to rename in the current directory."
+msgstr "Nessun file da rinominare nella directory corrente."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:471
+msgid "Confirm rename"
+msgstr "Conferma rinominazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:472
+#, python-brace-format
+msgid "Rename {n} file(s) according to the current schema?"
+msgstr "Rinominare {n} file secondo lo schema corrente?"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:494 src/pbpicat/ui/main_window.py:510
+#: src/pbpicat/ui/main_window.py:539
+msgid "Rename error"
+msgstr "Errore di rinominazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:497
+msgid "Files are already correctly numbered."
+msgstr "I file sono già numerati correttamente."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:501
+msgid "Confirm renumber"
+msgstr "Conferma rinumerazione"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:502
+#, python-brace-format
+msgid "Renumber {n} file(s) starting from 1?"
+msgstr "Rinumerare {n} file a partire da 1?"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:511 src/pbpicat/ui/main_window.py:540
+msgid "Error: rename cancelled."
+msgstr "Errore: rinominazione annullata."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:515
+#, python-brace-format
+msgid "{n} file(s) renumbered successfully."
+msgstr "{n} file rinumerato/i con successo."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:521
+msgid "Missing destination"
+msgstr "Destinazione mancante"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:521
+msgid "Please specify a destination directory."
+msgstr "Specificare una directory di destinazione."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:551
+#, python-brace-format
+msgid "{n} file(s) renamed successfully."
+msgstr "{n} file rinominato/i con successo."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:565
+msgid "Undo error"
+msgstr "Errore durante l'annullamento"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:566
+msgid "Error: undo failed."
+msgstr "Errore: annullamento non riuscito."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:570
+msgid "Last rename undone."
+msgstr "Ultima rinominazione annullata."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:579
+msgid "Settings saved."
+msgstr "Impostazioni salvate."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:584
+msgid "Program settings saved."
+msgstr "Impostazioni del programma salvate."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:591
+msgid "History saved."
+msgstr "Cronologia salvata."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:595
+msgid "Template applied from history."
+msgstr "Modello applicato dalla cronologia."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:604
+msgid "PBPicat — Image & Video File Renamer"
+msgstr "PBPicat — Rinominatore di file immagine e video"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:606
+#, python-brace-format
+msgid "PBPicat — Image & Video File Renamer [{catalog}]"
+msgstr "PBPicat — Rinominatore di file immagine e video [{catalog}]"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:621
+msgid "New catalog"
+msgstr "Nuovo catalogo"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:621
+msgid "Catalog name (letters, digits, hyphens, underscores):"
+msgstr "Nome catalogo (lettere, cifre, trattini, underscore):"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:631
+msgid "Invalid name"
+msgstr "Nome non valido"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:632
+msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
+msgstr ""
+"Il nome del catalogo può contenere solo lettere, cifre, trattini o "
+"underscore."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:638
+msgid "Already exists"
+msgstr "Già esistente"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:639
+#, python-brace-format
+msgid "A catalog named \"{name}\" already exists."
+msgstr "Esiste già un catalogo con il nome «{name}»."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:652
+msgid "No catalogs"
+msgstr "Nessun catalogo"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:653
+msgid ""
+"There are no additional catalogs to delete (\"default\" cannot be deleted)."
+msgstr ""
+"Non ci sono altri cataloghi da eliminare («default» non può essere "
+"eliminato)."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:656
+msgid "Delete catalog"
+msgstr "Elimina catalogo"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:656
+msgid "Select catalog to delete:"
+msgstr "Selezionare il catalogo da eliminare:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:662
+#, python-brace-format
+msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
+msgstr ""
+"Eliminare il catalogo «{name}» e tutte le sue impostazioni? Questa "
+"operazione non può essere annullata."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:670
+#, python-brace-format
+msgid "Catalog \"{name}\" deleted."
+msgstr "Catalogo «{name}» eliminato."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:693
+#, python-brace-format
+msgid "Switched to catalog \"{name}\"."
+msgstr "Passato al catalogo «{name}»."
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:707
+msgid "About PBPicat"
+msgstr "Informazioni su PBPicat"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:709
+#, python-brace-format
+msgid ""
+"<b>PBPicat</b> {version}<br>Image and video file renaming tool using a "
+"structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) "
+"and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+msgstr ""
+"<b>PBPicat</b> {version}<br>"
+"Strumento per rinominare file immagine e video tramite uno schema strutturato.<br>"
+"<br>"
+"Formati supportati: immagini (JPEG, PNG, HEIC, RAW…) e video (MP4, MOV…),<br>"
+"con file sidecar associati (XMP, DOP, PP3…)."
+
+# ==AUTO== Automatically translated
+#~ msgid ""
+#~ "<b>PBPicat</b><br>Image and video file renaming tool using a structured "
+#~ "schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and "
+#~ "videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
+#~ msgstr ""
+#~ "<b>PBPicat</b><br>Strumento per rinominare file immagine e video tramite "
+#~ "uno schema strutturato.<br><br>Formati supportati: immagini (JPEG, PNG, "
+#~ "HEIC, RAW…) e video (MP4, MOV…),<br>con file sidecar associati (XMP, DOP, "
+#~ "PP3…)."

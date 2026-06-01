@@ -1,7 +1,8 @@
 import re
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -92,6 +93,7 @@ class _KeyboardShortcutsDialog(QDialog):
 
         main_rows = "".join(
             [
+                row("F5", _("Refresh")),
                 row("Del", _("Delete selected file(s) and their sidecars")),
             ]
         )
@@ -221,16 +223,18 @@ class MainWindow(QMainWindow):
         mb = self.menuBar()
 
         file_menu = mb.addMenu(_("&File"))
-        file_menu.addAction(_("&Quit"), self.close)
+        file_menu.addAction(_("&Quit"), self.close).setShortcut(QKeySequence.StandardKey.Quit)
 
         self._catalog_menu = mb.addMenu(_("&Catalog"))
-        self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog)
+        self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog).setShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_N)
+        )
         self._catalog_menu.addAction(_("&Delete catalog…"), self._delete_catalog_action)
         self._catalog_menu.addSeparator()
         self._catalog_menu.aboutToShow.connect(self._populate_catalog_list)
 
         view_menu = mb.addMenu(_("&View"))
-        view_menu.addAction(_("&Refresh"), self._refresh)
+        view_menu.addAction(_("&Refresh"), self._refresh).setShortcut(QKeySequence(Qt.Key.Key_F5))
 
         settings_menu = mb.addMenu(_("&Settings"))
         settings_menu.addAction(_("&Configuration…"), self._open_settings)
@@ -239,7 +243,9 @@ class MainWindow(QMainWindow):
         settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
 
         help_menu = mb.addMenu(_("&Help"))
-        help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts)
+        help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts).setShortcut(
+            QKeySequence(Qt.Key.Key_F1)
+        )
         help_menu.addSeparator()
         help_menu.addAction(_("&About"), self._about)
 
@@ -697,12 +703,13 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _about(self) -> None:
+        version = QCoreApplication.applicationVersion()
         QMessageBox.about(
             self,
             _("About PBPicat"),
             _(
-                "<b>PBPicat</b><br>Image and video file renaming tool using a structured schema."
+                "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema."
                 "<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),"
                 "<br>with associated sidecar files (XMP, DOP, PP3…)."
-            ),
+            ).format(version=version),
         )
