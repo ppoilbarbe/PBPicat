@@ -34,7 +34,7 @@ jobs:
 
       - name: Compile translations
         shell: bash -el {0}
-        run: make compile-mo NOCONDA=1
+        run: make compile-mo
 
       - name: Run test suite
         shell: bash -el {0}
@@ -90,7 +90,7 @@ jobs:
 
       - name: Compile translations
         shell: bash -el {0}
-        run: make compile-mo NOCONDA=1
+        run: make compile-mo
 
       - name: Build with PyInstaller
         # Call PyInstaller directly to avoid GNU Make portability issues on Windows runners.

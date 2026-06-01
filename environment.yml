@@ -21,5 +21,7 @@ dependencies:
   - gh
   # Packaging
   - pyinstaller
+  # i18n tools
+  - gettext
   # Dev install (editable — lancez ensuite : make install)
   - pip
