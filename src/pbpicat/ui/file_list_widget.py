@@ -121,6 +121,7 @@ class FileListWidget(QTableWidget):
         self._get_video_marker_pos: Callable[[], int] | None = None
         self._rebuilding: bool = False
         self._sidecars_pending_edit: set[Path] = set()
+        self._dir_tree = None
         self._apply_config(config)
         self._setup_table()
         self.cellDoubleClicked.connect(self._on_double_click)
@@ -132,6 +133,9 @@ class FileListWidget(QTableWidget):
         self._refresh_debounce.setSingleShot(True)
         self._refresh_debounce.setInterval(400)
         self._refresh_debounce.timeout.connect(self._refresh_preserve_selection)
+
+    def set_dir_tree(self, dir_tree) -> None:
+        self._dir_tree = dir_tree
 
     def set_schema_getter(self, getter: Callable[[], list[str]]) -> None:
         self._get_schema_fields = getter
@@ -149,6 +153,7 @@ class FileListWidget(QTableWidget):
         self._sidecar_exts: list[str] = config.get("sidecar_extensions", [".xmp", ".dop", ".pp3"])
         self._sidecar_new_extension: str = config.get("sidecar_new_extension", ".xmp")
         self._delete_empty_sidecars: bool = config.get("delete_empty_sidecars", True)
+        self._delete_list_max_files: int = config.get("delete_list_max_files", 12)
         self._schema_field_count: int = config.get("schema_field_count", 6)
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
@@ -467,12 +472,12 @@ class FileListWidget(QTableWidget):
             return
         rows = {idx.row() for idx in self.selectedIndexes()}
         if len(rows) != 1:
-            self._image_viewer.close()
+            self._image_viewer.show_message(_("Cannot display multiple files simultaneously."))
             return
         row = next(iter(rows))
         if row >= len(self._display_data):
             return
-        path, _ = self._display_data[row]
+        path, _sidecars = self._display_data[row]
         if path.suffix.lower() in self._image_exts:
             self._image_viewer.load_image(path)
 
@@ -508,9 +513,20 @@ class FileListWidget(QTableWidget):
         except Exception:  # noqa: BLE001
             return ""
 
+    def focusInEvent(self, event) -> None:  # noqa: N802
+        super().focusInEvent(event)
+        if self._display_data and not self.selectedIndexes():
+            self.selectRow(0)
+
     def keyPressEvent(self, event) -> None:  # noqa: N802
         if event.key() == Qt.Key_Delete:
             self._delete_selection()
+        elif event.key() in (Qt.Key_Left, Qt.Key_Right) and self._dir_tree is not None:
+            self._dir_tree.setFocus()
+        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            rows = {idx.row() for idx in self.selectedIndexes()}
+            if len(rows) == 1:
+                self._on_double_click(next(iter(rows)), self._NAME_COL)
         else:
             super().keyPressEvent(event)
 
@@ -576,11 +592,15 @@ class FileListWidget(QTableWidget):
             all_files.append(p)
             all_files.extend(scs)
 
-        names = "\n".join(f.name for f in all_files)
+        if len(all_files) > self._delete_list_max_files:
+            body = _("Permanently delete {count} files?").format(count=len(all_files))
+        else:
+            names = "\n".join(f.name for f in all_files)
+            body = _("Permanently delete:\n{names}").format(names=names)
         reply = QMessageBox.question(
             parent,
             _("Confirm deletion"),
-            _("Permanently delete:\n{names}").format(names=names),
+            body,
             QMessageBox.Yes | QMessageBox.No,
         )
         if reply != QMessageBox.Yes:

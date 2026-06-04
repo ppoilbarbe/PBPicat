@@ -31,6 +31,8 @@ class FilePanel(QFrame):
         layout.addWidget(splitter)
 
         self.dir_tree.directory_selected.connect(self.file_list.load_directory)
+        self.file_list.set_dir_tree(self.dir_tree)
+        self.dir_tree.set_file_list(self.file_list)
 
     def refresh(self) -> None:
         self.file_list.refresh()

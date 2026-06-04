@@ -12,6 +12,10 @@ class DirTree(QTreeView):
         super().__init__(parent)
         self._target_path: str | None = None
         self._scroll_path: str | None = None
+        self._file_list = None
+
+    def set_file_list(self, file_list) -> None:
+        self._file_list = file_list
 
         self._model = QFileSystemModel()
         self._model.setRootPath(QDir.rootPath())
@@ -106,6 +110,16 @@ class DirTree(QTreeView):
         action = menu.exec(self.viewport().mapToGlobal(pos))
         if action is open_action:
             QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+
+    def keyPressEvent(self, event) -> None:  # noqa: N802
+        if event.key() == Qt.Key_Right:
+            idx = self.currentIndex()
+            super().keyPressEvent(event)
+            # Transfer focus if Qt didn't navigate to a child (leaf, or unscanned dir with no loaded children yet)
+            if self.currentIndex() == idx and self._model.rowCount(idx) == 0 and self._file_list is not None:
+                self._file_list.setFocus()
+            return
+        super().keyPressEvent(event)
 
     def _on_current_changed(self, current, _previous):
         if current.isValid():

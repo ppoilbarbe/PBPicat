@@ -28,17 +28,20 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 - Valid catalog names: letters, digits, hyphens, underscores only.
 
 **Menus and keyboard shortcuts:**
-| Menu | Item | Shortcut |
-|------|------|----------|
-| File | Quit | Ctrl+Q |
-| Catalog | New catalog… | Ctrl+N |
-| Catalog | Delete catalog… | — |
-| View | Refresh | F5 |
-| Settings | Configuration… | — |
-| Settings | History… | — |
-| Settings | Program settings… | — |
-| Help | Keyboard shortcuts… | F1 |
-| Help | About | — |
+| Menu | Item | Shortcut | Status tip |
+|------|------|----------|------------|
+| File | Quit | Ctrl+Q | Quit the application |
+| Catalog | New catalog… | Ctrl+N | Create a new catalog |
+| Catalog | Delete catalog… | — | Delete a catalog |
+| Catalog | Duplicate catalog… | Ctrl+Shift+D | Duplicate the current catalog |
+| View | Refresh | F5 | Refresh |
+| Settings | Configuration… | Ctrl+, | Open catalog settings |
+| Settings | History… | — | Edit field and filter history |
+| Settings | Program settings… | Ctrl+Alt+, | Open program settings |
+| Help | Keyboard shortcuts… | F1 | Show keyboard shortcuts |
+| Help | About | — | About PBPicat |
+
+All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
 **Catalog menu behaviour:**
 - **New catalog…** — prompts for a name, creates the directory, switches to it.
@@ -112,15 +115,28 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 
 ### Zone 3 — Files (FilePanel)
 `QSplitter horizontal`:
-- **Left**: `QTreeView` with `QFileSystemModel` (directories only)
-- **Right**: `FileListWidget` (QTableWidget 3 columns)
+- **Left**: `DirTree` — `QTreeView` with `QFileSystemModel` (directories only)
+- **Right**: `FileListWidget` — QTableWidget 3 columns
+
+#### Keyboard navigation between panels
+| Location | Key | Effect |
+|----------|-----|--------|
+| FileListWidget | ← or → | Focus moves to DirTree |
+| FileListWidget | Return / Enter | Opens current file (image viewer or external player); no effect on sidecar column |
+| DirTree (leaf node) | → | Focus moves to FileListWidget; selects row 0 if nothing was selected |
+
+A leaf node is a directory with no loaded subdirectories (`rowCount == 0` after Qt processes the key). `QFileSystemModel` loads lazily, so this also handles unscanned directories in a single keypress.
+
+When `FileListWidget` receives focus and has no selected row, row 0 is selected automatically.
 
 #### FileListWidget
-| Col | Content | Double-click | Hover |
+| Col | Content | Double-click / Return | Hover |
 |-----|---------|--------------|-------|
-| Preview | Async thumbnail (QThread) or ▶ for video | Opens ImageViewer (images) | — |
-| Name | Filename | — | Tooltip: previewed final name (number = 1) |
+| Preview | Async thumbnail (QThread) or ▶ for video | Opens ImageViewer (images) or external player (videos) | — |
+| Name | Filename | Opens ImageViewer (images) or external player (videos) | Tooltip: previewed final name (number = 1) |
 | Sidecar | `●` + extensions if present, `○` otherwise | If sidecar exists: opens text sidecars (QDesktopServices). If no sidecar: opens `<stem><sidecar_new_extension>` in the default editor (file need not exist). | — |
+
+Return/Enter acts like a double-click on the Name column (ignores the sidecar logic).
 
 Multi-selection (ExtendedSelection).
 

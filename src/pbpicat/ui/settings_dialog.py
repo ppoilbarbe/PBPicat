@@ -67,6 +67,19 @@ class _SchemaTab(QWidget):
         history_row.addStretch()
         root.addLayout(history_row)
 
+        del_list_row = QHBoxLayout()
+        del_list_row.addWidget(QLabel(_("Max files listed in deletion confirmation:")))
+        self._del_list_spin = QSpinBox()
+        self._del_list_spin.setRange(1, 999)
+        self._del_list_spin.setValue(self._config.get("delete_list_max_files", DEFAULTS["delete_list_max_files"]))
+        self._del_list_spin.setToolTip(
+            _("When deleting more files than this threshold, show the count instead of listing each file name")
+        )
+        self._del_list_spin.setFixedWidth(60)
+        del_list_row.addWidget(self._del_list_spin)
+        del_list_row.addStretch()
+        root.addLayout(del_list_row)
+
         root.addWidget(QLabel(_("<b>Field titles:</b>")))
 
         scroll = QScrollArea()
@@ -103,6 +116,7 @@ class _SchemaTab(QWidget):
         config["schema_field_count"] = count
         config["schema_field_titles"] = titles
         config["history_max"] = self._history_spin.value()
+        config["delete_list_max_files"] = self._del_list_spin.value()
 
 
 class _SidecarTab(QWidget):

@@ -116,6 +116,7 @@ DEFAULTS = {
     "language": "",
     "sidecar_new_extension": ".xmp",
     "delete_empty_sidecars": True,
+    "delete_list_max_files": 12,
 }
 
 _DEFAULT_GLOBAL_CONFIG: dict = {
@@ -193,6 +194,17 @@ def delete_catalog(name: str) -> None:
     if name == "default":
         raise ValueError("The default catalog cannot be deleted.")
     shutil.rmtree(_BASE_DIR / name)
+
+
+def duplicate_catalog(source_name: str, dest_name: str) -> None:
+    """Copy all files from source_name catalog into a new dest_name catalog."""
+    src_dir = _BASE_DIR / source_name
+    dst_dir = _BASE_DIR / dest_name
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    for filename in ("settings.json", "history.json"):
+        src_file = src_dir / filename
+        if src_file.exists():
+            shutil.copy2(src_file, dst_dir / filename)
 
 
 def init_catalogs() -> None:

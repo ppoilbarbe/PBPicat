@@ -27,6 +27,7 @@ from pbpicat.config import (
     create_catalog,
     current_catalog,
     delete_catalog,
+    duplicate_catalog,
     list_catalogs,
     load_config,
     load_global_config,
@@ -94,7 +95,11 @@ class _KeyboardShortcutsDialog(QDialog):
         main_rows = "".join(
             [
                 row("F5", _("Refresh")),
+                row("Ctrl+,", _("Open catalog settings")),
+                row("Ctrl+Alt+,", _("Open program settings")),
                 row("Del", _("Delete selected file(s) and their sidecars")),
+                row("← / → (file list)", _("Move focus to the directory tree")),
+                row("→ (tree leaf)", _("Move focus to the file list")),
             ]
         )
 
@@ -222,31 +227,45 @@ class MainWindow(QMainWindow):
         mb = self.menuBar()
 
         file_menu = mb.addMenu(_("&File"))
-        file_menu.addAction(_("&Quit"), self.close).setShortcut(QKeySequence.StandardKey.Quit)
+        act = file_menu.addAction(_("&Quit"), self.close)
+        act.setShortcut(QKeySequence.StandardKey.Quit)
+        act.setStatusTip(_("Quit the application"))
 
         self._catalog_menu = mb.addMenu(_("&Catalog"))
-        self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog).setShortcut(
-            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_N)
-        )
-        self._catalog_menu.addAction(_("&Delete catalog…"), self._delete_catalog_action)
+        act = self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog)
+        act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_N))
+        act.setStatusTip(_("Create a new catalog"))
+        act = self._catalog_menu.addAction(_("&Delete catalog…"), self._delete_catalog_action)
+        act.setStatusTip(_("Delete a catalog"))
+        act = self._catalog_menu.addAction(_("D&uplicate catalog…"), self._duplicate_catalog_action)
+        act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_D))
+        act.setStatusTip(_("Duplicate the current catalog"))
         self._catalog_menu.addSeparator()
         self._catalog_menu.aboutToShow.connect(self._populate_catalog_list)
 
         view_menu = mb.addMenu(_("&View"))
-        view_menu.addAction(_("&Refresh"), self._refresh).setShortcut(QKeySequence(Qt.Key.Key_F5))
+        act = view_menu.addAction(_("&Refresh"), self._refresh)
+        act.setShortcut(QKeySequence(Qt.Key.Key_F5))
+        act.setStatusTip(_("Refresh"))
 
         settings_menu = mb.addMenu(_("&Settings"))
-        settings_menu.addAction(_("&Configuration…"), self._open_settings)
-        settings_menu.addAction(_("&History…"), self._open_history)
+        act = settings_menu.addAction(_("&Configuration…"), self._open_settings)
+        act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Comma))
+        act.setStatusTip(_("Open catalog settings"))
+        act = settings_menu.addAction(_("&History…"), self._open_history)
+        act.setStatusTip(_("Edit field and filter history"))
         settings_menu.addSeparator()
-        settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
+        act = settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
+        act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.ALT | Qt.Key.Key_Comma))
+        act.setStatusTip(_("Open program settings"))
 
         help_menu = mb.addMenu(_("&Help"))
-        help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts).setShortcut(
-            QKeySequence(Qt.Key.Key_F1)
-        )
+        act = help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts)
+        act.setShortcut(QKeySequence(Qt.Key.Key_F1))
+        act.setStatusTip(_("Show keyboard shortcuts"))
         help_menu.addSeparator()
-        help_menu.addAction(_("&About"), self._about)
+        act = help_menu.addAction(_("&About"), self._about)
+        act.setStatusTip(_("About PBPicat"))
 
     def _setup_ui(self) -> None:
         central = QWidget()
@@ -669,6 +688,35 @@ class MainWindow(QMainWindow):
             self._switch_to_catalog("default")
         delete_catalog(name)
         self._status.showMessage(_('Catalog "{name}" deleted.').format(name=name))
+
+    def _duplicate_catalog_action(self) -> None:
+        source = current_catalog()
+        name, ok = QInputDialog.getText(
+            self,
+            _("Duplicate catalog"),
+            _('New catalog name (copy of "{source}"):').format(source=source),
+        )
+        if not ok:
+            return
+        name = name.strip()
+        if not name:
+            return
+        if not re.fullmatch(r"[A-Za-z0-9_\-]+", name):
+            QMessageBox.warning(
+                self,
+                _("Invalid name"),
+                _("Catalog name may only contain letters, digits, hyphens, or underscores."),
+            )
+            return
+        if name in list_catalogs():
+            QMessageBox.warning(
+                self,
+                _("Already exists"),
+                _('A catalog named "{name}" already exists.').format(name=name),
+            )
+            return
+        duplicate_catalog(source, name)
+        self._status.showMessage(_('Catalog "{source}" duplicated as "{name}".').format(source=source, name=name))
 
     def _save_current_catalog_state(self) -> None:
         save_last_source_dir(self._file_panel.dir_tree.current_path())

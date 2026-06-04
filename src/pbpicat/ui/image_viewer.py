@@ -219,6 +219,12 @@ class ImageViewer(QWidget):
             self._label.setText(_("Cannot load image."))
         self._apply_zoom()
 
+    def show_message(self, text: str) -> None:
+        self._pixmap = QPixmap()
+        self._label.setPixmap(QPixmap())
+        self._label.setText(text)
+        self._zoom_label.setText("")
+
     # ------------------------------------------------------------------
     # Zoom actions
     # ------------------------------------------------------------------
