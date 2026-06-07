@@ -355,6 +355,156 @@ def test_init_catalogs_migrates_legacy_files(tmp_path, monkeypatch):
     monkeypatch.setattr(cfg, "_current_catalog", "default")
 
 
+# ---------------------------------------------------------------------------
+# load_current_catalog_name — OSError branch
+# ---------------------------------------------------------------------------
+
+
+def test_load_current_catalog_name_oserror(tmp_path, monkeypatch):
+    """Covers the except OSError: pass branch (lines 166-167)."""
+    import pathlib
+
+    base = tmp_path / "pbpicat"
+    base.mkdir()
+    conf = base / "catalog.conf"
+    conf.write_text("default")
+    monkeypatch.setattr(cfg, "_BASE_DIR", base)
+    monkeypatch.setattr(cfg, "_CATALOG_CONF", conf)
+
+    orig_read_text = pathlib.Path.read_text
+
+    def raise_on_conf(self, *args, **kwargs):
+        if str(self) == str(conf):
+            raise OSError("Permission denied")
+        return orig_read_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(pathlib.Path, "read_text", raise_on_conf)
+    assert cfg.load_current_catalog_name() == "default"
+
+
+# ---------------------------------------------------------------------------
+# create_catalog — with initial_config
+# ---------------------------------------------------------------------------
+
+
+def test_create_catalog_with_initial_config(patched_paths):
+    """Covers the initial_config branch (lines 188-191)."""
+    import json
+
+    cfg.create_catalog("new_cat", {"sidecar_extensions": [".xmp"]})
+    cat_dir = patched_paths.parent / "new_cat"
+    assert cat_dir.is_dir()
+    data = json.loads((cat_dir / "settings.json").read_text())
+    assert data["sidecar_extensions"] == [".xmp"]
+
+
+def test_create_catalog_does_not_overwrite_settings(patched_paths):
+    """When settings.json already exists the initial_config is ignored (line 189)."""
+    import json
+
+    cat_dir = patched_paths.parent / "existing"
+    cat_dir.mkdir()
+    (cat_dir / "settings.json").write_text('{"existing": true}')
+    cfg.create_catalog("existing", {"new_key": False})
+    data = json.loads((cat_dir / "settings.json").read_text())
+    assert "existing" in data
+    assert "new_key" not in data
+
+
+# ---------------------------------------------------------------------------
+# duplicate_catalog
+# ---------------------------------------------------------------------------
+
+
+def test_duplicate_catalog(patched_paths):
+    """Covers lines 202-208 (normal copy of settings + history)."""
+    import json
+
+    src = patched_paths.parent / "src"
+    src.mkdir()
+    (src / "settings.json").write_text('{"history_max": 42}')
+    (src / "history.json").write_text('{"k": ["v"]}')
+
+    cfg.duplicate_catalog("src", "dst")
+
+    dst = patched_paths.parent / "dst"
+    assert dst.is_dir()
+    assert json.loads((dst / "settings.json").read_text())["history_max"] == 42
+    assert json.loads((dst / "history.json").read_text()) == {"k": ["v"]}
+
+
+def test_duplicate_catalog_missing_files(patched_paths):
+    """Files that do not exist in the source are not created in dest (lines 205-208)."""
+    src = patched_paths.parent / "src2"
+    src.mkdir()
+    cfg.duplicate_catalog("src2", "dst2")
+    dst = patched_paths.parent / "dst2"
+    assert dst.is_dir()
+    assert not (dst / "settings.json").exists()
+    assert not (dst / "history.json").exists()
+
+
+# ---------------------------------------------------------------------------
+# load_global_config / save_global_config
+# ---------------------------------------------------------------------------
+
+
+def test_load_global_config_no_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", tmp_path / "global_settings.json")
+    result = cfg.load_global_config()
+    assert "default_sidecar_extensions" in result
+    assert result["language"] == ""
+
+
+def test_load_global_config_valid(tmp_path, monkeypatch):
+    import json
+
+    path = tmp_path / "global_settings.json"
+    path.write_text(json.dumps({"language": "fr", "default_sidecar_extensions": [".xmp"]}))
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", path)
+    result = cfg.load_global_config()
+    assert result["language"] == "fr"
+    assert result["default_sidecar_extensions"] == [".xmp"]
+
+
+def test_load_global_config_type_mismatch(tmp_path, monkeypatch):
+    import json
+
+    path = tmp_path / "global_settings.json"
+    path.write_text(json.dumps({"language": 123}))
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", path)
+    result = cfg.load_global_config()
+    assert result["language"] == ""
+
+
+def test_load_global_config_invalid_json(tmp_path, monkeypatch):
+    path = tmp_path / "global_settings.json"
+    path.write_text("bad json {{{")
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", path)
+    result = cfg.load_global_config()
+    assert "default_sidecar_extensions" in result
+
+
+def test_load_global_config_oserror(tmp_path, monkeypatch):
+    path = tmp_path / "global_settings.json"
+    path.mkdir()  # directory → OSError on open
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", path)
+    result = cfg.load_global_config()
+    assert "default_sidecar_extensions" in result
+
+
+def test_save_global_config(tmp_path, monkeypatch):
+    import json
+
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    path = tmp_path / "global_settings.json"
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", path)
+    cfg.save_global_config({"language": "es", "default_sidecar_extensions": [".dop"]})
+    data = json.loads(path.read_text())
+    assert data["language"] == "es"
+    assert data["default_sidecar_extensions"] == [".dop"]
+
+
 def test_init_catalogs_does_not_overwrite_existing(tmp_path, monkeypatch):
     base = tmp_path / "pbpicat"
     base.mkdir()

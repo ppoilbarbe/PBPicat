@@ -34,12 +34,18 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Catalog | New catalog… | Ctrl+N | Create a new catalog |
 | Catalog | Delete catalog… | — | Delete a catalog |
 | Catalog | Duplicate catalog… | Ctrl+Shift+D | Duplicate the current catalog |
+| Images | Open | Ctrl+O | Open selected file(s) with the default application |
+| Images | Open with… | Ctrl+Shift+O | Open selected file with a chosen application |
+| Images | Template | — | Infer rename template from the selected file name |
+| Images | Delete | Del | Permanently delete the selected file(s) |
 | View | Refresh | F5 | Refresh |
-| Settings | Configuration… | Ctrl+, | Open catalog settings |
+| Settings | Catalog configuration… | Ctrl+, | Open catalog settings |
 | Settings | History… | — | Edit field and filter history |
 | Settings | Program settings… | Ctrl+Alt+, | Open program settings |
 | Help | Keyboard shortcuts… | F1 | Show keyboard shortcuts |
 | Help | About | — | About PBPicat |
+
+Images menu actions are disabled when no file is selected; Template is disabled with multiple selection.
 
 All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
@@ -70,6 +76,8 @@ All actions set `setStatusTip()` so the status bar shows the description when ho
 | `language` | str | "" | Interface language code (e.g. "fr", "en"); empty = system default |
 | `sidecar_new_extension` | str | ".xmp" | Extension used when creating a new sidecar by double-clicking the sidecar column on a file with no sidecar |
 | `delete_empty_sidecars` | bool | true | If true, zero-byte sidecar files (including orphans) are deleted automatically when loading a directory |
+| `confirm_deletions` | bool | true | If true, show a confirmation dialog before deleting files (default Yes) |
+| `delete_list_max_files` | int | 12 | When deleting more files than this threshold, show the count instead of listing file names |
 
 ## Rename Schema
 - N editable combobox fields with per-field history
@@ -146,8 +154,12 @@ Multi-selection (ExtendedSelection).
 - Startup: the restored directory is scrolled into view in the dir tree.
 
 **Context menu (right-click on a file):**
+- **Open** (Ctrl+O): opens the file with the default application via `platform.open_default`.
+- **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio`/`.desktop` files; macOS: app name prompt; Windows: "Open as" dialog).
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
-- **Delete**: permanently deletes the file and its sidecars after confirmation. If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
+- **Delete** (Del): permanently deletes the file and its sidecars (confirmation dialog if `confirm_deletions=true`). If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
+
+Same actions available in the **Images** menu and in the **ImageViewer** toolbar (after zoom buttons, before stretch).
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`
@@ -158,8 +170,9 @@ Multi-selection (ExtendedSelection).
 
 #### ImageViewer (`ui/image_viewer.py`)
 Non-modal window opened by double-clicking the preview column.
-Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | stretch | zoom label.
+Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
+Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
 | Key | Action |
 |-----|--------|
 | 0 | Fit window (default) |
@@ -184,14 +197,19 @@ Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 ## Dialogs
 
 ### SettingsDialog (`ui/settings_dialog.py`)
-Menu **Settings → Preferences…** — tabs:
-- **Rename Schema**: QSpinBox (field count 1–12) + dynamic QFormLayout (titles)
-- **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported); QComboBox "Default extension for new sidecar" populated from the list
-- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer
+Menu **Settings → Catalog configuration…** (Ctrl+,) — tabs:
+- **Rename Schema**: QSpinBox (field count 1–12) + dynamic QFormLayout (titles); max history and max deletion list size
+- **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported); QComboBox "Default extension for new sidecar" populated from the list; "Delete empty sidecar files" checkbox
+- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer; "Confirm deletions" checkbox (default checked)
 - **Video**: QListWidget extensions + marker field
 - **Thumbnails**: max width/height
-- **Language**: QComboBox (system default + available locales from `.mo` files); restart required
 - OK → `save_config()` + `schema_frame.rebuild(config)`
+
+### GlobalSettingsDialog (`ui/settings_dialog.py`)
+Menu **Settings → Program settings…** (Ctrl+Alt+,) — tabs:
+- **Sidecar Extensions**: default extensions for new catalogs (stored in `global_settings.json`)
+- **Language**: QComboBox (system default + available locales); restart required
+- OK → `save_global_config()`
 
 ### HistoryDialog (`ui/history_dialog.py`)
 Menu **Settings → Histories…**
@@ -206,6 +224,7 @@ Menu **Settings → Histories…**
 | App config + `last_dest` | `$XDG_CONFIG_HOME/pbpicat/<catalog>/settings.json` |
 | Field histories + sidecar filter history | `$XDG_CONFIG_HOME/pbpicat/<catalog>/history.json` |
 | Window geometry, last source dir (`source/last_dir`), video marker pos (`schema/video_marker_pos`) | `$XDG_CONFIG_HOME/pbpicat/<catalog>/ui.conf` (QSettings IniFormat) |
+| Program-level settings (default sidecars, language) | `$XDG_CONFIG_HOME/pbpicat/global_settings.json` |
 
 `$XDG_CONFIG_HOME` defaults to `~/.config` if unset.
 `config.py` handles one-shot migration from legacy QSettings if `history.json` is absent.
@@ -245,13 +264,18 @@ PBPicat/
     ├── resources/
     │   ├── pbpicat.svg
     │   └── zoom_{fit,original,width,height,in,out}.svg
+    ├── platform/
+    │   ├── __init__.py       # dispatches to _linux / _macos / _windows at import time
+    │   ├── _linux.py         # XDG: xdg-mime, gio, gtk-launch, .desktop file parsing
+    │   ├── _macos.py         # subprocess open -a
+    │   └── _windows.py       # os.startfile / os.startfile(…, "openas")
     └── ui/
         ├── main_window.py
         ├── schema_frame.py       # SchemaFrame: get_fields / set_fields / push_history / rebuild
-        ├── settings_dialog.py    # SettingsDialog (6 tabs incl. Language)
+        ├── settings_dialog.py    # SettingsDialog (5 tabs) + GlobalSettingsDialog (2 tabs)
         ├── history_dialog.py     # HistoryDialog
         ├── file_panel.py
         ├── dir_tree.py
-        ├── file_list_widget.py   # FileListWidget + _ThumbnailWorker + Schema context menu
-        └── image_viewer.py
+        ├── file_list_widget.py   # FileListWidget + _ThumbnailWorker + Open/OpenWith/Template/Delete context menu
+        └── image_viewer.py       # Open/OpenWith/Template/Delete signals + toolbar buttons
 ```

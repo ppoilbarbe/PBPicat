@@ -12,7 +12,7 @@ try:
     import pillow_heif
 
     pillow_heif.register_heif_opener()
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
 
 
@@ -41,5 +41,5 @@ def main() -> None:
     sys.exit(app.exec())
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

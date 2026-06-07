@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  pbpicat\n"
 "Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-06-04 18:36+0200\n"
+"POT-Creation-Date: 2026-06-07 20:54+0200\n"
 "PO-Revision-Date: 2026-05-17 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language: vi\n"
@@ -24,70 +24,88 @@ msgid "language_name"
 msgstr "Tiếng Việt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/dir_tree.py:109
+#: src/pbpicat/platform/_linux.py:202 src/pbpicat/platform/_macos.py:20
+#: src/pbpicat/ui/file_list_widget.py:545 src/pbpicat/ui/image_viewer.py:191
+msgid "Open with"
+msgstr "Mở bằng"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/platform/_linux.py:206
+msgid "Choose an application:"
+msgstr "Chọn ứng dụng:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/platform/_macos.py:21
+msgid "Application name:"
+msgstr "Tên ứng dụng:"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/dir_tree.py:109 src/pbpicat/ui/file_list_widget.py:544
+#: src/pbpicat/ui/image_viewer.py:190
 msgid "Open"
 msgstr "Mở"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:42
+#: src/pbpicat/ui/file_list_widget.py:43
 msgid "Proposed template"
 msgstr "Mẫu đề xuất"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:46
+#: src/pbpicat/ui/file_list_widget.py:47
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Mẫu được phát hiện — xác nhận để áp dụng cho các trường:"
 
-#: src/pbpicat/ui/file_list_widget.py:54
+#: src/pbpicat/ui/file_list_widget.py:55
 msgid "(empty)"
 msgstr "(trống)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:163
+#: src/pbpicat/ui/file_list_widget.py:165
 msgid "Preview"
 msgstr "Xem trước"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:163
+#: src/pbpicat/ui/file_list_widget.py:165
 msgid "File name"
 msgstr "Tên tệp"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:163
+#: src/pbpicat/ui/file_list_widget.py:165
 msgid "Sidecar"
 msgstr "Sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:362
+#: src/pbpicat/ui/file_list_widget.py:364
 #, python-brace-format
 msgid "File name ({n})"
 msgstr "Tên tệp ({n})"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:475
+#: src/pbpicat/ui/file_list_widget.py:480
 msgid "Cannot display multiple files simultaneously."
 msgstr "Không thể hiển thị nhiều tệp cùng lúc."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:541
-#: src/pbpicat/ui/file_list_widget.py:643
+#: src/pbpicat/ui/file_list_widget.py:547
+#: src/pbpicat/ui/file_list_widget.py:671 src/pbpicat/ui/image_viewer.py:192
 msgid "Template"
 msgstr "Mẫu"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:542 src/pbpicat/ui/history_dialog.py:59
-#: src/pbpicat/ui/settings_dialog.py:151 src/pbpicat/ui/settings_dialog.py:307
-#: src/pbpicat/ui/settings_dialog.py:407 src/pbpicat/ui/settings_dialog.py:604
+#: src/pbpicat/ui/file_list_widget.py:548 src/pbpicat/ui/history_dialog.py:59
+#: src/pbpicat/ui/image_viewer.py:193 src/pbpicat/ui/settings_dialog.py:151
+#: src/pbpicat/ui/settings_dialog.py:307 src/pbpicat/ui/settings_dialog.py:413
+#: src/pbpicat/ui/settings_dialog.py:610
 msgid "Delete"
 msgstr "Xóa"
 
-#: src/pbpicat/ui/file_list_widget.py:596
+#: src/pbpicat/ui/file_list_widget.py:625
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Xóa vĩnh viễn {count} tệp?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:599 src/pbpicat/ui/main_window.py:194
+#: src/pbpicat/ui/file_list_widget.py:628 src/pbpicat/ui/main_window.py:194
 #, python-brace-format
 msgid ""
 "Permanently delete:\n"
@@ -97,18 +115,18 @@ msgstr ""
 "{names}"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:602 src/pbpicat/ui/main_window.py:193
-#: src/pbpicat/ui/main_window.py:681
+#: src/pbpicat/ui/file_list_widget.py:630 src/pbpicat/ui/main_window.py:193
+#: src/pbpicat/ui/main_window.py:722
 msgid "Confirm deletion"
 msgstr "Xác nhận xóa"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:623 src/pbpicat/ui/main_window.py:210
+#: src/pbpicat/ui/file_list_widget.py:651 src/pbpicat/ui/main_window.py:210
 msgid "Deletion error"
 msgstr "Lỗi xóa"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:645
+#: src/pbpicat/ui/file_list_widget.py:673
 #, python-brace-format
 msgid ""
 "Could not determine a template for '{name}'.\n"
@@ -118,7 +136,7 @@ msgstr ""
 "Không có phần nào của tên tệp khớp với lịch sử trường."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:651 src/pbpicat/ui/history_dialog.py:151
+#: src/pbpicat/ui/file_list_widget.py:679 src/pbpicat/ui/history_dialog.py:151
 #: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
 #: src/pbpicat/ui/settings_dialog.py:107 src/pbpicat/ui/settings_dialog.py:109
 #: src/pbpicat/ui/settings_dialog.py:115
@@ -168,42 +186,42 @@ msgid "Sidecar filter"
 msgstr "Bộ lọc sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:140
+#: src/pbpicat/ui/image_viewer.py:147
 msgid "Fit window  0"
 msgstr "Vừa cửa sổ  0"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:141
+#: src/pbpicat/ui/image_viewer.py:148
 msgid "Actual size (1:1)  1"
 msgstr "Kích thước thực (1:1)  1"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:142
+#: src/pbpicat/ui/image_viewer.py:149
 msgid "Fit width  W"
 msgstr "Vừa chiều rộng  W"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:143
+#: src/pbpicat/ui/image_viewer.py:150
 msgid "Fit height  H"
 msgstr "Vừa chiều cao  H"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:167
+#: src/pbpicat/ui/image_viewer.py:174
 msgid "Zoom in  +"
 msgstr "Phóng to  +"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:168
+#: src/pbpicat/ui/image_viewer.py:175
 msgid "Zoom out  −"
 msgstr "Thu nhỏ  −"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:219
+#: src/pbpicat/ui/image_viewer.py:246
 msgid "Cannot load image."
 msgstr "Không thể tải hình ảnh."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:323
+#: src/pbpicat/ui/image_viewer.py:350
 msgid " (max)"
 msgstr " (tối đa)"
 
@@ -226,17 +244,17 @@ msgid "Image viewer"
 msgstr "Trình xem ảnh"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:97 src/pbpicat/ui/main_window.py:249
+#: src/pbpicat/ui/main_window.py:97 src/pbpicat/ui/main_window.py:269
 msgid "Refresh"
 msgstr "Làm mới"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:98 src/pbpicat/ui/main_window.py:254
+#: src/pbpicat/ui/main_window.py:98 src/pbpicat/ui/main_window.py:274
 msgid "Open catalog settings"
 msgstr "Mở cài đặt danh mục"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:99 src/pbpicat/ui/main_window.py:260
+#: src/pbpicat/ui/main_window.py:99 src/pbpicat/ui/main_window.py:280
 msgid "Open program settings"
 msgstr "Mở cài đặt chương trình"
 
@@ -293,7 +311,7 @@ msgid "Close image viewer"
 msgstr "Đóng trình xem ảnh"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:132 src/pbpicat/ui/main_window.py:381
+#: src/pbpicat/ui/main_window.py:132 src/pbpicat/ui/main_window.py:402
 msgid "Orphan sidecars"
 msgstr "Sidecar mồ côi"
 
@@ -365,367 +383,412 @@ msgstr "Nhân đôi danh mục hiện tại"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/main_window.py:246
+msgid "&Images"
+msgstr "&Hình ảnh"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:247
+msgid "&Open"
+msgstr "&Mở"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:249
+msgid "Open selected file(s) with the default application"
+msgstr "Mở (các) tệp đã chọn bằng ứng dụng mặc định"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:250
+msgid "Open &with…"
+msgstr "Mở &bằng…"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:254
+msgid "Open selected file with a chosen application"
+msgstr "Mở tệp đã chọn bằng ứng dụng được chọn"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:256
+msgid "&Template"
+msgstr "&Mẫu"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:257
+msgid "Infer rename template from the selected file name"
+msgstr "Suy ra mẫu đổi tên từ tên tệp đã chọn"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:259
+msgid "&Delete"
+msgstr "&Xóa"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:261
+msgid "Permanently delete the selected file(s)"
+msgstr "Xóa vĩnh viễn (các) tệp đã chọn"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/main_window.py:266
 msgid "&View"
 msgstr "&Xem"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:247
+#: src/pbpicat/ui/main_window.py:267
 msgid "&Refresh"
 msgstr "&Làm mới"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:251
+#: src/pbpicat/ui/main_window.py:271
 msgid "&Settings"
 msgstr "&Cài đặt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:252
-msgid "&Configuration…"
-msgstr "&Cấu hình…"
+#: src/pbpicat/ui/main_window.py:272
+msgid "&Catalog configuration…"
+msgstr "&Cấu hình danh mục…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:255
+#: src/pbpicat/ui/main_window.py:275
 msgid "&History…"
 msgstr "&Lịch sử…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:256
+#: src/pbpicat/ui/main_window.py:276
 msgid "Edit field and filter history"
 msgstr "Chỉnh sửa lịch sử trường và bộ lọc"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:258
+#: src/pbpicat/ui/main_window.py:278
 msgid "&Program settings…"
 msgstr "&Cài đặt chương trình…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:262
+#: src/pbpicat/ui/main_window.py:282
 msgid "&Help"
 msgstr "&Trợ giúp"
 
-#: src/pbpicat/ui/main_window.py:263
+#: src/pbpicat/ui/main_window.py:283
 msgid "&Keyboard shortcuts…"
 msgstr "Phím tắt &bàn phím…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:265
+#: src/pbpicat/ui/main_window.py:285
 msgid "Show keyboard shortcuts"
 msgstr "Hiển thị phím tắt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:267
+#: src/pbpicat/ui/main_window.py:287
 msgid "&About"
 msgstr "&Giới thiệu"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:268 src/pbpicat/ui/main_window.py:756
+#: src/pbpicat/ui/main_window.py:288 src/pbpicat/ui/main_window.py:797
 msgid "About PBPicat"
 msgstr "Giới thiệu về PBPicat"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:289
+#: src/pbpicat/ui/main_window.py:309
 msgid "Ready."
 msgstr "Sẵn sàng."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:308
+#: src/pbpicat/ui/main_window.py:329
 msgid "Destination:"
 msgstr "Đích:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:310
+#: src/pbpicat/ui/main_window.py:331
 msgid "Destination root directory (DEST_ROOTDIR)…"
 msgstr "Thư mục gốc đích (DEST_ROOTDIR)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:314
+#: src/pbpicat/ui/main_window.py:335
 msgid "Browse…"
 msgstr "Duyệt…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:319
+#: src/pbpicat/ui/main_window.py:340
 msgid "Rename all"
 msgstr "Đổi tên tất cả"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:322
+#: src/pbpicat/ui/main_window.py:343
 msgid "Rename all files in the current directory according to the schema"
 msgstr "Đổi tên tất cả tệp trong thư mục hiện tại theo lược đồ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:326
+#: src/pbpicat/ui/main_window.py:347
 msgid "Renumber from 1"
 msgstr "Đánh số lại từ 1"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:329
+#: src/pbpicat/ui/main_window.py:350
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Đánh số lại tất cả tệp trong thư mục hiện tại bắt đầu từ 1"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:338
+#: src/pbpicat/ui/main_window.py:359
 msgid "Undo last rename"
 msgstr "Hoàn tác đổi tên lần cuối"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:339
+#: src/pbpicat/ui/main_window.py:360
 msgid "Undo last rename (restores files to their original location)"
 msgstr "Hoàn tác lần đổi tên cuối cùng (khôi phục tệp về vị trí ban đầu)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:346
+#: src/pbpicat/ui/main_window.py:367
 msgid "Sort by date"
 msgstr "Sắp xếp theo ngày"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:347
+#: src/pbpicat/ui/main_window.py:368
 msgid "Sort files by modification date (unchecked: sort by name)"
 msgstr "Sắp xếp tệp theo ngày sửa đổi (bỏ chọn: sắp xếp theo tên)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:352
+#: src/pbpicat/ui/main_window.py:373
 msgid "Reverse sort"
 msgstr "Sắp xếp ngược"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:353
+#: src/pbpicat/ui/main_window.py:374
 msgid "Reverse the sort order"
 msgstr "Đảo ngược thứ tự sắp xếp"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:362
+#: src/pbpicat/ui/main_window.py:383
 msgid "Sidecar filter…"
 msgstr "Bộ lọc sidecar…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:365
+#: src/pbpicat/ui/main_window.py:386
 msgid "<b>Sidecar content filter</b><br>Python regular expression applied to the <i>content</i> of sidecar files.<br>Only files with at least one sidecar whose content matches are shown.<br>Files with no sidecar are always hidden when a filter is active.<br><tt>.*</tt> matches across line breaks (re.DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters.<br>Leave empty to show all files."
 msgstr "<b>Bộ lọc nội dung sidecar</b><br>Biểu thức chính quy Python áp dụng cho <i>nội dung</i> tệp sidecar.<br>Chỉ hiển thị tệp có ít nhất một sidecar khớp.<br>Tệp không có sidecar luôn bị ẩn khi bộ lọc đang hoạt động.<br><tt>.*</tt> khớp qua dấu ngắt dòng (re.DOTALL).<br>Không phân biệt hoa/thường (re.IGNORECASE), kể cả ký tự có dấu.<br>Để trống để hiển thị tất cả tệp."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:382
+#: src/pbpicat/ui/main_window.py:403
 msgid "Show orphan sidecar files (no matching image or video)"
 msgstr "Hiển thị các tệp sidecar mồ côi (không có ảnh hoặc video tương ứng)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:389
+#: src/pbpicat/ui/main_window.py:410
 msgid "Rename selection"
 msgstr "Đổi tên đã chọn"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:390
+#: src/pbpicat/ui/main_window.py:411
 msgid "Rename selected files according to the schema"
 msgstr "Đổi tên các tệp đã chọn theo lược đồ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:403
+#: src/pbpicat/ui/main_window.py:424
 msgid "Choose destination directory"
 msgstr "Chọn thư mục đích"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:480
+#: src/pbpicat/ui/main_window.py:521
 msgid "No file selected."
 msgstr "Chưa chọn tệp nào."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:487
+#: src/pbpicat/ui/main_window.py:528
 msgid "No files to rename in the current directory."
 msgstr "Không có tệp nào để đổi tên trong thư mục hiện tại."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:491
+#: src/pbpicat/ui/main_window.py:532
 msgid "Confirm rename"
 msgstr "Xác nhận đổi tên"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:492
+#: src/pbpicat/ui/main_window.py:533
 #, python-brace-format
 msgid "Rename {n} file(s) according to the current schema?"
 msgstr "Đổi tên {n} tệp theo lược đồ hiện tại?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:514 src/pbpicat/ui/main_window.py:530
-#: src/pbpicat/ui/main_window.py:559
+#: src/pbpicat/ui/main_window.py:555 src/pbpicat/ui/main_window.py:571
+#: src/pbpicat/ui/main_window.py:600
 msgid "Rename error"
 msgstr "Lỗi đổi tên"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:517
+#: src/pbpicat/ui/main_window.py:558
 msgid "Files are already correctly numbered."
 msgstr "Các tệp đã được đánh số đúng."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:521
+#: src/pbpicat/ui/main_window.py:562
 msgid "Confirm renumber"
 msgstr "Xác nhận đánh số lại"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:522
+#: src/pbpicat/ui/main_window.py:563
 #, python-brace-format
 msgid "Renumber {n} file(s) starting from 1?"
 msgstr "Đánh số lại {n} tệp bắt đầu từ 1?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:531 src/pbpicat/ui/main_window.py:560
+#: src/pbpicat/ui/main_window.py:572 src/pbpicat/ui/main_window.py:601
 msgid "Error: rename cancelled."
 msgstr "Lỗi: đổi tên bị hủy."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:535
+#: src/pbpicat/ui/main_window.py:576
 #, python-brace-format
 msgid "{n} file(s) renumbered successfully."
 msgstr "{n} tệp đã được đánh số lại thành công."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:541
+#: src/pbpicat/ui/main_window.py:582
 msgid "Missing destination"
 msgstr "Thiếu đích"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:541
+#: src/pbpicat/ui/main_window.py:582
 msgid "Please specify a destination directory."
 msgstr "Vui lòng chỉ định thư mục đích."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:571
+#: src/pbpicat/ui/main_window.py:612
 #, python-brace-format
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} tệp đã được đổi tên thành công."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:585
+#: src/pbpicat/ui/main_window.py:626
 msgid "Undo error"
 msgstr "Lỗi hoàn tác"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:586
+#: src/pbpicat/ui/main_window.py:627
 msgid "Error: undo failed."
 msgstr "Lỗi: hoàn tác không thành công."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:590
+#: src/pbpicat/ui/main_window.py:631
 msgid "Last rename undone."
 msgstr "Đã hoàn tác lần đổi tên cuối."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:599
+#: src/pbpicat/ui/main_window.py:640
 msgid "Settings saved."
 msgstr "Đã lưu cài đặt."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:604
+#: src/pbpicat/ui/main_window.py:645
 msgid "Program settings saved."
 msgstr "Đã lưu cài đặt chương trình."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:611
+#: src/pbpicat/ui/main_window.py:652
 msgid "History saved."
 msgstr "Đã lưu lịch sử."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:615
+#: src/pbpicat/ui/main_window.py:656
 msgid "Template applied from history."
 msgstr "Đã áp dụng mẫu từ lịch sử."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:624
+#: src/pbpicat/ui/main_window.py:665
 msgid "PBPicat — Image & Video File Renamer"
 msgstr "PBPicat — Công cụ đổi tên tệp ảnh và video"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:626
+#: src/pbpicat/ui/main_window.py:667
 #, python-brace-format
 msgid "PBPicat — Image & Video File Renamer [{catalog}]"
 msgstr "PBPicat — Công cụ đổi tên tệp ảnh và video [{catalog}]"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:641
+#: src/pbpicat/ui/main_window.py:682
 msgid "New catalog"
 msgstr "Danh mục mới"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:641
+#: src/pbpicat/ui/main_window.py:682
 msgid "Catalog name (letters, digits, hyphens, underscores):"
 msgstr "Tên danh mục (chữ cái, chữ số, dấu gạch ngang, dấu gạch dưới):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:651 src/pbpicat/ui/main_window.py:707
+#: src/pbpicat/ui/main_window.py:692 src/pbpicat/ui/main_window.py:748
 msgid "Invalid name"
 msgstr "Tên không hợp lệ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:652 src/pbpicat/ui/main_window.py:708
+#: src/pbpicat/ui/main_window.py:693 src/pbpicat/ui/main_window.py:749
 msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
 msgstr "Tên danh mục chỉ được chứa chữ cái, chữ số, dấu gạch ngang hoặc dấu gạch dưới."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:658 src/pbpicat/ui/main_window.py:714
+#: src/pbpicat/ui/main_window.py:699 src/pbpicat/ui/main_window.py:755
 msgid "Already exists"
 msgstr "Đã tồn tại"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:659 src/pbpicat/ui/main_window.py:715
+#: src/pbpicat/ui/main_window.py:700 src/pbpicat/ui/main_window.py:756
 #, python-brace-format
 msgid "A catalog named \"{name}\" already exists."
 msgstr "Danh mục có tên «{name}» đã tồn tại."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:672
+#: src/pbpicat/ui/main_window.py:713
 msgid "No catalogs"
 msgstr "Không có danh mục"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:673
+#: src/pbpicat/ui/main_window.py:714
 msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
 msgstr "Không có danh mục bổ sung nào để xóa («default» không thể xóa)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:676
+#: src/pbpicat/ui/main_window.py:717
 msgid "Delete catalog"
 msgstr "Xóa danh mục"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:676
+#: src/pbpicat/ui/main_window.py:717
 msgid "Select catalog to delete:"
 msgstr "Chọn danh mục để xóa:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:682
+#: src/pbpicat/ui/main_window.py:723
 #, python-brace-format
 msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
 msgstr "Xóa danh mục «{name}» và tất cả cài đặt của nó? Hành động này không thể hoàn tác."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:690
+#: src/pbpicat/ui/main_window.py:731
 #, python-brace-format
 msgid "Catalog \"{name}\" deleted."
 msgstr "Danh mục «{name}» đã bị xóa."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:696
+#: src/pbpicat/ui/main_window.py:737
 msgid "Duplicate catalog"
 msgstr "Nhân đôi danh mục"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:697
+#: src/pbpicat/ui/main_window.py:738
 #, python-brace-format
 msgid "New catalog name (copy of \"{source}\"):"
 msgstr "Tên danh mục mới (bản sao của \"{source}\"):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:719
+#: src/pbpicat/ui/main_window.py:760
 #, python-brace-format
 msgid "Catalog \"{source}\" duplicated as \"{name}\"."
 msgstr "Danh mục \"{source}\" đã được nhân đôi thành \"{name}\"."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:742
+#: src/pbpicat/ui/main_window.py:783
 #, python-brace-format
 msgid "Switched to catalog \"{name}\"."
 msgstr "Đã chuyển sang danh mục «{name}»."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:758
+#: src/pbpicat/ui/main_window.py:799
 #, python-brace-format
 msgid "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…)."
 msgstr "<b>PBPicat</b> {version}<br>Công cụ đổi tên tệp ảnh và video theo lược đồ có cấu trúc.<br><br>Định dạng hỗ trợ: ảnh (JPEG, PNG, HEIC, RAW…) và video (MP4, MOV…),<br>cùng tệp sidecar liên quan (XMP, DOP, PP3…)."
@@ -780,19 +843,19 @@ msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
 msgstr "Phần mở rộng tệp sidecar (ví dụ .xmp, .prompt.txt):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:140 src/pbpicat/ui/settings_dialog.py:593
+#: src/pbpicat/ui/settings_dialog.py:140 src/pbpicat/ui/settings_dialog.py:599
 msgid ".ext or .name.ext"
 msgstr ".ext hoặc .tên.ext"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/settings_dialog.py:145 src/pbpicat/ui/settings_dialog.py:301
-#: src/pbpicat/ui/settings_dialog.py:401 src/pbpicat/ui/settings_dialog.py:598
+#: src/pbpicat/ui/settings_dialog.py:407 src/pbpicat/ui/settings_dialog.py:604
 msgid "Add"
 msgstr "Thêm"
 
 # ==AUTO== Automatically translated
 #: src/pbpicat/ui/settings_dialog.py:158 src/pbpicat/ui/settings_dialog.py:314
-#: src/pbpicat/ui/settings_dialog.py:413
+#: src/pbpicat/ui/settings_dialog.py:419
 msgid "Restore missing defaults"
 msgstr "Khôi phục giá trị mặc định còn thiếu"
 
@@ -822,26 +885,26 @@ msgid "Default extension for new sidecar:"
 msgstr "Phần mở rộng mặc định cho sidecar mới:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:199 src/pbpicat/ui/settings_dialog.py:346
-#: src/pbpicat/ui/settings_dialog.py:446 src/pbpicat/ui/settings_dialog.py:652
+#: src/pbpicat/ui/settings_dialog.py:199 src/pbpicat/ui/settings_dialog.py:351
+#: src/pbpicat/ui/settings_dialog.py:452 src/pbpicat/ui/settings_dialog.py:658
 msgid "Invalid extension"
 msgstr "Phần mở rộng không hợp lệ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:200 src/pbpicat/ui/settings_dialog.py:653
+#: src/pbpicat/ui/settings_dialog.py:200 src/pbpicat/ui/settings_dialog.py:659
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
 msgstr "«{ext}» không phải là phần mở rộng hợp lệ (ví dụ .xmp, .prompt.txt)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:369
-#: src/pbpicat/ui/settings_dialog.py:469
+#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:374
+#: src/pbpicat/ui/settings_dialog.py:475
 msgid "Restore defaults"
 msgstr "Khôi phục giá trị mặc định"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:369
-#: src/pbpicat/ui/settings_dialog.py:469
+#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:374
+#: src/pbpicat/ui/settings_dialog.py:475
 msgid "All default extensions are already in the list."
 msgstr "Tất cả phần mở rộng mặc định đã có trong danh sách."
 
@@ -870,7 +933,7 @@ msgid "Recognised image extensions (thumbnail + rename):"
 msgstr "Phần mở rộng ảnh được nhận diện (hình thu nhỏ + đổi tên):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:315 src/pbpicat/ui/settings_dialog.py:414
+#: src/pbpicat/ui/settings_dialog.py:315 src/pbpicat/ui/settings_dialog.py:420
 msgid "Add extensions from the built-in default list that are not yet in the list above"
 msgstr "Thêm các phần mở rộng từ danh sách mặc định tích hợp chưa có trong danh sách trên"
 
@@ -895,108 +958,122 @@ msgid "Max zoom:"
 msgstr "Thu phóng tối đa:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:347
+#: src/pbpicat/ui/settings_dialog.py:339
+msgid "Confirm deletions"
+msgstr "Xác nhận xóa"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:340
+msgid "Ask for confirmation before permanently deleting files"
+msgstr "Hỏi xác nhận trước khi xóa vĩnh viễn các tệp"
+
+# ==AUTO== Automatically translated
+#: src/pbpicat/ui/settings_dialog.py:352
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "«{ext}» không phải là phần mở rộng hợp lệ (ví dụ .png, .heic)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:387
+#: src/pbpicat/ui/settings_dialog.py:393
 msgid "Recognised video extensions:"
 msgstr "Phần mở rộng video được nhận diện:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:421
+#: src/pbpicat/ui/settings_dialog.py:427
 msgid "<b>Video marker</b><br>Inserted among the name components at the position chosen in the schema.<br>No '_' in the value. Empty = no marker."
 msgstr "<b>Đánh dấu video</b><br>Được chèn vào giữa các thành phần tên tại vị trí đã chọn trong lược đồ.<br>Không có «_» trong giá trị. Để trống = không đánh dấu."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:433
+#: src/pbpicat/ui/settings_dialog.py:439
 msgid "e.g. VID  (empty = none)"
 msgstr "ví dụ VID  (để trống = không có)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:435
+#: src/pbpicat/ui/settings_dialog.py:441
 msgid "Marker:"
 msgstr "Đánh dấu:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:447
+#: src/pbpicat/ui/settings_dialog.py:453
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .mp4)."
 msgstr "«{ext}» không phải là phần mở rộng hợp lệ (ví dụ .mp4)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:492 src/pbpicat/ui/settings_dialog.py:628
+#: src/pbpicat/ui/settings_dialog.py:498 src/pbpicat/ui/settings_dialog.py:634
 msgid "System default"
 msgstr "Mặc định hệ thống"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:501 src/pbpicat/ui/settings_dialog.py:637
+#: src/pbpicat/ui/settings_dialog.py:507 src/pbpicat/ui/settings_dialog.py:643
 msgid "Interface language:"
 msgstr "Ngôn ngữ giao diện:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:504 src/pbpicat/ui/settings_dialog.py:640
+#: src/pbpicat/ui/settings_dialog.py:510 src/pbpicat/ui/settings_dialog.py:646
 msgid "A restart is required for the language change to take effect."
 msgstr "Cần khởi động lại để thay đổi ngôn ngữ có hiệu lực."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:514
+#: src/pbpicat/ui/settings_dialog.py:520
 msgid "Configuration"
 msgstr "Cấu hình"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:529
+#: src/pbpicat/ui/settings_dialog.py:535
 msgid "Rename schema"
 msgstr "Lược đồ đổi tên"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:530 src/pbpicat/ui/settings_dialog.py:569
+#: src/pbpicat/ui/settings_dialog.py:536 src/pbpicat/ui/settings_dialog.py:575
 msgid "Sidecar extensions"
 msgstr "Phần mở rộng sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:531
+#: src/pbpicat/ui/settings_dialog.py:537
 msgid "Images"
 msgstr "Hình ảnh"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:532
+#: src/pbpicat/ui/settings_dialog.py:538
 msgid "Video"
 msgstr "Video"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:533
+#: src/pbpicat/ui/settings_dialog.py:539
 msgid "Thumbnails"
 msgstr "Hình thu nhỏ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:560
+#: src/pbpicat/ui/settings_dialog.py:566
 msgid "Program settings"
 msgstr "Cài đặt chương trình"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:570
+#: src/pbpicat/ui/settings_dialog.py:576
 msgid "Language"
 msgstr "Ngôn ngữ"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:583
+#: src/pbpicat/ui/settings_dialog.py:589
 msgid "<b>Default sidecar extensions for new catalogs</b>"
 msgstr "<b>Phần mở rộng sidecar mặc định cho danh mục mới</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:584
+#: src/pbpicat/ui/settings_dialog.py:590
 msgid "(e.g. .xmp, .dop, .prompt.txt)"
 msgstr "(vd. .xmp, .dop, .prompt.txt)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:610
+#: src/pbpicat/ui/settings_dialog.py:616
 msgid "Restore built-in defaults"
 msgstr "Khôi phục giá trị mặc định tích hợp"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:611
+#: src/pbpicat/ui/settings_dialog.py:617
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "Đặt lại danh sách về các phần mở rộng sidecar mặc định tích hợp"
+
+# ==AUTO== Automatically translated
+#~ msgid "&Configuration…"
+#~ msgstr "&Cấu hình…"

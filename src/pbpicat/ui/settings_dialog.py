@@ -336,6 +336,11 @@ class _ImageTab(QWidget):
 
         root.addLayout(form)
 
+        self._confirm_deletions_cb = QCheckBox(_("Confirm deletions"))
+        self._confirm_deletions_cb.setToolTip(_("Ask for confirmation before permanently deleting files"))
+        self._confirm_deletions_cb.setChecked(self._config.get("confirm_deletions", True))
+        root.addWidget(self._confirm_deletions_cb)
+
     def _add_ext(self) -> None:
         raw = self._ext_edit.text().strip().lower()
         if not raw.startswith("."):
@@ -372,6 +377,7 @@ class _ImageTab(QWidget):
         config["image_extensions"] = [self._list.item(i).text() for i in range(self._list.count())]
         config["zoom_step_percent"] = self._step_spin.value()
         config["zoom_max_percent"] = self._max_spin.value()
+        config["confirm_deletions"] = self._confirm_deletions_cb.isChecked()
 
 
 class _VideoTab(QWidget):

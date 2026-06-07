@@ -36,6 +36,10 @@ _THEME_MAP = {
     "zoom_height": "zoom-fit-height",
     "zoom_in": "zoom-in",
     "zoom_out": "zoom-out",
+    "open": "document-open",
+    "open_with": "applications-other",
+    "template": "view-list-details",
+    "delete": "edit-delete",
 }
 
 
@@ -74,6 +78,9 @@ class ImageViewer(QWidget):
 
     navigate_prev = Signal()
     navigate_next = Signal()
+    open_requested = Signal()
+    open_with_requested = Signal()
+    template_requested = Signal()
     delete_requested = Signal()
 
     def __init__(
@@ -174,6 +181,24 @@ class ImageViewer(QWidget):
             btn.clicked.connect(slot)
             tb.addWidget(btn)
 
+        sep2 = QToolButton()
+        sep2.setEnabled(False)
+        sep2.setFixedWidth(8)
+        tb.addWidget(sep2)
+
+        for icon_name, fallback, tip, callback in [
+            ("open", "▶", _("Open") + "  Ctrl+O", lambda: self.open_requested.emit()),
+            ("open_with", "▶…", _("Open with") + "  Ctrl+Shift+O", lambda: self.open_with_requested.emit()),
+            ("template", "T", _("Template"), lambda: self.template_requested.emit()),
+            ("delete", "✕", _("Delete") + "  Del", lambda: self.delete_requested.emit()),
+        ]:
+            btn = QToolButton()
+            btn.setIcon(_get_icon(icon_name, fallback))
+            btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+            btn.setToolTip(tip)
+            btn.clicked.connect(callback)
+            tb.addWidget(btn)
+
         tb.addStretch()
         self._zoom_label = QLabel()
         self._zoom_label.setMinimumWidth(180)
@@ -195,6 +220,11 @@ class ImageViewer(QWidget):
             (QKeySequence(Qt.KeyboardModifier.KeypadModifier | Qt.Key.Key_Minus), self._act_zoom_out),
             (QKeySequence(Qt.Key.Key_Up), self.navigate_prev),
             (QKeySequence(Qt.Key.Key_Down), self.navigate_next),
+            (QKeySequence.StandardKey.Open, self.open_requested),
+            (
+                QKeySequence(Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier | Qt.Key.Key_O),
+                self.open_with_requested,
+            ),
             (QKeySequence(Qt.Key.Key_Delete), self.delete_requested),
             (QKeySequence(Qt.Key.Key_Escape), self.close),
         ]
@@ -360,7 +390,7 @@ class ImageViewer(QWidget):
                 return False
             if etype == QEvent.Type.MouseButtonDblClick and event.button() == Qt.LeftButton:
                 self._drag_pos = None
-                self._zoom_to_point(event.pos())
+                self._zoom_to_point(event.position().toPoint())
                 return True
         return super().eventFilter(obj, event)
 

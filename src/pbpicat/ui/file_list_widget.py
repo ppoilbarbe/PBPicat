@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 
 from pbpicat.config import load_all_history
 from pbpicat.image_io import load_qimage
+from pbpicat.platform import open_default, open_with
 from pbpicat.renamer import validate_schema
 
 from .image_viewer import ImageViewer
@@ -154,6 +155,7 @@ class FileListWidget(QTableWidget):
         self._sidecar_new_extension: str = config.get("sidecar_new_extension", ".xmp")
         self._delete_empty_sidecars: bool = config.get("delete_empty_sidecars", True)
         self._delete_list_max_files: int = config.get("delete_list_max_files", 12)
+        self._confirm_deletions: bool = config.get("confirm_deletions", True)
         self._schema_field_count: int = config.get("schema_field_count", 6)
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
@@ -445,6 +447,9 @@ class FileListWidget(QTableWidget):
             self._image_viewer = ImageViewer(path, self, self._zoom_step_percent, self._zoom_max_percent)
             self._image_viewer.navigate_prev.connect(lambda: self._navigate_viewer(-1))
             self._image_viewer.navigate_next.connect(lambda: self._navigate_viewer(+1))
+            self._image_viewer.open_requested.connect(self._open_from_viewer)
+            self._image_viewer.open_with_requested.connect(self._open_with_from_viewer)
+            self._image_viewer.template_requested.connect(self._template_from_viewer)
             self._image_viewer.delete_requested.connect(self._delete_from_viewer)
             self._image_viewer.show()
         else:
@@ -519,9 +524,7 @@ class FileListWidget(QTableWidget):
             self.selectRow(0)
 
     def keyPressEvent(self, event) -> None:  # noqa: N802
-        if event.key() == Qt.Key_Delete:
-            self._delete_selection()
-        elif event.key() in (Qt.Key_Left, Qt.Key_Right) and self._dir_tree is not None:
+        if event.key() in (Qt.Key_Left, Qt.Key_Right) and self._dir_tree is not None:
             self._dir_tree.setFocus()
         elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
             rows = {idx.row() for idx in self.selectedIndexes()}
@@ -538,10 +541,17 @@ class FileListWidget(QTableWidget):
             return
         path, sidecars = self._display_data[row]
         menu = QMenu(self)
+        open_action = menu.addAction(_("Open") + "\tCtrl+O")
+        open_with_action = menu.addAction(_("Open with") + "\tCtrl+Shift+O")
+        menu.addSeparator()
         infer_action = menu.addAction(_("Template"))
         delete_action = menu.addAction(_("Delete") + "\tDel")
         chosen = menu.exec(event.globalPos())
-        if chosen == infer_action:
+        if chosen == open_action:
+            self._open_file(path)
+        elif chosen == open_with_action:
+            self._open_file_with(path)
+        elif chosen == infer_action:
             self._propose_schema(path)
         elif chosen == delete_action:
             self._delete_file(path, sidecars)
@@ -569,15 +579,33 @@ class FileListWidget(QTableWidget):
         if entry:
             self._delete_file(*entry)
 
-    def _delete_from_viewer(self) -> None:
+    def _viewer_row(self) -> int | None:
         rows = {idx.row() for idx in self.selectedIndexes()}
         if len(rows) != 1:
-            return
+            return None
         row = next(iter(rows))
-        if row >= len(self._display_data):
-            return
-        path, sidecars = self._display_data[row]
-        self._delete_file(path, sidecars, dialog_parent=self._image_viewer)
+        return row if row < len(self._display_data) else None
+
+    def _open_from_viewer(self) -> None:
+        row = self._viewer_row()
+        if row is not None:
+            open_default(self._display_data[row][0])
+
+    def _open_with_from_viewer(self) -> None:
+        row = self._viewer_row()
+        if row is not None:
+            open_with(self._display_data[row][0], self._image_viewer)
+
+    def _template_from_viewer(self) -> None:
+        row = self._viewer_row()
+        if row is not None:
+            self._propose_schema(self._display_data[row][0])
+
+    def _delete_from_viewer(self) -> None:
+        row = self._viewer_row()
+        if row is not None:
+            path, sidecars = self._display_data[row]
+            self._delete_file(path, sidecars, dialog_parent=self._image_viewer)
 
     def _delete_file(self, path: Path, sidecars: list[Path], dialog_parent=None) -> None:
         parent = dialog_parent if dialog_parent is not None else self
@@ -592,19 +620,19 @@ class FileListWidget(QTableWidget):
             all_files.append(p)
             all_files.extend(scs)
 
-        if len(all_files) > self._delete_list_max_files:
-            body = _("Permanently delete {count} files?").format(count=len(all_files))
-        else:
-            names = "\n".join(f.name for f in all_files)
-            body = _("Permanently delete:\n{names}").format(names=names)
-        reply = QMessageBox.question(
-            parent,
-            _("Confirm deletion"),
-            body,
-            QMessageBox.Yes | QMessageBox.No,
-        )
-        if reply != QMessageBox.Yes:
-            return
+        if self._confirm_deletions:
+            if len(all_files) > self._delete_list_max_files:
+                body = _("Permanently delete {count} files?").format(count=len(all_files))
+            else:
+                names = "\n".join(f.name for f in all_files)
+                body = _("Permanently delete:\n{names}").format(names=names)
+            msg = QMessageBox(parent)
+            msg.setWindowTitle(_("Confirm deletion"))
+            msg.setText(body)
+            msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msg.setDefaultButton(QMessageBox.Yes)
+            if msg.exec() != QMessageBox.Yes:
+                return
 
         next_row = self.next_row_after_files([p for p, _ in to_delete])
         dirs_to_clean: set[Path] = set()
@@ -710,6 +738,42 @@ class FileListWidget(QTableWidget):
                     break
 
         return result if matched_any else None
+
+    # ------------------------------------------------------------------
+    # Public action slots (usable from menu bar)
+    # ------------------------------------------------------------------
+
+    def open_selected(self) -> None:
+        for path in self.get_selected_files():
+            open_default(path)
+
+    def open_with_selected(self) -> None:
+        for path in self.get_selected_files():
+            open_with(path, self)
+
+    def template_selected(self) -> None:
+        paths = self.get_selected_files()
+        if len(paths) == 1:
+            self._propose_schema(paths[0])
+
+    def delete_selected(self) -> None:
+        self._delete_selection()
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _open_selection(self) -> None:
+        self.open_selected()
+
+    def _open_with_selection(self) -> None:
+        self.open_with_selected()
+
+    def _open_file(self, path: Path) -> None:
+        open_default(path)
+
+    def _open_file_with(self, path: Path) -> None:
+        open_with(path, self)
 
     def _open_text_sidecars(self, sidecars: list[Path]) -> None:
         for sc in sidecars:

@@ -243,13 +243,30 @@ class MainWindow(QMainWindow):
         self._catalog_menu.addSeparator()
         self._catalog_menu.aboutToShow.connect(self._populate_catalog_list)
 
+        images_menu = mb.addMenu(_("&Images"))
+        self._act_img_open = images_menu.addAction(_("&Open"), self._img_open)
+        self._act_img_open.setShortcut(QKeySequence.StandardKey.Open)
+        self._act_img_open.setStatusTip(_("Open selected file(s) with the default application"))
+        self._act_img_open_with = images_menu.addAction(_("Open &with…"), self._img_open_with)
+        self._act_img_open_with.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O))
+        self._act_img_open_with.setStatusTip(_("Open selected file with a chosen application"))
+        images_menu.addSeparator()
+        self._act_img_template = images_menu.addAction(_("&Template"), self._img_template)
+        self._act_img_template.setStatusTip(_("Infer rename template from the selected file name"))
+        images_menu.addSeparator()
+        self._act_img_delete = images_menu.addAction(_("&Delete"), self._img_delete)
+        self._act_img_delete.setShortcut(QKeySequence(Qt.Key.Key_Delete))
+        self._act_img_delete.setStatusTip(_("Permanently delete the selected file(s)"))
+        for act in (self._act_img_open, self._act_img_open_with, self._act_img_template, self._act_img_delete):
+            act.setEnabled(False)
+
         view_menu = mb.addMenu(_("&View"))
         act = view_menu.addAction(_("&Refresh"), self._refresh)
         act.setShortcut(QKeySequence(Qt.Key.Key_F5))
         act.setStatusTip(_("Refresh"))
 
         settings_menu = mb.addMenu(_("&Settings"))
-        act = settings_menu.addAction(_("&Configuration…"), self._open_settings)
+        act = settings_menu.addAction(_("&Catalog configuration…"), self._open_settings)
         act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Comma))
         act.setStatusTip(_("Open catalog settings"))
         act = settings_menu.addAction(_("&History…"), self._open_history)
@@ -294,6 +311,7 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.set_video_marker_pos_getter(self._schema_frame.get_video_marker_pos)
         self._file_panel.file_list.file_count_changed.connect(self._on_file_count_changed)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_rename_btn)
+        self._file_panel.file_list.itemSelectionChanged.connect(self._update_image_actions)
         self._file_panel.file_list.orphan_sidecar_count_changed.connect(self._on_orphan_count_changed)
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
@@ -410,6 +428,26 @@ class MainWindow(QMainWindow):
 
     def _update_rename_btn(self) -> None:
         self._rename_btn.setEnabled(bool(self._file_panel.file_list.get_selected_files()))
+
+    def _update_image_actions(self) -> None:
+        n = len(self._file_panel.file_list.get_selected_files())
+        any_sel = n > 0
+        self._act_img_open.setEnabled(any_sel)
+        self._act_img_open_with.setEnabled(any_sel)
+        self._act_img_template.setEnabled(n == 1)
+        self._act_img_delete.setEnabled(any_sel)
+
+    def _img_open(self) -> None:
+        self._file_panel.file_list.open_selected()
+
+    def _img_open_with(self) -> None:
+        self._file_panel.file_list.open_with_selected()
+
+    def _img_template(self) -> None:
+        self._file_panel.file_list.template_selected()
+
+    def _img_delete(self) -> None:
+        self._file_panel.file_list.delete_selected()
 
     def _on_sort_by_date_changed(self, checked: bool) -> None:
         self._file_panel.file_list.set_sort_by_date(checked)
