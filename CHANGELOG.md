@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-06-08
+
 ### Added
 
 - **About dialog enriched** — now shows Python version, PySide6 version, platform string, and author(s) as clickable `mailto:` links read from package metadata.
