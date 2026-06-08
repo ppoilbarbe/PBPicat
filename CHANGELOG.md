@@ -6,6 +6,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **About dialog enriched** — now shows Python version, PySide6 version, platform string, and author(s) as clickable `mailto:` links read from package metadata.
+- **Menu icons** — all menu-bar actions (File, Catalog, Images, Settings, Help) now display icons; new SVG assets created for *Quit*, *Duplicate*, *Refresh*, *Catalog configuration*, *History*, *Program settings*, *Keyboard shortcuts*, and *About*.
+- **Context menu icons** — the file-list context menu reuses the same `QAction` objects as the *Images* menu, ensuring identical icons, labels, shortcuts and enabled/disabled state at all times.
+- **`ui/icons.py`** — shared `get_icon(svg_name, theme_name, text_fallback)` helper that resolves icons via FreeDesktop theme → bundled SVG → text fallback; consolidates previously duplicated logic from `image_viewer.py`.
+- **Keyboard shortcuts dialog** — added missing entries: Ctrl+Z (Undo rename), Ctrl+O (Open), Ctrl+Shift+O (Open with), Ctrl+N (New catalog), Ctrl+Shift+D (Duplicate catalog); Del and Escape now rendered via `QKeySequence.toString(NativeText)` for correct localisation.
+- **Undo rename shortcut** — Ctrl+Z activates the *Undo rename* button.
+
+### Changed
+
+- **Version read from package metadata** — `importlib.metadata` replaces the hardcoded version string in `__main__.py`; the About dialog always shows the installed version.
+- **Context menu selects clicked row** — right-clicking an unselected row now selects it before the menu appears, so actions operate on the expected file.
+
 ## [1.7.0] - 2026-06-08
 
 ### Added

@@ -1,4 +1,5 @@
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 from PySide6.QtGui import QIcon
@@ -27,7 +28,7 @@ def main() -> None:
     app = QApplication(sys.argv)
     app.setApplicationName("PBPicat")
     app.setOrganizationName("PBPicat")
-    app.setApplicationVersion("1.6.3")
+    app.setApplicationVersion(version("pbpicat"))
 
     icon_path = _resource("resources/pbpicat.svg")
     app.setWindowIcon(QIcon(str(icon_path)))

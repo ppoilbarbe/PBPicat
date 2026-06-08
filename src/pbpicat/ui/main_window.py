@@ -1,4 +1,6 @@
+import platform
 import re
+import sys
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, Qt
@@ -51,6 +53,7 @@ from pbpicat.renamer import (
 
 from .file_panel import FilePanel
 from .history_dialog import HistoryDialog
+from .icons import get_icon
 from .schema_frame import SchemaFrame
 from .settings_dialog import GlobalSettingsDialog, SettingsDialog
 
@@ -92,14 +95,27 @@ class _KeyboardShortcutsDialog(QDialog):
         title_main = _("Main window")
         title_viewer = _("Image viewer")
 
+        def key(seq) -> str:
+            return QKeySequence(seq).toString(QKeySequence.SequenceFormat.NativeText)
+
+        key_del = key(Qt.Key.Key_Delete)
+        key_esc = key(Qt.Key.Key_Escape)
+        file_list = _("file list")
+        tree_leaf = _("tree leaf")
+
         main_rows = "".join(
             [
                 row("F5", _("Refresh")),
-                row("Ctrl+,", _("Open catalog settings")),
-                row("Ctrl+Alt+,", _("Open program settings")),
-                row("Del", _("Delete selected file(s) and their sidecars")),
-                row("← / → (file list)", _("Move focus to the directory tree")),
-                row("→ (tree leaf)", _("Move focus to the file list")),
+                row(key(QKeySequence.StandardKey.Undo), _("Undo rename")),
+                row(key(QKeySequence.StandardKey.Open), _("Open selected file(s)")),
+                row(key(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O), _("Open with…")),
+                row(key(Qt.Modifier.CTRL | Qt.Key.Key_N), _("New catalog")),
+                row(key(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_D), _("Duplicate catalog")),
+                row(key(Qt.Modifier.CTRL | Qt.Key.Key_Comma), _("Open catalog settings")),
+                row(key(Qt.Modifier.CTRL | Qt.Modifier.ALT | Qt.Key.Key_Comma), _("Open program settings")),
+                row(key_del, _("Delete selected file(s) and their sidecars")),
+                row(f"← / → ({file_list})", _("Move focus to the directory tree")),
+                row(f"→ ({tree_leaf})", _("Move focus to the file list")),
             ]
         )
 
@@ -111,8 +127,8 @@ class _KeyboardShortcutsDialog(QDialog):
                 row("H", _("Fit height")),
                 row("+ / −", _("Zoom in / Zoom out")),
                 row("↑ / ↓", _("Navigate to previous / next image")),
-                row("Del", _("Delete current image and its sidecars")),
-                row("Escape", _("Close image viewer")),
+                row(key_del, _("Delete current image and its sidecars")),
+                row(key_esc, _("Close image viewer")),
             ]
         )
 
@@ -231,16 +247,20 @@ class MainWindow(QMainWindow):
         act = file_menu.addAction(_("&Quit"), self.close)
         act.setShortcut(QKeySequence.StandardKey.Quit)
         act.setStatusTip(_("Quit the application"))
+        act.setIcon(get_icon("application-exit", "application-exit"))
 
         self._catalog_menu = mb.addMenu(_("&Catalog"))
         act = self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog)
         act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_N))
         act.setStatusTip(_("Create a new catalog"))
+        act.setIcon(get_icon("folder-new", "folder-new"))
         act = self._catalog_menu.addAction(_("&Delete catalog…"), self._delete_catalog_action)
         act.setStatusTip(_("Delete a catalog"))
+        act.setIcon(get_icon("delete", "edit-delete"))
         act = self._catalog_menu.addAction(_("D&uplicate catalog…"), self._duplicate_catalog_action)
         act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_D))
         act.setStatusTip(_("Duplicate the current catalog"))
+        act.setIcon(get_icon("edit-copy", "edit-copy"))
         self._catalog_menu.addSeparator()
         self._catalog_menu.aboutToShow.connect(self._populate_catalog_list)
 
@@ -248,41 +268,58 @@ class MainWindow(QMainWindow):
         self._act_img_open = images_menu.addAction(_("&Open"), self._img_open)
         self._act_img_open.setShortcut(QKeySequence.StandardKey.Open)
         self._act_img_open.setStatusTip(_("Open selected file(s) with the default application"))
+        self._act_img_open.setIcon(get_icon("open", "document-open"))
         self._act_img_open_with = images_menu.addAction(_("Open &with…"), self._img_open_with)
         self._act_img_open_with.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O))
         self._act_img_open_with.setStatusTip(_("Open selected file with a chosen application"))
+        self._act_img_open_with.setIcon(get_icon("open_with", "document-open"))
         images_menu.addSeparator()
         self._act_img_template = images_menu.addAction(_("&Template"), self._img_template)
         self._act_img_template.setStatusTip(_("Infer rename template from the selected file name"))
+        self._act_img_template.setIcon(get_icon("template", "view-list-details"))
         images_menu.addSeparator()
         self._act_img_delete = images_menu.addAction(_("&Delete"), self._img_delete)
         self._act_img_delete.setShortcut(QKeySequence(Qt.Key.Key_Delete))
         self._act_img_delete.setStatusTip(_("Permanently delete the selected file(s)"))
+        self._act_img_delete.setIcon(get_icon("delete", "edit-delete"))
         for act in (self._act_img_open, self._act_img_open_with, self._act_img_template, self._act_img_delete):
             act.setEnabled(False)
         images_menu.addSeparator()
         act = images_menu.addAction(_("&Refresh"), self._refresh)
         act.setShortcut(QKeySequence(Qt.Key.Key_F5))
         act.setStatusTip(_("Refresh"))
+        act.setIcon(get_icon("view-refresh", "view-refresh"))
 
         settings_menu = mb.addMenu(_("&Settings"))
         act = settings_menu.addAction(_("&Catalog configuration…"), self._open_settings)
         act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Comma))
         act.setStatusTip(_("Open catalog settings"))
+        act.setIcon(get_icon("configure", "configure"))
         act = settings_menu.addAction(_("&History…"), self._open_history)
         act.setStatusTip(_("Edit field and filter history"))
+        act.setIcon(get_icon("document-open-recent", "document-open-recent"))
         settings_menu.addSeparator()
         act = settings_menu.addAction(_("&Program settings…"), self._open_global_settings)
         act.setShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Modifier.ALT | Qt.Key.Key_Comma))
         act.setStatusTip(_("Open program settings"))
+        act.setIcon(get_icon("preferences-system", "preferences-system"))
 
         help_menu = mb.addMenu(_("&Help"))
         act = help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts)
         act.setShortcut(QKeySequence(Qt.Key.Key_F1))
         act.setStatusTip(_("Show keyboard shortcuts"))
+        act.setIcon(get_icon("help-keyboard-shortcuts", "help-keyboard-shortcuts"))
         help_menu.addSeparator()
         act = help_menu.addAction(_("&About"), self._about)
         act.setStatusTip(_("About PBPicat"))
+        act.setIcon(get_icon("help-about", "help-about"))
+
+        self._file_panel.file_list.set_context_actions(
+            self._act_img_open,
+            self._act_img_open_with,
+            self._act_img_template,
+            self._act_img_delete,
+        )
 
     def _setup_ui(self) -> None:
         central = QWidget()
@@ -355,6 +392,7 @@ class MainWindow(QMainWindow):
 
         self._undo_btn = QPushButton(_("Undo rename"))
         self._undo_btn.setToolTip(_("Undo last rename (restores files to their original location)"))
+        self._undo_btn.setShortcut(QKeySequence.StandardKey.Undo)
         self._undo_btn.clicked.connect(self._undo_last_rename)
         self._undo_btn.setEnabled(False)
         layout.addWidget(self._undo_btn)
@@ -685,6 +723,7 @@ class MainWindow(QMainWindow):
             action = self._catalog_menu.addAction(name, lambda n=name: self._switch_to_catalog(n))
             action.setCheckable(True)
             action.setChecked(name == active)
+            action.setIcon(get_icon("folder-open", "folder-open"))
 
     def _new_catalog(self) -> None:
         name, ok = QInputDialog.getText(
@@ -801,7 +840,20 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _about(self) -> None:
+        from email.utils import getaddresses
+        from importlib.metadata import metadata
+
+        import PySide6
+
         version = QCoreApplication.applicationVersion()
+        py_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+        pyside_version = PySide6.__version__
+        os_info = platform.platform()
+        meta = metadata("pbpicat")
+        authors_html = ", ".join(
+            f'<a href="mailto:{email}">{name}</a>' if email else name
+            for name, email in getaddresses([meta["Author-email"] or ""])
+        )
         QMessageBox.about(
             self,
             _("About PBPicat"),
@@ -809,5 +861,17 @@ class MainWindow(QMainWindow):
                 "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema."
                 "<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),"
                 "<br>with associated sidecar files (XMP, DOP, PP3…)."
-            ).format(version=version),
+                "<br><br><b>{authors_label}:</b> {authors}"
+                "<br><b>Python:</b> {py_version}"
+                "<br><b>PySide6:</b> {pyside_version}"
+                "<br><b>{platform_label}:</b> {os_info}"
+            ).format(
+                version=version,
+                authors_label=_("Authors"),
+                authors=authors_html,
+                py_version=py_version,
+                pyside_version=pyside_version,
+                platform_label=_("Platform"),
+                os_info=os_info,
+            ),
         )

@@ -2,7 +2,7 @@ from enum import Enum, auto
 from pathlib import Path
 
 from PySide6.QtCore import QEvent, QPoint, QSize, Qt, Signal
-from PySide6.QtGui import QIcon, QKeySequence, QPainter, QPixmap, QShortcut
+from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -16,6 +16,9 @@ from PySide6.QtWidgets import (
 from pbpicat.config import DEFAULTS, qsettings
 from pbpicat.image_io import load_pixmap
 
+from .icons import ICON_SIZE as _ICON_SIZE
+from .icons import get_icon
+
 
 class _ZoomMode(Enum):
     FIT_WINDOW = auto()
@@ -23,49 +26,6 @@ class _ZoomMode(Enum):
     FIT_HEIGHT = auto()
     ONE_TO_ONE = auto()
     CUSTOM = auto()
-
-
-_ICON_SIZE = 22
-_ICON_DIR = Path(__file__).parent.parent / "resources"
-
-# Mapping: logical name → FreeDesktop theme name
-_THEME_MAP = {
-    "zoom_fit": "zoom-fit-best",
-    "zoom_original": "zoom-original",
-    "zoom_width": "zoom-fit-width",
-    "zoom_height": "zoom-fit-height",
-    "zoom_in": "zoom-in",
-    "zoom_out": "zoom-out",
-    "open": "document-open",
-    "open_with": "applications-other",
-    "template": "view-list-details",
-    "delete": "edit-delete",
-}
-
-
-def _get_icon(name: str, fallback: str) -> QIcon:
-    theme_icon = QIcon.fromTheme(_THEME_MAP.get(name, ""))
-    if not theme_icon.isNull():
-        return theme_icon
-    svg_path = _ICON_DIR / f"{name}.svg"
-    if svg_path.exists():
-        icon = QIcon(str(svg_path))
-        if not icon.isNull():
-            return icon
-    return _text_icon(fallback)
-
-
-def _text_icon(text: str, size: int = _ICON_SIZE) -> QIcon:
-    pix = QPixmap(size, size)
-    pix.fill(Qt.transparent)
-    p = QPainter(pix)
-    f = p.font()
-    f.setPixelSize(max(8, size - 6))
-    f.setBold(True)
-    p.setFont(f)
-    p.drawText(pix.rect(), Qt.AlignCenter, text)
-    p.end()
-    return QIcon(pix)
 
 
 class ImageViewer(QWidget):
@@ -153,7 +113,7 @@ class ImageViewer(QWidget):
         self._zoom_buttons: list[QToolButton] = []
         for icon_name, fallback, tip, slot in specs:
             btn = QToolButton()
-            btn.setIcon(_get_icon(icon_name, fallback))
+            btn.setIcon(get_icon(icon_name, text_fallback=fallback))
             btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
             btn.setToolTip(tip)
             btn.setCheckable(True)
@@ -175,7 +135,7 @@ class ImageViewer(QWidget):
             ("zoom_out", "－", _("Zoom out  −"), self._act_zoom_out),
         ]:
             btn = QToolButton()
-            btn.setIcon(_get_icon(icon_name, fallback))
+            btn.setIcon(get_icon(icon_name, text_fallback=fallback))
             btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
             btn.setToolTip(tip)
             btn.clicked.connect(slot)
@@ -193,7 +153,7 @@ class ImageViewer(QWidget):
             ("delete", "✕", _("Delete") + "  Del", lambda: self.delete_requested.emit()),
         ]:
             btn = QToolButton()
-            btn.setIcon(_get_icon(icon_name, fallback))
+            btn.setIcon(get_icon(icon_name, text_fallback=fallback))
             btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
             btn.setToolTip(tip)
             btn.clicked.connect(callback)

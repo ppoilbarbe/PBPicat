@@ -6,7 +6,13 @@ from PIL import Image
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 
-from pbpicat.ui.image_viewer import ImageViewer, _get_icon, _text_icon, _ZoomMode
+from pbpicat.ui.icons import _text_icon, get_icon
+from pbpicat.ui.image_viewer import ImageViewer, _ZoomMode
+
+
+def _get_icon(name, fallback):
+    return get_icon(name, text_fallback=fallback)
+
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -356,7 +362,7 @@ def test_get_icon_theme_found(qapp):
     from unittest.mock import patch
 
     non_null_icon = _text_icon("T")  # guaranteed non-null
-    with patch("pbpicat.ui.image_viewer.QIcon.fromTheme", return_value=non_null_icon):
+    with patch("pbpicat.ui.icons.QIcon.fromTheme", return_value=non_null_icon):
         icon = _get_icon("zoom_fit", "⊡")
     assert not icon.isNull()
 

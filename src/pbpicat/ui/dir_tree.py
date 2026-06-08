@@ -4,6 +4,8 @@ from PySide6.QtCore import QDir, Qt, QTimer, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QAbstractItemView, QFileSystemModel, QMenu, QTreeView
 
+from .icons import get_icon
+
 
 class DirTree(QTreeView):
     directory_selected = Signal(str)
@@ -106,7 +108,7 @@ class DirTree(QTreeView):
             return
         path = self._model.filePath(idx)
         menu = QMenu(self)
-        open_action = menu.addAction(_("Open"))
+        open_action = menu.addAction(get_icon("open", "document-open"), _("Open"))
         action = menu.exec(self.viewport().mapToGlobal(pos))
         if action is open_action:
             QDesktopServices.openUrl(QUrl.fromLocalFile(path))

@@ -133,6 +133,7 @@ class FileListWidget(QTableWidget):
         self._get_video_marker_pos: Callable[[], int] | None = None
         self._rebuilding: bool = False
         self._auto_selecting: bool = False
+        self._ctx_actions: tuple | None = None
         self._sidecars_pending_edit: set[Path] = set()
         self._dir_tree = None
         self._apply_config(config)
@@ -155,6 +156,9 @@ class FileListWidget(QTableWidget):
 
     def set_video_marker_pos_getter(self, getter: Callable[[], int]) -> None:
         self._get_video_marker_pos = getter
+
+    def set_context_actions(self, open_act, open_with_act, template_act, delete_act) -> None:
+        self._ctx_actions = (open_act, open_with_act, template_act, delete_act)
 
     def _apply_config(self, config: dict) -> None:
         legacy = config.get("thumbnail_size", 128)
@@ -589,22 +593,18 @@ class FileListWidget(QTableWidget):
         if row < 0 or row >= len(self._display_data):
             event.ignore()
             return
-        path, sidecars = self._display_data[row]
+        selected_rows = {idx.row() for idx in self.selectedIndexes()}
+        if row not in selected_rows:
+            self.selectRow(row)
         menu = QMenu(self)
-        open_action = menu.addAction(_("Open") + "\tCtrl+O")
-        open_with_action = menu.addAction(_("Open with") + "\tCtrl+Shift+O")
-        menu.addSeparator()
-        infer_action = menu.addAction(_("Template"))
-        delete_action = menu.addAction(_("Delete") + "\tDel")
-        chosen = menu.exec(event.globalPos())
-        if chosen == open_action:
-            self._open_file(path)
-        elif chosen == open_with_action:
-            self._open_file_with(path)
-        elif chosen == infer_action:
-            self._propose_schema(path)
-        elif chosen == delete_action:
-            self._delete_file(path, sidecars)
+        if self._ctx_actions is not None:
+            open_act, open_with_act, template_act, delete_act = self._ctx_actions
+            menu.addAction(open_act)
+            menu.addAction(open_with_act)
+            menu.addSeparator()
+            menu.addAction(template_act)
+            menu.addAction(delete_act)
+        menu.exec(event.globalPos())
         event.accept()
 
     def mouseDoubleClickEvent(self, event) -> None:  # noqa: N802
