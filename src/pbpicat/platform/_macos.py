@@ -9,6 +9,10 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
 
+def config_dir() -> Path:
+    return Path.home() / "Library" / "Application Support" / "pbpicat"
+
+
 def open_default(path: Path) -> None:
     QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
 

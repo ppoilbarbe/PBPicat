@@ -3,6 +3,12 @@
 from pbpicat.platform import _macos
 
 
+def test_config_dir_returns_library_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(_macos.Path, "home", staticmethod(lambda: tmp_path))
+    result = _macos.config_dir()
+    assert result == tmp_path / "Library" / "Application Support" / "pbpicat"
+
+
 def test_open_default(tmp_path, monkeypatch):
     f = tmp_path / "test.png"
     f.touch()

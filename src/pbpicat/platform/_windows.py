@@ -6,6 +6,10 @@ import os
 from pathlib import Path
 
 
+def config_dir() -> Path:
+    return Path(os.environ.get("APPDATA", Path.home())) / "pbpicat"
+
+
 def open_default(path: Path) -> None:
     os.startfile(str(path))
 

@@ -217,6 +217,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self._config = load_config()
         self._undo_stack: list[tuple[str, list[tuple]]] = []
+        self._undo_total: int = 0
         self._orphan_dlg: _OrphanSidecarsDialog | None = None
         self._setup_ui()
         self._setup_menu()
@@ -259,9 +260,8 @@ class MainWindow(QMainWindow):
         self._act_img_delete.setStatusTip(_("Permanently delete the selected file(s)"))
         for act in (self._act_img_open, self._act_img_open_with, self._act_img_template, self._act_img_delete):
             act.setEnabled(False)
-
-        view_menu = mb.addMenu(_("&View"))
-        act = view_menu.addAction(_("&Refresh"), self._refresh)
+        images_menu.addSeparator()
+        act = images_menu.addAction(_("&Refresh"), self._refresh)
         act.setShortcut(QKeySequence(Qt.Key.Key_F5))
         act.setStatusTip(_("Refresh"))
 
@@ -353,7 +353,7 @@ class MainWindow(QMainWindow):
     def _build_button_zone(self) -> QHBoxLayout:
         layout = QHBoxLayout()
 
-        self._undo_btn = QPushButton(_("Undo last rename"))
+        self._undo_btn = QPushButton(_("Undo rename"))
         self._undo_btn.setToolTip(_("Undo last rename (restores files to their original location)"))
         self._undo_btn.clicked.connect(self._undo_last_rename)
         self._undo_btn.setEnabled(False)
@@ -569,7 +569,8 @@ class MainWindow(QMainWindow):
             self._status.showMessage(_("Error: rename cancelled."))
             return
         self._undo_stack.append(("renumber", plan))
-        self._undo_btn.setEnabled(True)
+        self._undo_total += 1
+        self._update_undo_btn()
         self._status.showMessage(_("{n} file(s) renumbered successfully.").format(n=len(files)))
         self._file_panel.file_list.refresh_and_select(0)
 
@@ -602,13 +603,23 @@ class MainWindow(QMainWindow):
         save_last_dest(dest_root)
 
         self._undo_stack.append(("rename", plan))
-        self._undo_btn.setEnabled(True)
+        self._undo_total += 1
+        self._update_undo_btn()
 
         media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
         n = len([p for p, _ in plan if p.suffix.lower() in media_exts])
         self._status.showMessage(_("{n} file(s) renamed successfully.").format(n=n))
         next_row = self._file_panel.file_list.next_row_after_files(file_paths)
         self._file_panel.file_list.refresh_and_select(next_row)
+
+    def _update_undo_btn(self) -> None:
+        n = len(self._undo_stack)
+        if n:
+            self._undo_btn.setText(_("Undo rename {n}/{total}").format(n=n, total=self._undo_total))
+            self._undo_btn.setEnabled(True)
+        else:
+            self._undo_btn.setText(_("Undo rename"))
+            self._undo_btn.setEnabled(False)
 
     def _undo_last_rename(self) -> None:
         if not self._undo_stack:
@@ -624,9 +635,10 @@ class MainWindow(QMainWindow):
             self._status.showMessage(_("Error: undo failed."))
             return
         self._undo_stack.pop()
-        self._undo_btn.setEnabled(bool(self._undo_stack))
+        self._update_undo_btn()
         self._status.showMessage(_("Last rename undone."))
-        self._file_panel.refresh()
+        restored = {src for src, _dst in plan}
+        self._file_panel.file_list.refresh_and_select_paths(restored)
 
     def _open_settings(self) -> None:
         dlg = SettingsDialog(self._config, self)
@@ -770,7 +782,8 @@ class MainWindow(QMainWindow):
         set_current_catalog(name)
         self._config = load_config()
         self._undo_stack.clear()
-        self._undo_btn.setEnabled(False)
+        self._undo_total = 0
+        self._update_undo_btn()
         self._schema_frame.rebuild(self._config)
         self._file_panel.reconfigure(self._config)
         self._reload_filter_history()

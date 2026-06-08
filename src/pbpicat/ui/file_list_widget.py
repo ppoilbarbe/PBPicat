@@ -3,7 +3,18 @@ import unicodedata
 from collections.abc import Callable
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QFileSystemWatcher, QMimeData, QSize, Qt, QThread, QTimer, QUrl, Signal
+from PySide6.QtCore import (
+    QEvent,
+    QFileSystemWatcher,
+    QItemSelectionModel,
+    QMimeData,
+    QSize,
+    Qt,
+    QThread,
+    QTimer,
+    QUrl,
+    Signal,
+)
 from PySide6.QtGui import QDesktopServices, QDrag, QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -121,6 +132,7 @@ class FileListWidget(QTableWidget):
         self._get_schema_fields: Callable[[], list[str]] | None = None
         self._get_video_marker_pos: Callable[[], int] | None = None
         self._rebuilding: bool = False
+        self._auto_selecting: bool = False
         self._sidecars_pending_edit: set[Path] = set()
         self._dir_tree = None
         self._apply_config(config)
@@ -190,7 +202,11 @@ class FileListWidget(QTableWidget):
             self._watcher.removePaths(watched)
         self._current_dir = Path(dir_path)
         self._watcher.addPath(dir_path)
-        self.refresh()
+        self._auto_selecting = True
+        try:
+            self.refresh()
+        finally:
+            self._auto_selecting = False
 
     def _on_dir_changed_on_disk(self) -> None:
         self._refresh_debounce.start()
@@ -198,13 +214,25 @@ class FileListWidget(QTableWidget):
     def _refresh_preserve_selection(self) -> None:
         rows = {idx.row() for idx in self.selectedIndexes()}
         selected_paths = {self._display_data[r][0] for r in rows if r < len(self._display_data)}
-        self.refresh()
+        self._auto_selecting = True
+        try:
+            self.refresh()
+        finally:
+            self._auto_selecting = False
         if selected_paths and self._display_data:
+            sm = self.selectionModel()
+            sm.clearSelection()
+            first_row = None
             for row, (path, _) in enumerate(self._display_data):
                 if path in selected_paths:
-                    self.selectRow(row)
-                    self.scrollTo(self.model().index(row, 0))
-                    break
+                    sm.select(
+                        self.model().index(row, 0),
+                        QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
+                    )
+                    if first_row is None:
+                        first_row = row
+            if first_row is not None:
+                self.scrollTo(self.model().index(first_row, 0))
 
     def refresh(self) -> None:
         if self._current_dir is None:
@@ -270,6 +298,24 @@ class FileListWidget(QTableWidget):
             row = min(row, len(self._display_data) - 1)
             self.selectRow(row)
             self.scrollTo(self.model().index(row, 0))
+
+    def refresh_and_select_paths(self, paths: set[Path]) -> None:
+        """Refresh the table then select all rows whose path is in paths."""
+        self._refresh_debounce.stop()
+        self.refresh()
+        sm = self.selectionModel()
+        sm.clearSelection()
+        first_row = None
+        for row, (path, _) in enumerate(self._display_data):
+            if path in paths:
+                sm.select(
+                    self.model().index(row, 0),
+                    QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
+                )
+                if first_row is None:
+                    first_row = row
+        if first_row is not None:
+            self.scrollTo(self.model().index(first_row, 0))
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -471,7 +517,7 @@ class FileListWidget(QTableWidget):
             row += direction
 
     def _on_selection_changed(self) -> None:
-        if self._rebuilding:
+        if self._rebuilding or self._auto_selecting:
             return
         if self._image_viewer is None or not self._image_viewer.isVisible():
             return
@@ -521,7 +567,11 @@ class FileListWidget(QTableWidget):
     def focusInEvent(self, event) -> None:  # noqa: N802
         super().focusInEvent(event)
         if self._display_data and not self.selectedIndexes():
-            self.selectRow(0)
+            self._auto_selecting = True
+            try:
+                self.selectRow(0)
+            finally:
+                self._auto_selecting = False
 
     def keyPressEvent(self, event) -> None:  # noqa: N802
         if event.key() in (Qt.Key_Left, Qt.Key_Right) and self._dir_tree is not None:

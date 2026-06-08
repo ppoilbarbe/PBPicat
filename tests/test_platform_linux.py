@@ -436,3 +436,16 @@ def test_app_chooser_dialog_activate_accepts(qtbot):
     qtbot.addWidget(dlg)
     dlg._on_activate(dlg._list.item(0))
     # accepted state set (we can't call exec() but _on_activate calls accept())
+
+
+def test_config_dir_uses_xdg(tmp_path, monkeypatch):
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    result = _linux.config_dir()
+    assert result == tmp_path / "pbpicat"
+
+
+def test_config_dir_falls_back_to_dot_config(tmp_path, monkeypatch):
+    monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
+    monkeypatch.setattr(_linux.Path, "home", staticmethod(lambda: tmp_path))
+    result = _linux.config_dir()
+    assert result == tmp_path / ".config" / "pbpicat"

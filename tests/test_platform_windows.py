@@ -5,6 +5,19 @@ from unittest.mock import patch
 from pbpicat.platform import _windows
 
 
+def test_config_dir_uses_appdata(tmp_path, monkeypatch):
+    monkeypatch.setenv("APPDATA", str(tmp_path))
+    result = _windows.config_dir()
+    assert result == tmp_path / "pbpicat"
+
+
+def test_config_dir_falls_back_to_home(tmp_path, monkeypatch):
+    monkeypatch.delenv("APPDATA", raising=False)
+    monkeypatch.setattr(_windows.Path, "home", staticmethod(lambda: tmp_path))
+    result = _windows.config_dir()
+    assert result == tmp_path / "pbpicat"
+
+
 def test_open_default(tmp_path):
     f = tmp_path / "test.jpg"
     f.touch()

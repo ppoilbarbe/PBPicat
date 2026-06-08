@@ -1,12 +1,12 @@
 import json
-import os
 import shutil
 from pathlib import Path
 
 from PySide6.QtCore import QSettings
 
-_XDG_CONFIG_HOME = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-_BASE_DIR = _XDG_CONFIG_HOME / "pbpicat"
+from pbpicat.platform import config_dir as _config_dir
+
+_BASE_DIR = _config_dir()
 _CATALOG_CONF = _BASE_DIR / "catalog.conf"
 _GLOBAL_CONFIG_PATH = _BASE_DIR / "global_settings.json"
 

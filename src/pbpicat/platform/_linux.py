@@ -29,6 +29,10 @@ _XDG_APP_DIRS: list[Path] = [
 _C_ENV = {**os.environ, "LANG": "C", "LC_ALL": "C"}
 
 
+def config_dir() -> Path:
+    return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "pbpicat"
+
+
 def open_default(path: Path) -> None:
     QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
 

@@ -1053,3 +1053,104 @@ def test_mouse_double_click_left(qtbot, catalog_env, sample_png):
     )
     with patch.object(w, "_on_double_click"):
         w.mouseDoubleClickEvent(event)
+
+
+# ---------------------------------------------------------------------------
+# Bug regression: refresh_and_select_paths — multi-select preserved after undo
+# ---------------------------------------------------------------------------
+
+
+def test_refresh_and_select_paths_selects_multiple(qtbot, base_config, tmp_path):
+    """All paths in the set must be selected after refresh_and_select_paths."""
+    _img(tmp_path / "a.png")
+    _img(tmp_path / "b.png")
+    _img(tmp_path / "c.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+
+    paths = {tmp_path / "a.png", tmp_path / "c.png"}
+    w.refresh_and_select_paths(paths)
+
+    selected = set(w.get_selected_files())
+    assert selected == paths
+
+
+def test_refresh_and_select_paths_stops_debounce(qtbot, base_config, tmp_path):
+    """The debounce timer must be inactive after refresh_and_select_paths."""
+    _img(tmp_path / "a.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+
+    w._refresh_debounce.start()
+    assert w._refresh_debounce.isActive()
+
+    w.refresh_and_select_paths({tmp_path / "a.png"})
+    assert not w._refresh_debounce.isActive()
+
+
+def test_refresh_preserve_selection_multi(qtbot, base_config, tmp_path):
+    """_refresh_preserve_selection must restore all previously selected rows."""
+    _img(tmp_path / "a.png")
+    _img(tmp_path / "b.png")
+    _img(tmp_path / "c.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+
+    # Select two files manually (bypass auto_selecting guard)
+    from PySide6.QtCore import QItemSelectionModel
+
+    sm = w.selectionModel()
+    sm.select(w.model().index(0, 0), QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows)
+    sm.select(w.model().index(2, 0), QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows)
+
+    w._refresh_preserve_selection()
+
+    selected = set(w.get_selected_files())
+    assert selected == {tmp_path / "a.png", tmp_path / "c.png"}
+
+
+# ---------------------------------------------------------------------------
+# Bug regression: viewer not updated during load_directory / focusInEvent
+# ---------------------------------------------------------------------------
+
+
+def test_load_directory_does_not_trigger_viewer(qtbot, base_config, tmp_path):
+    """_on_selection_changed must not update the viewer during load_directory."""
+    _img(tmp_path / "a.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+
+    viewer = MagicMock()
+    viewer.isVisible.return_value = True
+    w._image_viewer = viewer
+
+    w.load_directory(str(tmp_path))
+
+    viewer.load_image.assert_not_called()
+    viewer.show_message.assert_not_called()
+
+
+def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
+    """focusInEvent auto-select must not update the image viewer."""
+    from PySide6.QtCore import QEvent, Qt
+    from PySide6.QtGui import QFocusEvent
+
+    _img(tmp_path / "a.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.clearSelection()
+
+    viewer = MagicMock()
+    viewer.isVisible.return_value = True
+    w._image_viewer = viewer
+
+    event = QFocusEvent(QEvent.Type.FocusIn, Qt.FocusReason.MouseFocusReason)
+    w.focusInEvent(event)
+
+    assert len(w.selectedIndexes()) > 0  # auto-select did happen
+    viewer.load_image.assert_not_called()  # but viewer was not updated
+    viewer.show_message.assert_not_called()
