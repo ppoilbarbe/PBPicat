@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.7.0] - 2026-06-08
+
+### Added
+
+- **Images menu** — new *Images* menu (between *Catalog* and *Settings*) with *Open* (Ctrl+O), *Open with…* (Ctrl+Shift+O), *Template*, *Delete* (Del), and *Refresh* (F5) actions.
+- **Open / Open with** — *Open* launches the selected file(s) with the system default application; *Open with…* prompts for a specific application. Both actions are available in the file-list context menu and the image-viewer toolbar.
+- **Platform helpers** — new `platform/` package providing XDG/Linux (application picker dialog), macOS (`open -a`), and Windows (`ShellExecuteW`) implementations for *Open with*.
+- **Image viewer toolbar extended** — *Open*, *Open with*, *Template*, and *Delete* buttons added after the zoom controls.
+- **Confirm deletions setting** — new catalog setting (default: on) that requires confirmation before deleting files; a configurable threshold controls whether individual file names are listed.
+- **Keyboard navigation** — Left/Right arrows in the file list transfer focus to the directory tree; Right arrow on a tree leaf transfers focus back to the file list.
+- **Return/Enter opens file** — pressing Return or Enter in the file list opens the image viewer (images) or the default external application (other media).
+- **Auto-select on focus** — when the file list gains focus with no active selection, the first row is automatically selected.
+- **New keyboard shortcuts** — Ctrl+, opens catalog settings; Ctrl+Alt+, opens program settings; both are also shown in the keyboard-shortcuts dialog.
+- **Status tips on all menu actions** — every menu entry now has a descriptive status-bar tip.
+- **Duplicate catalog** (Ctrl+Shift+D) — copies the current catalog's settings and field history to a new catalog name.
+- **Undo rename counter** — the *Undo rename* button shows `N/total` (renames pending / total done in the session), e.g. *Undo rename 3/17*.
+- **Auto-select restored files after undo** — after undoing a rename or renumber, the files moved back to their original location are automatically selected in the file list.
+- **Test suite** — 551 tests across 14 modules at 98 % overall coverage; all non-UI modules and most UI modules at 100 %.
+
+### Changed
+
+- **"Refresh" moved to *Images* menu** — the *Refresh* action (F5) is the last entry of the *Images* menu; the now-empty *View* menu is removed.
+- **Multi-selection in image viewer** — selecting more than one file while the viewer is open shows an informational message instead of closing the viewer.
+- ***Catalog configuration…* renamed** — the menu entry was previously labelled *Configuration…* under *Settings*.
+- **`config_dir()` moved to `platform/`** — each platform module now exposes `config_dir()` returning the OS-native configuration directory (`$XDG_CONFIG_HOME/pbpicat` on Linux, `~/Library/Application Support/pbpicat` on macOS, `%APPDATA%\pbpicat` on Windows). `config.py` no longer contains XDG-specific or OS-specific code.
+
+### Fixed
+
+- **Multi-selection lost after undo** — `refresh_and_select_paths` cancels the filesystem-watcher debounce before refreshing, and `_refresh_preserve_selection` now restores all previously selected rows instead of only the first.
+- **Image viewer auto-updated on directory change** — the viewer no longer changes image when the file list loads a new directory or gains focus (auto-select row 0); it updates only on explicit user selection.
+
 ## [1.6.3] - 2026-06-01
 
 ### Changed
