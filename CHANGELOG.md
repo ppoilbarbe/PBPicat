@@ -20,6 +20,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Version read from package metadata** — `importlib.metadata` replaces the hardcoded version string in `__main__.py`; the About dialog always shows the installed version.
 - **Context menu selects clicked row** — right-clicking an unselected row now selects it before the menu appears, so actions operate on the expected file.
 
+### Fixed
+
+- **PyInstaller bundle crash on startup** — `email` was listed in `excludes` but is required by `importlib.metadata` at import time and by `email.utils` in the About dialog; removed from excludes.
+- **Menu icons missing in PyInstaller bundle** — `_RESOURCE_DIR` in `ui/icons.py` was computed from `__file__`, which points inside the package directory in the bundle; now uses `sys._MEIPASS` when available, matching the actual extraction path of bundled SVG assets.
+
 ## [1.7.0] - 2026-06-08
 
 ### Added

@@ -50,7 +50,7 @@ a = Analysis(
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
-    excludes=["tkinter", "unittest", "email", "http", "xml", "numpy", "matplotlib"],
+    excludes=["tkinter", "unittest", "http", "xml", "numpy", "matplotlib"],
     noarchive=False,
 )
 

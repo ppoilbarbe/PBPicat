@@ -1,9 +1,13 @@
+import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QPainter, QPixmap
 
-_RESOURCE_DIR = Path(__file__).parent.parent / "resources"
+if hasattr(sys, "_MEIPASS"):
+    _RESOURCE_DIR = Path(sys._MEIPASS) / "resources"
+else:
+    _RESOURCE_DIR = Path(__file__).parent.parent / "resources"
 ICON_SIZE = 22
 
 # Mapping: SVG name → FreeDesktop theme name (used when theme_name is not supplied)

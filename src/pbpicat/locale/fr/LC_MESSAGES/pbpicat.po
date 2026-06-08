@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  pbpicat\n"
 "Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-06-08 13:02+0200\n"
+"POT-Creation-Date: 2026-06-08 13:11+0200\n"
 "PO-Revision-Date: 2026-05-02 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language: fr\n"
@@ -23,7 +23,7 @@ msgid "language_name"
 msgstr "Français"
 
 #: src/pbpicat/platform/_linux.py:217 src/pbpicat/platform/_macos.py:25
-#: src/pbpicat/ui/image_viewer.py:152
+#: src/pbpicat/ui/image_viewer.py:151
 msgid "Open with"
 msgstr "Ouvrir avec"
 
@@ -35,7 +35,7 @@ msgstr "Choisir une application :"
 msgid "Application name:"
 msgstr "Nom de l'application :"
 
-#: src/pbpicat/ui/dir_tree.py:111 src/pbpicat/ui/image_viewer.py:151
+#: src/pbpicat/ui/dir_tree.py:111 src/pbpicat/ui/image_viewer.py:150
 msgid "Open"
 msgstr "Ouvrir"
 
@@ -87,7 +87,7 @@ msgstr ""
 "{names}"
 
 #: src/pbpicat/ui/file_list_widget.py:680 src/pbpicat/ui/main_window.py:209
-#: src/pbpicat/ui/main_window.py:771
+#: src/pbpicat/ui/main_window.py:770
 msgid "Confirm deletion"
 msgstr "Confirmer la suppression"
 
@@ -95,7 +95,7 @@ msgstr "Confirmer la suppression"
 msgid "Deletion error"
 msgstr "Erreur de suppression"
 
-#: src/pbpicat/ui/file_list_widget.py:721 src/pbpicat/ui/image_viewer.py:153
+#: src/pbpicat/ui/file_list_widget.py:721 src/pbpicat/ui/image_viewer.py:152
 msgid "Template"
 msgstr "Modèle"
 
@@ -129,7 +129,7 @@ msgstr "▲ Monter"
 msgid "▼ Move down"
 msgstr "▼ Descendre"
 
-#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/image_viewer.py:154
+#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/image_viewer.py:153
 #: src/pbpicat/ui/settings_dialog.py:151 src/pbpicat/ui/settings_dialog.py:307
 #: src/pbpicat/ui/settings_dialog.py:413 src/pbpicat/ui/settings_dialog.py:610
 msgid "Delete"
@@ -155,35 +155,35 @@ msgstr "Historiques des champs"
 msgid "Sidecar filter"
 msgstr "Filtre sidecar"
 
-#: src/pbpicat/ui/image_viewer.py:108
+#: src/pbpicat/ui/image_viewer.py:107
 msgid "Fit window  0"
 msgstr "Adapter à la fenêtre  0"
 
-#: src/pbpicat/ui/image_viewer.py:109
+#: src/pbpicat/ui/image_viewer.py:108
 msgid "Actual size (1:1)  1"
 msgstr "Taille réelle (1:1)  1"
 
-#: src/pbpicat/ui/image_viewer.py:110
+#: src/pbpicat/ui/image_viewer.py:109
 msgid "Fit width  W"
 msgstr "Adapter à la largeur  W"
 
-#: src/pbpicat/ui/image_viewer.py:111
+#: src/pbpicat/ui/image_viewer.py:110
 msgid "Fit height  H"
 msgstr "Adapter à la hauteur  H"
 
-#: src/pbpicat/ui/image_viewer.py:135
+#: src/pbpicat/ui/image_viewer.py:134
 msgid "Zoom in  +"
 msgstr "Agrandir  +"
 
-#: src/pbpicat/ui/image_viewer.py:136
+#: src/pbpicat/ui/image_viewer.py:135
 msgid "Zoom out  −"
 msgstr "Diminuer  −"
 
-#: src/pbpicat/ui/image_viewer.py:210
+#: src/pbpicat/ui/image_viewer.py:209
 msgid "Cannot load image."
 msgstr "Impossible de charger l'image."
 
-#: src/pbpicat/ui/image_viewer.py:314
+#: src/pbpicat/ui/image_viewer.py:313
 msgid " (max)"
 msgstr " (max)"
 
@@ -213,12 +213,12 @@ msgstr "liste de fichiers"
 msgid "tree leaf"
 msgstr "feuille de l'arbre"
 
-#: src/pbpicat/ui/main_window.py:108 src/pbpicat/ui/main_window.py:291
+#: src/pbpicat/ui/main_window.py:108 src/pbpicat/ui/main_window.py:290
 msgid "Refresh"
 msgstr "Actualiser"
 
-#: src/pbpicat/ui/main_window.py:109 src/pbpicat/ui/main_window.py:394
-#: src/pbpicat/ui/main_window.py:660
+#: src/pbpicat/ui/main_window.py:109 src/pbpicat/ui/main_window.py:393
+#: src/pbpicat/ui/main_window.py:659
 msgid "Undo rename"
 msgstr "Annuler le renommage"
 
@@ -232,19 +232,19 @@ msgstr "Ouvrir le(s) fichier(s) sélectionné(s)"
 msgid "Open with…"
 msgstr "Ouvrir avec…"
 
-#: src/pbpicat/ui/main_window.py:112 src/pbpicat/ui/main_window.py:731
+#: src/pbpicat/ui/main_window.py:112 src/pbpicat/ui/main_window.py:730
 msgid "New catalog"
 msgstr "Nouveau catalogue"
 
-#: src/pbpicat/ui/main_window.py:113 src/pbpicat/ui/main_window.py:786
+#: src/pbpicat/ui/main_window.py:113 src/pbpicat/ui/main_window.py:785
 msgid "Duplicate catalog"
 msgstr "Dupliquer le catalogue"
 
-#: src/pbpicat/ui/main_window.py:114 src/pbpicat/ui/main_window.py:297
+#: src/pbpicat/ui/main_window.py:114 src/pbpicat/ui/main_window.py:296
 msgid "Open catalog settings"
 msgstr "Ouvrir les paramètres du catalogue"
 
-#: src/pbpicat/ui/main_window.py:115 src/pbpicat/ui/main_window.py:305
+#: src/pbpicat/ui/main_window.py:115 src/pbpicat/ui/main_window.py:304
 msgid "Open program settings"
 msgstr "Ouvrir les paramètres du programme"
 
@@ -292,7 +292,7 @@ msgstr "Supprimer l'image actuelle et ses fichiers annexes"
 msgid "Close image viewer"
 msgstr "Fermer le visualiseur d'images"
 
-#: src/pbpicat/ui/main_window.py:148 src/pbpicat/ui/main_window.py:438
+#: src/pbpicat/ui/main_window.py:148 src/pbpicat/ui/main_window.py:437
 msgid "Orphan sidecars"
 msgstr "Sidecars orphelins"
 
@@ -309,373 +309,373 @@ msgstr "Tout supprimer"
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} fichier(s) sidecar orphelin(s) :"
 
-#: src/pbpicat/ui/main_window.py:247
+#: src/pbpicat/ui/main_window.py:246
 msgid "&File"
 msgstr "&Fichier"
 
-#: src/pbpicat/ui/main_window.py:248
+#: src/pbpicat/ui/main_window.py:247
 msgid "&Quit"
 msgstr "&Quitter"
 
-#: src/pbpicat/ui/main_window.py:250
+#: src/pbpicat/ui/main_window.py:249
 msgid "Quit the application"
 msgstr "Quitter l'application"
 
-#: src/pbpicat/ui/main_window.py:253
+#: src/pbpicat/ui/main_window.py:252
 msgid "&Catalog"
 msgstr "&Catalogue"
 
-#: src/pbpicat/ui/main_window.py:254
+#: src/pbpicat/ui/main_window.py:253
 msgid "&New catalog…"
 msgstr "&Nouveau catalogue…"
 
-#: src/pbpicat/ui/main_window.py:256
+#: src/pbpicat/ui/main_window.py:255
 msgid "Create a new catalog"
 msgstr "Créer un nouveau catalogue"
 
-#: src/pbpicat/ui/main_window.py:258
+#: src/pbpicat/ui/main_window.py:257
 msgid "&Delete catalog…"
 msgstr "&Supprimer un catalogue…"
 
-#: src/pbpicat/ui/main_window.py:259
+#: src/pbpicat/ui/main_window.py:258
 msgid "Delete a catalog"
 msgstr "Supprimer un catalogue"
 
-#: src/pbpicat/ui/main_window.py:261
+#: src/pbpicat/ui/main_window.py:260
 msgid "D&uplicate catalog…"
 msgstr "D&upliquer le catalogue…"
 
-#: src/pbpicat/ui/main_window.py:263
+#: src/pbpicat/ui/main_window.py:262
 msgid "Duplicate the current catalog"
 msgstr "Dupliquer le catalogue courant"
 
-#: src/pbpicat/ui/main_window.py:268
+#: src/pbpicat/ui/main_window.py:267
 msgid "&Images"
 msgstr "&Images"
 
-#: src/pbpicat/ui/main_window.py:269
+#: src/pbpicat/ui/main_window.py:268
 msgid "&Open"
 msgstr "&Ouvrir"
 
-#: src/pbpicat/ui/main_window.py:271
+#: src/pbpicat/ui/main_window.py:270
 msgid "Open selected file(s) with the default application"
 msgstr "Ouvrir le(s) fichier(s) sélectionné(s) avec l'application par défaut"
 
-#: src/pbpicat/ui/main_window.py:273
+#: src/pbpicat/ui/main_window.py:272
 msgid "Open &with…"
 msgstr "Ouvrir &avec…"
 
-#: src/pbpicat/ui/main_window.py:275
+#: src/pbpicat/ui/main_window.py:274
 msgid "Open selected file with a chosen application"
 msgstr "Ouvrir le fichier sélectionné avec une application choisie"
 
-#: src/pbpicat/ui/main_window.py:278
+#: src/pbpicat/ui/main_window.py:277
 msgid "&Template"
 msgstr "&Modèle"
 
-#: src/pbpicat/ui/main_window.py:279
+#: src/pbpicat/ui/main_window.py:278
 msgid "Infer rename template from the selected file name"
 msgstr "Déduire un modèle de renommage depuis le nom du fichier sélectionné"
 
-#: src/pbpicat/ui/main_window.py:282
+#: src/pbpicat/ui/main_window.py:281
 msgid "&Delete"
 msgstr "&Supprimer"
 
-#: src/pbpicat/ui/main_window.py:284
+#: src/pbpicat/ui/main_window.py:283
 msgid "Permanently delete the selected file(s)"
 msgstr "Supprimer définitivement le(s) fichier(s) sélectionné(s)"
 
-#: src/pbpicat/ui/main_window.py:289
+#: src/pbpicat/ui/main_window.py:288
 msgid "&Refresh"
 msgstr "&Actualiser"
 
-#: src/pbpicat/ui/main_window.py:294
+#: src/pbpicat/ui/main_window.py:293
 msgid "&Settings"
 msgstr "&Paramètres"
 
-#: src/pbpicat/ui/main_window.py:295
+#: src/pbpicat/ui/main_window.py:294
 msgid "&Catalog configuration…"
 msgstr "&Configuration du catalogue…"
 
-#: src/pbpicat/ui/main_window.py:299
+#: src/pbpicat/ui/main_window.py:298
 msgid "&History…"
 msgstr "&Historiques…"
 
-#: src/pbpicat/ui/main_window.py:300
+#: src/pbpicat/ui/main_window.py:299
 msgid "Edit field and filter history"
 msgstr "Modifier l'historique des champs et des filtres"
 
-#: src/pbpicat/ui/main_window.py:303
+#: src/pbpicat/ui/main_window.py:302
 msgid "&Program settings…"
 msgstr "&Paramètres du programme…"
 
-#: src/pbpicat/ui/main_window.py:308
+#: src/pbpicat/ui/main_window.py:307
 msgid "&Help"
 msgstr "&Aide"
 
-#: src/pbpicat/ui/main_window.py:309
+#: src/pbpicat/ui/main_window.py:308
 msgid "&Keyboard shortcuts…"
 msgstr "&Raccourcis clavier…"
 
-#: src/pbpicat/ui/main_window.py:311
+#: src/pbpicat/ui/main_window.py:310
 msgid "Show keyboard shortcuts"
 msgstr "Afficher les raccourcis clavier"
 
-#: src/pbpicat/ui/main_window.py:314
+#: src/pbpicat/ui/main_window.py:313
 msgid "&About"
 msgstr "À &propos"
 
-#: src/pbpicat/ui/main_window.py:315 src/pbpicat/ui/main_window.py:860
+#: src/pbpicat/ui/main_window.py:314 src/pbpicat/ui/main_window.py:859
 msgid "About PBPicat"
 msgstr "À propos de PBPicat"
 
-#: src/pbpicat/ui/main_window.py:344
+#: src/pbpicat/ui/main_window.py:343
 msgid "Ready."
 msgstr "Prêt."
 
-#: src/pbpicat/ui/main_window.py:364
+#: src/pbpicat/ui/main_window.py:363
 msgid "Destination:"
 msgstr "Destination :"
 
-#: src/pbpicat/ui/main_window.py:366
+#: src/pbpicat/ui/main_window.py:365
 msgid "Destination root directory (DEST_ROOTDIR)…"
 msgstr "Répertoire racine de destination (DEST_ROOTDIR)…"
 
-#: src/pbpicat/ui/main_window.py:370
+#: src/pbpicat/ui/main_window.py:369
 msgid "Browse…"
 msgstr "Parcourir…"
 
-#: src/pbpicat/ui/main_window.py:375
+#: src/pbpicat/ui/main_window.py:374
 msgid "Rename all"
 msgstr "Renommer tout"
 
-#: src/pbpicat/ui/main_window.py:378
+#: src/pbpicat/ui/main_window.py:377
 msgid "Rename all files in the current directory according to the schema"
 msgstr "Renomme tous les fichiers du répertoire courant selon le schéma"
 
-#: src/pbpicat/ui/main_window.py:382
+#: src/pbpicat/ui/main_window.py:381
 msgid "Renumber from 1"
 msgstr "Renuméroter depuis 1"
 
-#: src/pbpicat/ui/main_window.py:385
+#: src/pbpicat/ui/main_window.py:384
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Renuméroter tous les fichiers du répertoire courant à partir de 1"
 
-#: src/pbpicat/ui/main_window.py:395
+#: src/pbpicat/ui/main_window.py:394
 msgid "Undo last rename (restores files to their original location)"
 msgstr "Annule le dernier renommage (remet les fichiers à leur emplacement d'origine)"
 
-#: src/pbpicat/ui/main_window.py:403
+#: src/pbpicat/ui/main_window.py:402
 msgid "Sort by date"
 msgstr "Trier par date"
 
-#: src/pbpicat/ui/main_window.py:404
+#: src/pbpicat/ui/main_window.py:403
 msgid "Sort files by modification date (unchecked: sort by name)"
 msgstr "Trier les fichiers par date de modification (décoché : trier par nom)"
 
-#: src/pbpicat/ui/main_window.py:409
+#: src/pbpicat/ui/main_window.py:408
 msgid "Reverse sort"
 msgstr "Tri inverse"
 
-#: src/pbpicat/ui/main_window.py:410
+#: src/pbpicat/ui/main_window.py:409
 msgid "Reverse the sort order"
 msgstr "Inverser l'ordre de tri"
 
-#: src/pbpicat/ui/main_window.py:419
+#: src/pbpicat/ui/main_window.py:418
 msgid "Sidecar filter…"
 msgstr "Filtre sidecar…"
 
-#: src/pbpicat/ui/main_window.py:422
+#: src/pbpicat/ui/main_window.py:421
 msgid "<b>Sidecar content filter</b><br>Python regular expression applied to the <i>content</i> of sidecar files.<br>Only files with at least one sidecar whose content matches are shown.<br>Files with no sidecar are always hidden when a filter is active.<br><tt>.*</tt> matches across line breaks (re.DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters.<br>Leave empty to show all files."
 msgstr "<b>Filtre sur le contenu des sidecars</b><br>Expression régulière Python appliquée au <i>contenu</i> des fichiers sidecar.<br>Seuls les fichiers dont au moins un sidecar correspond sont affichés.<br>Les fichiers sans sidecar sont toujours masqués quand un filtre est actif.<br><tt>.*</tt> traverse les sauts de ligne (re.DOTALL).<br>Insensible à la casse (re.IGNORECASE), y compris les caractères accentués.<br>Laisser vide pour afficher tous les fichiers."
 
-#: src/pbpicat/ui/main_window.py:439
+#: src/pbpicat/ui/main_window.py:438
 msgid "Show orphan sidecar files (no matching image or video)"
 msgstr "Afficher les fichiers sidecar orphelins (sans image ou vidéo correspondante)"
 
-#: src/pbpicat/ui/main_window.py:446
+#: src/pbpicat/ui/main_window.py:445
 msgid "Rename selection"
 msgstr "Renommer la sélection"
 
-#: src/pbpicat/ui/main_window.py:447
+#: src/pbpicat/ui/main_window.py:446
 msgid "Rename selected files according to the schema"
 msgstr "Renomme les fichiers sélectionnés selon le schéma"
 
-#: src/pbpicat/ui/main_window.py:460
+#: src/pbpicat/ui/main_window.py:459
 msgid "Choose destination directory"
 msgstr "Choisir le répertoire destination"
 
-#: src/pbpicat/ui/main_window.py:557
+#: src/pbpicat/ui/main_window.py:556
 msgid "No file selected."
 msgstr "Aucun fichier sélectionné."
 
-#: src/pbpicat/ui/main_window.py:564
+#: src/pbpicat/ui/main_window.py:563
 msgid "No files to rename in the current directory."
 msgstr "Aucun fichier à renommer dans le répertoire courant."
 
-#: src/pbpicat/ui/main_window.py:568
+#: src/pbpicat/ui/main_window.py:567
 msgid "Confirm rename"
 msgstr "Confirmer le renommage"
 
-#: src/pbpicat/ui/main_window.py:569
+#: src/pbpicat/ui/main_window.py:568
 #, python-brace-format
 msgid "Rename {n} file(s) according to the current schema?"
 msgstr "Renommer {n} fichier(s) selon le schéma courant ?"
 
-#: src/pbpicat/ui/main_window.py:591 src/pbpicat/ui/main_window.py:607
-#: src/pbpicat/ui/main_window.py:637
+#: src/pbpicat/ui/main_window.py:590 src/pbpicat/ui/main_window.py:606
+#: src/pbpicat/ui/main_window.py:636
 msgid "Rename error"
 msgstr "Erreur de renommage"
 
-#: src/pbpicat/ui/main_window.py:594
+#: src/pbpicat/ui/main_window.py:593
 msgid "Files are already correctly numbered."
 msgstr "Les fichiers sont déjà correctement numérotés."
 
-#: src/pbpicat/ui/main_window.py:598
+#: src/pbpicat/ui/main_window.py:597
 msgid "Confirm renumber"
 msgstr "Confirmer la renumérotation"
 
-#: src/pbpicat/ui/main_window.py:599
+#: src/pbpicat/ui/main_window.py:598
 #, python-brace-format
 msgid "Renumber {n} file(s) starting from 1?"
 msgstr "Renuméroter {n} fichier(s) à partir de 1 ?"
 
-#: src/pbpicat/ui/main_window.py:608 src/pbpicat/ui/main_window.py:638
+#: src/pbpicat/ui/main_window.py:607 src/pbpicat/ui/main_window.py:637
 msgid "Error: rename cancelled."
 msgstr "Erreur : renommage annulé."
 
-#: src/pbpicat/ui/main_window.py:613
+#: src/pbpicat/ui/main_window.py:612
 #, python-brace-format
 msgid "{n} file(s) renumbered successfully."
 msgstr "{n} fichier(s) renuméroté(s) avec succès."
 
-#: src/pbpicat/ui/main_window.py:619
+#: src/pbpicat/ui/main_window.py:618
 msgid "Missing destination"
 msgstr "Destination manquante"
 
-#: src/pbpicat/ui/main_window.py:619
+#: src/pbpicat/ui/main_window.py:618
 msgid "Please specify a destination directory."
 msgstr "Veuillez spécifier un répertoire destination."
 
-#: src/pbpicat/ui/main_window.py:650
+#: src/pbpicat/ui/main_window.py:649
 #, python-brace-format
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} fichier(s) renommé(s) avec succès."
 
-#: src/pbpicat/ui/main_window.py:657
+#: src/pbpicat/ui/main_window.py:656
 #, python-brace-format
 msgid "Undo rename {n}/{total}"
 msgstr "Annuler le renommage {n}/{total}"
 
-#: src/pbpicat/ui/main_window.py:673
+#: src/pbpicat/ui/main_window.py:672
 msgid "Undo error"
 msgstr "Erreur d'annulation"
 
-#: src/pbpicat/ui/main_window.py:674
+#: src/pbpicat/ui/main_window.py:673
 msgid "Error: undo failed."
 msgstr "Erreur : annulation impossible."
 
-#: src/pbpicat/ui/main_window.py:678
+#: src/pbpicat/ui/main_window.py:677
 msgid "Last rename undone."
 msgstr "Dernier renommage annulé."
 
-#: src/pbpicat/ui/main_window.py:688
+#: src/pbpicat/ui/main_window.py:687
 msgid "Settings saved."
 msgstr "Configuration sauvegardée."
 
-#: src/pbpicat/ui/main_window.py:693
+#: src/pbpicat/ui/main_window.py:692
 msgid "Program settings saved."
 msgstr "Paramètres du programme enregistrés."
 
-#: src/pbpicat/ui/main_window.py:700
+#: src/pbpicat/ui/main_window.py:699
 msgid "History saved."
 msgstr "Historiques sauvegardés."
 
-#: src/pbpicat/ui/main_window.py:704
+#: src/pbpicat/ui/main_window.py:703
 msgid "Template applied from history."
 msgstr "Modèle appliqué depuis l'historique."
 
-#: src/pbpicat/ui/main_window.py:713
+#: src/pbpicat/ui/main_window.py:712
 msgid "PBPicat — Image & Video File Renamer"
 msgstr "PBPicat — Renommeur de fichiers graphiques"
 
-#: src/pbpicat/ui/main_window.py:715
+#: src/pbpicat/ui/main_window.py:714
 #, python-brace-format
 msgid "PBPicat — Image & Video File Renamer [{catalog}]"
 msgstr "PBPicat — Renommeur de fichiers graphiques [{catalog}]"
 
-#: src/pbpicat/ui/main_window.py:731
+#: src/pbpicat/ui/main_window.py:730
 msgid "Catalog name (letters, digits, hyphens, underscores):"
 msgstr "Nom du catalogue (lettres, chiffres, tirets, tirets bas) :"
 
-#: src/pbpicat/ui/main_window.py:741 src/pbpicat/ui/main_window.py:797
+#: src/pbpicat/ui/main_window.py:740 src/pbpicat/ui/main_window.py:796
 msgid "Invalid name"
 msgstr "Nom invalide"
 
-#: src/pbpicat/ui/main_window.py:742 src/pbpicat/ui/main_window.py:798
+#: src/pbpicat/ui/main_window.py:741 src/pbpicat/ui/main_window.py:797
 msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
 msgstr "Le nom du catalogue ne peut contenir que des lettres, des chiffres, des tirets ou des tirets bas."
 
-#: src/pbpicat/ui/main_window.py:748 src/pbpicat/ui/main_window.py:804
+#: src/pbpicat/ui/main_window.py:747 src/pbpicat/ui/main_window.py:803
 msgid "Already exists"
 msgstr "Déjà existant"
 
-#: src/pbpicat/ui/main_window.py:749 src/pbpicat/ui/main_window.py:805
+#: src/pbpicat/ui/main_window.py:748 src/pbpicat/ui/main_window.py:804
 #, python-brace-format
 msgid "A catalog named \"{name}\" already exists."
 msgstr "Un catalogue nommé « {name} » existe déjà."
 
-#: src/pbpicat/ui/main_window.py:762
+#: src/pbpicat/ui/main_window.py:761
 msgid "No catalogs"
 msgstr "Aucun catalogue"
 
-#: src/pbpicat/ui/main_window.py:763
+#: src/pbpicat/ui/main_window.py:762
 msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
 msgstr "Il n'y a aucun catalogue supplémentaire à supprimer (« default » ne peut pas être supprimé)."
 
-#: src/pbpicat/ui/main_window.py:766
+#: src/pbpicat/ui/main_window.py:765
 msgid "Delete catalog"
 msgstr "Supprimer un catalogue"
 
-#: src/pbpicat/ui/main_window.py:766
+#: src/pbpicat/ui/main_window.py:765
 msgid "Select catalog to delete:"
 msgstr "Sélectionner le catalogue à supprimer :"
 
-#: src/pbpicat/ui/main_window.py:772
+#: src/pbpicat/ui/main_window.py:771
 #, python-brace-format
 msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
 msgstr "Supprimer le catalogue « {name} » et tous ses paramètres ? Cette opération est irréversible."
 
-#: src/pbpicat/ui/main_window.py:780
+#: src/pbpicat/ui/main_window.py:779
 #, python-brace-format
 msgid "Catalog \"{name}\" deleted."
 msgstr "Catalogue « {name} » supprimé."
 
-#: src/pbpicat/ui/main_window.py:787
+#: src/pbpicat/ui/main_window.py:786
 #, python-brace-format
 msgid "New catalog name (copy of \"{source}\"):"
 msgstr "Nouveau nom du catalogue (copie de « {source} ») :"
 
-#: src/pbpicat/ui/main_window.py:809
+#: src/pbpicat/ui/main_window.py:808
 #, python-brace-format
 msgid "Catalog \"{source}\" duplicated as \"{name}\"."
 msgstr "Catalogue « {source} » dupliqué sous le nom « {name} »."
 
-#: src/pbpicat/ui/main_window.py:833
+#: src/pbpicat/ui/main_window.py:832
 #, python-brace-format
 msgid "Switched to catalog \"{name}\"."
 msgstr "Catalogue « {name} » activé."
 
-#: src/pbpicat/ui/main_window.py:862
+#: src/pbpicat/ui/main_window.py:861
 #, python-brace-format
 msgid "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…).<br><br><b>{authors_label}:</b> {authors}<br><b>Python:</b> {py_version}<br><b>PySide6:</b> {pyside_version}<br><b>{platform_label}:</b> {os_info}"
 msgstr "<b>PBPicat</b> {version}<br>Outil de renommage de fichiers image et vidéo selon un schéma structuré.<br><br>Formats pris en charge : images (JPEG, PNG, HEIC, RAW…) et vidéos (MP4, MOV…),<br>avec les fichiers sidecar associés (XMP, DOP, PP3…).<br><br><b>{authors_label} :</b> {authors}<br><b>Python :</b> {py_version}<br><b>PySide6 :</b> {pyside_version}<br><b>{platform_label} :</b> {os_info}"
 
-#: src/pbpicat/ui/main_window.py:871
+#: src/pbpicat/ui/main_window.py:870
 msgid "Authors"
 msgstr "Auteurs"
 
-#: src/pbpicat/ui/main_window.py:875
+#: src/pbpicat/ui/main_window.py:874
 msgid "Platform"
 msgstr "Plateforme"
 
