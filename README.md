@@ -49,7 +49,7 @@ The destination directory and filename are built as follows:
 A sidecar file shares the same stem as the image or video file, with a
 different extension (e.g. `.xmp`, `.dop`, `.pp3`). PBPicat renames
 sidecar files automatically alongside their parent file. Sidecar
-extensions are configurable in **Settings → Preferences**.
+extensions are configurable in **Settings → Catalog configuration**.
 
 ### Video support
 
@@ -75,14 +75,29 @@ The main window has four vertical zones:
 2. **Schema** — N editable fields with per-field history (combobox). Radio buttons between fields select the video marker position.
 
 3. **File panel** — Left side: directory tree. Right side: file list showing a thumbnail, filename, and a sidecar indicator for each file.
-   - Double-click a thumbnail → opens the image viewer.
-   - Double-click a sidecar indicator → opens text sidecars in the system editor.
-   - Right-click a file → **Template** (infer schema from the filename) or **Delete** (permanently removes the file and its sidecars).
+   - Double-click a thumbnail or filename → opens the image viewer (images) or the system player (videos).
+   - Double-click a sidecar indicator → opens text sidecars in the system editor; if no sidecar exists, creates a new one.
+   - Right-click a file → context menu (same actions as the **Images** menu, see below).
    - Hover over a filename → shows a preview of the resulting name.
+   - **Keyboard navigation**: Left/Right arrows in the file list move focus to the directory tree; Right arrow on a tree leaf moves focus back to the file list. Return/Enter opens the selected file.
 
-4. **Button bar** — **Undo last rename** (multi-level: click repeatedly to step back through successive rename operations), a **sidecar content filter**, and **Rename selection** (renames the currently selected files).
+4. **Button bar** — **Undo last rename** (Ctrl+Z, multi-level, shows N/total pending), a **sidecar content filter**, **Rename selection**, and **Renumber from 1**.
 
-**Sidecar content filter** — Type a Python regular expression (case-insensitive, `.` matches newlines) into the filter box to restrict the file list to files whose sidecar content matches. Only files that have at least one matching sidecar are shown; files with no sidecar at all are hidden as soon as a filter is active. Clear the box to show all files again. Previous expressions are saved in the history so they can be reused from the dropdown.
+**Sidecar content filter** — Type a Python regular expression (case-insensitive, `.` matches newlines) into the filter box to restrict the file list to files whose sidecar content matches. Only files that have at least one matching sidecar are shown; files with no sidecar at all are hidden as soon as a filter is active. Clear the box to show all files again. Previous expressions are saved in the history.
+
+**Renumber from 1** — Renames all displayed files in-place, assigning sequential numbers starting from 1 according to the numeric field (`#`) in the current schema. Images and videos are numbered separately. The result is undoable.
+
+### Images menu
+
+The **Images** menu (and the file-list context menu) provides:
+
+- **Open** (Ctrl+O) — Open the selected file(s) with the system default application.
+- **Open with…** (Ctrl+Shift+O) — Choose a specific application to open the file.
+- **Template** — Infer field values from the selected filename; shows a confirmation dialog before applying.
+- **Delete** (Del) — Permanently delete the selected file(s) and their sidecars. A confirmation dialog is shown by default. Empty source directories are removed after deletion.
+- **Rotate 90° CCW / CW / 180°** — Lossless rotation (JPEG via `jpegtran`; PNG/TIFF/BMP/WebP via Pillow). Rotation is undoable.
+- **Apply EXIF orientation** — Apply the EXIF orientation tag as a physical transform and strip the tag. Disabled when no EXIF orientation is present.
+- **Refresh** (F5) — Reload the current directory.
 
 ### Renaming
 
@@ -95,8 +110,29 @@ files). PBPicat:
 - Renames all sidecars alongside the main file.
 - Aborts the entire operation (nothing is moved) if any destination file already exists.
 - Removes empty source directories after renaming.
-- Supports multi-level undo: click **Undo last rename** repeatedly to
-  reverse successive rename operations one by one.
+- Supports multi-level undo: click **Undo last rename** (or press Ctrl+Z) repeatedly to reverse successive rename and renumber operations one by one.
+
+### Image viewer
+
+Double-clicking a thumbnail opens the non-modal image viewer. Its toolbar provides zoom controls (**Fit**, **1:1**, **Width**, **Height**, **+**, **−**), rotation buttons (**↺**, **↻**, **↕**, **EXIF**), and file action buttons (**Open**, **Open with**, **Template**, **Delete**).
+
+| Key | Action |
+| --- | ------ |
+| 0 | Fit window |
+| 1 | Actual size (1:1) |
+| W | Fit width |
+| H | Fit height |
+| + / − | Zoom in / out |
+| ↑ / ↓ | Navigate previous/next image |
+| Del | Delete current image and sidecars |
+| Escape | Close window |
+
+## Settings
+
+- **Settings → Catalog configuration…** (Ctrl+,) — Per-catalog settings: rename schema (field count, titles, max history), sidecar extensions, image extensions, video extensions and marker, thumbnail size, zoom, deletion confirmation.
+- **Settings → Program settings…** (Ctrl+Alt+,) — Application-wide settings: default sidecar extensions for new catalogs and interface language (restart required).
+- **Settings → Histories…** — Edit, reorder, or clear the field and filter histories.
+- **Help → Keyboard shortcuts…** (F1) — Full list of keyboard shortcuts.
 
 ## Developer setup
 

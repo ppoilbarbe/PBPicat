@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-06-13
+
 ### Added
 
 - **Lossless rotation** — new *Images* menu entries *Rotate 90° CCW*, *Rotate 90° CW*, *Rotate 180°*, and *Apply EXIF orientation*; same buttons in the ImageViewer toolbar between zoom controls and action buttons.
@@ -26,6 +28,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`make translate`** — now passes `--no-location` to `pybabel extract` (removes file/line references from `.pot`) and runs `tools/fix_po_dates.py` after `pybabel update` to keep date headers stable.
 - **ImageViewer toolbar** — rotation buttons (↺ ↻ ↕ EXIF) inserted between zoom controls and action buttons; *Apply EXIF orientation* button disabled when loaded image has no orientation tag.
 - **SPEC.md** — updated to document lossless rotation actions, their enabled/disabled rules, and the revised ImageViewer toolbar layout.
+- **README.md** — updated to document lossless rotation, Open/Open with actions, keyboard navigation, Renumber from 1, ImageViewer keyboard shortcuts, and the Settings menu restructuring (Catalog configuration vs. Program settings).
 
 ### Fixed
 
