@@ -6,6 +6,31 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **Lossless rotation** — new *Images* menu entries *Rotate 90° CCW*, *Rotate 90° CW*, *Rotate 180°*, and *Apply EXIF orientation*; same buttons in the ImageViewer toolbar between zoom controls and action buttons.
+  - JPEG: uses `jpegtran` (bundled in the PyInstaller executable); raises a `RuntimeError` shown as a warning dialog if unavailable.
+  - Other formats (PNG, TIFF, BMP, WebP): uses Pillow — always lossless.
+  - After JPEG rotation the EXIF Orientation tag is stripped via `piexif`.
+  - *Apply EXIF orientation* is disabled when the selected image has no EXIF orientation tag; enabled/disabled state is kept in sync with the selection.
+- **Rotation undo** — rotation operations are pushed to `_undo_stack` as `("rotation", [(path, undo_op, orig_orient)])` and undone by the existing Undo button; the button label changes to *Undo rotation (N)*.
+- **`image_ops.py`** — new module: `is_jpeg`, `get_exif_orientation`, `set_exif_orientation`, `_strip_jpeg_orientation`, `_find_jpegtran`, `_jpeg_apply`, `_pil_apply`, `_pil_save_lossless`, `rotate_lossless`.
+- **`piexif` dependency** — added to `pyproject.toml`, `environment.yml`, and as a PyInstaller hidden import.
+- **`jpegtran` in PyInstaller bundle** — `pbpicat.spec` now locates `jpegtran` via `shutil.which` at build time and includes it as a binary; `_find_jpegtran` checks `sys._MEIPASS` first.
+- **`tools/fix_po_dates.py`** — normalises `POT-Creation-Date` and `PO-Revision-Date` headers to eliminate spurious diffs between locales.
+- **`tools/po_check.py`** — inspects `.po` files (statistics, untranslated entries, pattern search) without grepping or calling msgfmt (both break on multi-line entries).
+- **i18n strings** — translated rotation action labels and status messages in all eight locales (de, en, es, fr, it, ru, vi, zh_CN).
+
+### Changed
+
+- **`make translate`** — now passes `--no-location` to `pybabel extract` (removes file/line references from `.pot`) and runs `tools/fix_po_dates.py` after `pybabel update` to keep date headers stable.
+- **ImageViewer toolbar** — rotation buttons (↺ ↻ ↕ EXIF) inserted between zoom controls and action buttons; *Apply EXIF orientation* button disabled when loaded image has no orientation tag.
+- **SPEC.md** — updated to document lossless rotation actions, their enabled/disabled rules, and the revised ImageViewer toolbar layout.
+
+### Fixed
+
+- **Row selection on click after scroll** — clicking the Nth visible row (after scrolling) previously selected the Nth row from the top of the list instead of the actual clicked row. Root cause: `focusInEvent` called `selectRow(0)` before the click was processed, scrolling the viewport and shifting row coordinates. Fixed by skipping auto-select when `event.reason() == MouseFocusReason`.
+
 ## [1.8.0] - 2026-06-08
 
 ### Added

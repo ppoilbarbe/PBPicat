@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  pbpicat\n"
+"Project-Id-Version: PBPicat\n"
 "Report-Msgid-Bugs-To: philippe@cardolan.net\n"
-"POT-Creation-Date: 2026-06-08 13:18+0200\n"
+"POT-Creation-Date: 2001-01-01 00:00+0000\n"
 "PO-Revision-Date: 2026-05-17 00:00+0000\n"
 "Last-Translator: Philippe Poilbarbe <philippe@cardolan.net>\n"
 "Language: de\n"
@@ -19,78 +19,78 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/i18n.py:52
 msgid "language_name"
 msgstr "Deutsch"
 
+msgid "No EXIF orientation tag to apply."
+msgstr "Kein EXIF-Orientierungstag zum Anwenden."
+
+#, python-brace-format
+msgid "Unsupported EXIF orientation value: {v}"
+msgstr "Nicht unterstützter EXIF-Orientierungswert: {v}"
+
+msgid ""
+"jpegtran is not available.\n"
+"JPEG lossless rotation requires jpegtran.\n"
+"Install libjpeg-turbo to enable this feature."
+msgstr ""
+"jpegtran ist nicht verfügbar.\n"
+"JPEG-verlustfreie Rotation erfordert jpegtran.\n"
+"Installieren Sie libjpeg-turbo, um diese Funktion zu aktivieren."
+
 # ==AUTO== Automatically translated
-#: src/pbpicat/platform/_linux.py:217 src/pbpicat/platform/_macos.py:25
-#: src/pbpicat/ui/image_viewer.py:151
 msgid "Open with"
 msgstr "Öffnen mit"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/platform/_linux.py:221
 msgid "Choose an application:"
 msgstr "Anwendung wählen:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/platform/_macos.py:26
 msgid "Application name:"
 msgstr "Anwendungsname:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/dir_tree.py:111 src/pbpicat/ui/image_viewer.py:150
 msgid "Open"
 msgstr "Öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:54
 msgid "Proposed template"
 msgstr "Vorgeschlagene Vorlage"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:58
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Erkannte Vorlage — bestaetigen, um sie auf Felder anzuwenden:"
 
-#: src/pbpicat/ui/file_list_widget.py:66
 msgid "(empty)"
 msgstr "(leer)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:181
 msgid "Preview"
 msgstr "Vorschau"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:181
 msgid "File name"
 msgstr "Dateiname"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:181
 msgid "Sidecar"
 msgstr "Sidecar"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:414
 #, python-brace-format
 msgid "File name ({n})"
 msgstr "Dateiname ({n})"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:530
 msgid "Cannot display multiple files simultaneously."
 msgstr "Mehrere Dateien können nicht gleichzeitig angezeigt werden."
 
-#: src/pbpicat/ui/file_list_widget.py:675
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "{count} Dateien dauerhaft löschen?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:678 src/pbpicat/ui/main_window.py:210
 #, python-brace-format
 msgid ""
 "Permanently delete:\n"
@@ -100,23 +100,18 @@ msgstr ""
 "{names}"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:680 src/pbpicat/ui/main_window.py:209
-#: src/pbpicat/ui/main_window.py:770
 msgid "Confirm deletion"
 msgstr "Loeschen bestaetigen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:701 src/pbpicat/ui/main_window.py:226
 msgid "Deletion error"
 msgstr "Loeschfehler"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:721 src/pbpicat/ui/image_viewer.py:152
 msgid "Template"
 msgstr "Vorlage"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:723
 #, python-brace-format
 msgid ""
 "Could not determine a template for '{name}'.\n"
@@ -126,819 +121,695 @@ msgstr ""
 "Kein Teil des Dateinamens stimmt mit einem Feldverlauf ueberein."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/file_list_widget.py:729 src/pbpicat/ui/history_dialog.py:151
-#: src/pbpicat/ui/schema_frame.py:109 src/pbpicat/ui/schema_frame.py:126
-#: src/pbpicat/ui/settings_dialog.py:107 src/pbpicat/ui/settings_dialog.py:109
-#: src/pbpicat/ui/settings_dialog.py:115
 #, python-brace-format
 msgid "Field {n}"
 msgstr "Feld {n}"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:34
 #, python-brace-format
 msgid "History — {title}:"
 msgstr "Verlauf — {title}:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:49
 msgid "▲ Move up"
 msgstr "▲ Nach oben"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:53
 msgid "▼ Move down"
 msgstr "▼ Nach unten"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:59 src/pbpicat/ui/image_viewer.py:153
-#: src/pbpicat/ui/settings_dialog.py:151 src/pbpicat/ui/settings_dialog.py:307
-#: src/pbpicat/ui/settings_dialog.py:413 src/pbpicat/ui/settings_dialog.py:610
 msgid "Delete"
 msgstr "Loeschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:63
 msgid "Clear all"
 msgstr "Alle loeschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:103
 msgid "Clear history"
 msgstr "Verlauf loeschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:104
 msgid "Clear all values from this history?"
 msgstr "Alle Werte aus diesem Verlauf loeschen?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:136
 msgid "Field histories"
 msgstr "Feldverlaeufe"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/history_dialog.py:158
 msgid "Sidecar filter"
 msgstr "Sidecar-Filter"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:107
 msgid "Fit window  0"
 msgstr "Fenster anpassen  0"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:108
 msgid "Actual size (1:1)  1"
 msgstr "Originalgroesse (1:1)  1"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:109
 msgid "Fit width  W"
 msgstr "Breite anpassen  W"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:110
 msgid "Fit height  H"
 msgstr "Hoehe anpassen  H"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:134
 msgid "Zoom in  +"
 msgstr "Vergroessern  +"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:135
 msgid "Zoom out  −"
 msgstr "Verkleinern  −"
 
+msgid "Rotate 90° CCW"
+msgstr "90° gegen den Uhrzeigersinn drehen"
+
+msgid "Rotate 90° CW"
+msgstr "90° im Uhrzeigersinn drehen"
+
+msgid "Rotate 180°"
+msgstr "180° drehen"
+
+msgid "Apply EXIF orientation"
+msgstr "EXIF-Ausrichtung anwenden"
+
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:209
 msgid "Cannot load image."
 msgstr "Bild kann nicht geladen werden."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/image_viewer.py:313
 msgid " (max)"
 msgstr " (max)"
 
-#: src/pbpicat/ui/main_window.py:64
 msgid "Keyboard shortcuts"
 msgstr "Tastaturkürzel"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:73 src/pbpicat/ui/main_window.py:176
 msgid "Close"
 msgstr "Schließen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:95
 msgid "Main window"
 msgstr "Hauptfenster"
 
-#: src/pbpicat/ui/main_window.py:96
 msgid "Image viewer"
 msgstr "Bildbetrachter"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:103
 msgid "file list"
 msgstr "Dateiliste"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:104
 msgid "tree leaf"
 msgstr "Baumblatt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:108 src/pbpicat/ui/main_window.py:290
 msgid "Refresh"
 msgstr "Aktualisieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:109 src/pbpicat/ui/main_window.py:393
-#: src/pbpicat/ui/main_window.py:659
 msgid "Undo rename"
 msgstr "Umbenennung rückgängig machen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:110
 msgid "Open selected file(s)"
 msgstr "Ausgewählte Datei(en) öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:111
 msgid "Open with…"
 msgstr "Öffnen mit…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:112 src/pbpicat/ui/main_window.py:730
 msgid "New catalog"
 msgstr "Neuer Katalog"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:113 src/pbpicat/ui/main_window.py:785
 msgid "Duplicate catalog"
 msgstr "Katalog duplizieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:114 src/pbpicat/ui/main_window.py:296
 msgid "Open catalog settings"
 msgstr "Katalogeinstellungen öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:115 src/pbpicat/ui/main_window.py:304
 msgid "Open program settings"
 msgstr "Programmeinstellungen öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:116
 msgid "Delete selected file(s) and their sidecars"
 msgstr "Ausgewählte Datei(en) und ihre Sidecars löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:117
 msgid "Move focus to the directory tree"
 msgstr "Fokus auf die Verzeichnisstruktur verschieben"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:118
 msgid "Move focus to the file list"
 msgstr "Fokus auf die Dateiliste verschieben"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:124
 msgid "Fit window"
 msgstr "Ans Fenster anpassen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:125
 msgid "Actual size (1:1)"
 msgstr "Originalgröße (1:1)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:126
 msgid "Fit width"
 msgstr "An Breite anpassen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:127
 msgid "Fit height"
 msgstr "An Höhe anpassen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:128
 msgid "Zoom in / Zoom out"
 msgstr "Vergroessern / Verkleinern"
 
-#: src/pbpicat/ui/main_window.py:129
 msgid "Navigate to previous / next image"
 msgstr "Zum vorherigen / nächsten Bild navigieren"
 
-#: src/pbpicat/ui/main_window.py:130
 msgid "Delete current image and its sidecars"
 msgstr "Aktuelles Bild und seine Sidecars löschen"
 
-#: src/pbpicat/ui/main_window.py:131
 msgid "Close image viewer"
 msgstr "Bildbetrachter schließen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:148 src/pbpicat/ui/main_window.py:437
 msgid "Orphan sidecars"
 msgstr "Verwaiste Sidecar-Dateien"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:166
 msgid "Delete selected"
 msgstr "Auswahl löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:170
 msgid "Delete all"
 msgstr "Alle löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:188
 #, python-brace-format
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} verwaiste Sidecar-Datei(en):"
 
+msgid "Rotate selected image(s) 90° counter-clockwise"
+msgstr "Ausgewählte(s) Bild(er) um 90° gegen den Uhrzeigersinn drehen"
+
+msgid "Rotate selected image(s) 90° clockwise"
+msgstr "Ausgewählte(s) Bild(er) um 90° im Uhrzeigersinn drehen"
+
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:246
+msgid "Rotate selected image(s) 180°"
+msgstr "Ausgewählte(s) Bild(er) um 180° drehen"
+
+msgid "Apply and remove the EXIF orientation tag"
+msgstr "EXIF-Orientierungstag anwenden und entfernen"
+
+# ==AUTO== Automatically translated
 msgid "&File"
 msgstr "&Datei"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:247
 msgid "&Quit"
 msgstr "&Beenden"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:249
 msgid "Quit the application"
 msgstr "Anwendung beenden"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:252
 msgid "&Catalog"
 msgstr "&Katalog"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:253
 msgid "&New catalog…"
 msgstr "&Neuer Katalog…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:255
 msgid "Create a new catalog"
 msgstr "Neuen Katalog erstellen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:257
 msgid "&Delete catalog…"
 msgstr "Katalog &loeschen…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:258
 msgid "Delete a catalog"
 msgstr "Katalog löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:260
 msgid "D&uplicate catalog…"
 msgstr "Ka&talog duplizieren…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:262
 msgid "Duplicate the current catalog"
 msgstr "Aktuellen Katalog duplizieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:267
 msgid "&Images"
 msgstr "&Bilder"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:268
 msgid "&Open"
 msgstr "&Öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:270
 msgid "Open selected file(s) with the default application"
 msgstr "Ausgewählte(n) Datei(en) mit der Standardanwendung öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:272
 msgid "Open &with…"
 msgstr "Öffnen &mit…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:274
 msgid "Open selected file with a chosen application"
 msgstr "Ausgewählte Datei mit einer gewählten Anwendung öffnen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:277
 msgid "&Template"
 msgstr "&Vorlage"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:278
 msgid "Infer rename template from the selected file name"
 msgstr "Umbenennungsvorlage aus dem ausgewählten Dateinamen ableiten"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:281
 msgid "&Delete"
 msgstr "&Löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:283
 msgid "Permanently delete the selected file(s)"
 msgstr "Ausgewählte(n) Datei(en) dauerhaft löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:288
 msgid "&Refresh"
 msgstr "&Aktualisieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:293
 msgid "&Settings"
 msgstr "&Einstellungen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:294
 msgid "&Catalog configuration…"
 msgstr "&Katalogkonfiguration…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:298
 msgid "&History…"
 msgstr "&Verlauf…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:299
 msgid "Edit field and filter history"
 msgstr "Feld- und Filterverlauf bearbeiten"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:302
 msgid "&Program settings…"
 msgstr "&Programmeinstellungen…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:307
 msgid "&Help"
 msgstr "&Hilfe"
 
-#: src/pbpicat/ui/main_window.py:308
 msgid "&Keyboard shortcuts…"
 msgstr "&Tastaturkürzel…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:310
 msgid "Show keyboard shortcuts"
 msgstr "Tastaturkürzel anzeigen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:313
 msgid "&About"
 msgstr "&Ueber"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:314 src/pbpicat/ui/main_window.py:859
 msgid "About PBPicat"
 msgstr "Ueber PBPicat"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:343
 msgid "Ready."
 msgstr "Bereit."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:363
 msgid "Destination:"
 msgstr "Ziel:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:365
 msgid "Destination root directory (DEST_ROOTDIR)…"
 msgstr "Zielstammverzeichnis (DEST_ROOTDIR)…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:369
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:374
 msgid "Rename all"
 msgstr "Alle umbenennen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:377
 msgid "Rename all files in the current directory according to the schema"
 msgstr "Alle Dateien im aktuellen Verzeichnis gemaess dem Schema umbenennen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:381
 msgid "Renumber from 1"
 msgstr "Ab 1 nummerieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:384
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Alle Dateien im aktuellen Verzeichnis ab 1 neu nummerieren"
 
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:394
-msgid "Undo last rename (restores files to their original location)"
-msgstr "Letztes Umbenennen rueckgaengig machen (stellt Dateien am urspruenglichen Speicherort wieder her)"
+msgid "Undo last operation"
+msgstr "Letzte Aktion rückgängig machen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:402
 msgid "Sort by date"
 msgstr "Nach Datum sortieren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:403
 msgid "Sort files by modification date (unchecked: sort by name)"
 msgstr "Dateien nach Änderungsdatum sortieren (deaktiviert: nach Name sortieren)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:408
 msgid "Reverse sort"
 msgstr "Umgekehrte Sortierung"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:409
 msgid "Reverse the sort order"
 msgstr "Sortierreihenfolge umkehren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:418
 msgid "Sidecar filter…"
 msgstr "Sidecar-Filter…"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:421
 msgid "<b>Sidecar content filter</b><br>Python regular expression applied to the <i>content</i> of sidecar files.<br>Only files with at least one sidecar whose content matches are shown.<br>Files with no sidecar are always hidden when a filter is active.<br><tt>.*</tt> matches across line breaks (re.DOTALL).<br>Case-insensitive (re.IGNORECASE), including accented characters.<br>Leave empty to show all files."
 msgstr "<b>Sidecar-Inhaltsfilter</b><br>Python-regulaerer Ausdruck, der auf den <i>Inhalt</i> der Sidecar-Dateien angewendet wird.<br>Nur Dateien, bei denen mindestens ein Sidecar uebereinstimmt, werden angezeigt.<br>Dateien ohne Sidecar werden bei aktivem Filter immer ausgeblendet.<br><tt>.*</tt> passt ueber Zeilenumbrueche hinweg (re.DOTALL).<br>Gross-/Kleinschreibung ignoriert (re.IGNORECASE), einschliesslich Akzentzeichen.<br>Leer lassen, um alle Dateien anzuzeigen."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:438
 msgid "Show orphan sidecar files (no matching image or video)"
 msgstr "Verwaiste Sidecar-Dateien anzeigen (kein passendes Bild oder Video)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:445
 msgid "Rename selection"
 msgstr "Auswahl umbenennen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:446
 msgid "Rename selected files according to the schema"
 msgstr "Ausgewaehlte Dateien gemaess dem Schema umbenennen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:459
 msgid "Choose destination directory"
 msgstr "Zielverzeichnis auswaehlen"
 
+msgid "Rotation unavailable"
+msgstr "Rotation nicht verfügbar"
+
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:556
+#, python-brace-format
+msgid "{n} file(s) rotated."
+msgstr "{n} Datei(en) gedreht."
+
+# ==AUTO== Automatically translated
 msgid "No file selected."
 msgstr "Keine Datei ausgewaehlt."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:563
 msgid "No files to rename in the current directory."
 msgstr "Keine umzubenennenden Dateien im aktuellen Verzeichnis."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:567
 msgid "Confirm rename"
 msgstr "Umbenennen bestaetigen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:568
 #, python-brace-format
 msgid "Rename {n} file(s) according to the current schema?"
 msgstr "{n} Datei(en) gemaess dem aktuellen Schema umbenennen?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:590 src/pbpicat/ui/main_window.py:606
-#: src/pbpicat/ui/main_window.py:636
 msgid "Rename error"
 msgstr "Umbenennungsfehler"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:593
 msgid "Files are already correctly numbered."
 msgstr "Dateien sind bereits korrekt nummeriert."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:597
 msgid "Confirm renumber"
 msgstr "Umnummerierung bestaetigen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:598
 #, python-brace-format
 msgid "Renumber {n} file(s) starting from 1?"
 msgstr "{n} Datei(en) ab 1 neu nummerieren?"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:607 src/pbpicat/ui/main_window.py:637
 msgid "Error: rename cancelled."
 msgstr "Fehler: Umbenennen abgebrochen."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:612
 #, python-brace-format
 msgid "{n} file(s) renumbered successfully."
 msgstr "{n} Datei(en) erfolgreich neu nummeriert."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:618
 msgid "Missing destination"
 msgstr "Ziel fehlt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:618
 msgid "Please specify a destination directory."
 msgstr "Bitte geben Sie ein Zielverzeichnis an."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:649
 #, python-brace-format
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} Datei(en) erfolgreich umbenannt."
 
-# ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:656
 #, python-brace-format
-msgid "Undo rename {n}/{total}"
-msgstr "Umbenennung {n}/{total} rückgängig machen"
+msgid "Undo rotation ({n})"
+msgstr "Rotation rückgängig machen ({n})"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:672
+msgid "Undo last rotation (restores original pixel data)"
+msgstr "Letzte Rotation rückgängig machen (stellt ursprüngliche Pixeldaten wieder her)"
+
+#, python-brace-format
+msgid "Undo rename ({n})"
+msgstr "Umbenennung rückgängig machen ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last rename (restores files to their original location)"
+msgstr "Letztes Umbenennen rueckgaengig machen (stellt Dateien am urspruenglichen Speicherort wieder her)"
+
+# ==AUTO== Automatically translated
 msgid "Undo error"
 msgstr "Rueckgaengig-Fehler"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:673
 msgid "Error: undo failed."
 msgstr "Fehler: Rueckgaengig fehlgeschlagen."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:677
+msgid "Rotation undone."
+msgstr "Rotation rückgängig gemacht."
+
+# ==AUTO== Automatically translated
 msgid "Last rename undone."
 msgstr "Letztes Umbenennen rueckgaengig gemacht."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:687
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:692
 msgid "Program settings saved."
 msgstr "Programmeinstellungen gespeichert."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:699
 msgid "History saved."
 msgstr "Verlauf gespeichert."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:703
 msgid "Template applied from history."
 msgstr "Vorlage aus Verlauf angewendet."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:712
 msgid "PBPicat — Image & Video File Renamer"
 msgstr "PBPicat — Bild- & Video-Dateiumbenenner"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:714
 #, python-brace-format
 msgid "PBPicat — Image & Video File Renamer [{catalog}]"
 msgstr "PBPicat — Bild- & Video-Dateiumbenenner [{catalog}]"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:730
 msgid "Catalog name (letters, digits, hyphens, underscores):"
 msgstr "Katalogname (Buchstaben, Ziffern, Bindestriche, Unterstriche):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:740 src/pbpicat/ui/main_window.py:796
 msgid "Invalid name"
 msgstr "Ungueltiger Name"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:741 src/pbpicat/ui/main_window.py:797
 msgid "Catalog name may only contain letters, digits, hyphens, or underscores."
 msgstr "Der Katalogname darf nur Buchstaben, Ziffern, Bindestriche oder Unterstriche enthalten."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:747 src/pbpicat/ui/main_window.py:803
 msgid "Already exists"
 msgstr "Bereits vorhanden"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:748 src/pbpicat/ui/main_window.py:804
 #, python-brace-format
 msgid "A catalog named \"{name}\" already exists."
 msgstr "Ein Katalog mit dem Namen \"{name}\" existiert bereits."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:761
 msgid "No catalogs"
 msgstr "Keine Kataloge"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:762
 msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
 msgstr "Es gibt keine weiteren Kataloge zum Loeschen (\"default\" kann nicht geloescht werden)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:765
 msgid "Delete catalog"
 msgstr "Katalog loeschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:765
 msgid "Select catalog to delete:"
 msgstr "Zu loeschenden Katalog auswaehlen:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:771
 #, python-brace-format
 msgid "Delete catalog \"{name}\" and all its settings? This cannot be undone."
 msgstr "Katalog \"{name}\" und alle Einstellungen loeschen? Dies kann nicht rueckgaengig gemacht werden."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:779
 #, python-brace-format
 msgid "Catalog \"{name}\" deleted."
 msgstr "Katalog \"{name}\" geloescht."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:786
 #, python-brace-format
 msgid "New catalog name (copy of \"{source}\"):"
 msgstr "Neuer Katalogname (Kopie von \"{source}\"):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:808
 #, python-brace-format
 msgid "Catalog \"{source}\" duplicated as \"{name}\"."
 msgstr "Katalog \"{source}\" dupliziert als \"{name}\"."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:832
 #, python-brace-format
 msgid "Switched to catalog \"{name}\"."
 msgstr "Zu Katalog \"{name}\" gewechselt."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:861
 #, python-brace-format
 msgid "<b>PBPicat</b> {version}<br>Image and video file renaming tool using a structured schema.<br><br>Supported formats: images (JPEG, PNG, HEIC, RAW…) and videos (MP4, MOV…),<br>with associated sidecar files (XMP, DOP, PP3…).<br><br><b>{authors_label}:</b> {authors}<br><b>Python:</b> {py_version}<br><b>PySide6:</b> {pyside_version}<br><b>{platform_label}:</b> {os_info}"
 msgstr "<b>PBPicat</b> {version}<br>Werkzeug zum Umbenennen von Bild- und Videodateien anhand eines strukturierten Schemas.<br><br>Unterstützte Formate: Bilder (JPEG, PNG, HEIC, RAW…) und Videos (MP4, MOV…),<br>mit zugehörigen Sidecar-Dateien (XMP, DOP, PP3…).<br><br><b>{authors_label}:</b> {authors}<br><b>Python:</b> {py_version}<br><b>PySide6:</b> {pyside_version}<br><b>{platform_label}:</b> {os_info}"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:870
 msgid "Authors"
 msgstr "Autoren"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/main_window.py:874
 msgid "Platform"
 msgstr "Plattform"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:88
 msgid "<b>Rename schema</b>"
 msgstr "<b>Umbenennungsschema</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/schema_frame.py:116
 msgid "Video marker position"
 msgstr "Position des Videomarkers"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:50
 msgid "Number of fields:"
 msgstr "Anzahl der Felder:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:60
 msgid "Max history entries:"
 msgstr "Max. Verlaufseintraege:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:64
 msgid "Maximum number of values kept per field history and sidecar filter history"
 msgstr "Maximale Anzahl gespeicherter Werte pro Feldverlauf und Sidecar-Filterverlauf"
 
-#: src/pbpicat/ui/settings_dialog.py:71
 msgid "Max files listed in deletion confirmation:"
 msgstr "Maximale Anzahl aufgelisteter Dateien bei Löschbestätigung:"
 
-#: src/pbpicat/ui/settings_dialog.py:76
 msgid "When deleting more files than this threshold, show the count instead of listing each file name"
 msgstr "Wenn mehr Dateien als dieser Schwellenwert gelöscht werden, wird die Anzahl statt der Dateinamen angezeigt"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:83
 msgid "<b>Field titles:</b>"
 msgstr "<b>Feldtitel:</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:110
 #, python-brace-format
 msgid "Field {n}:"
 msgstr "Feld {n}:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:131
 msgid "Sidecar file extensions (e.g. .xmp, .prompt.txt):"
 msgstr "Sidecar-Dateiendungen (z. B. .xmp, .prompt.txt):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:140 src/pbpicat/ui/settings_dialog.py:599
 msgid ".ext or .name.ext"
 msgstr ".ext oder .name.ext"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:145 src/pbpicat/ui/settings_dialog.py:301
-#: src/pbpicat/ui/settings_dialog.py:407 src/pbpicat/ui/settings_dialog.py:604
 msgid "Add"
 msgstr "Hinzufuegen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:158 src/pbpicat/ui/settings_dialog.py:314
-#: src/pbpicat/ui/settings_dialog.py:419
 msgid "Restore missing defaults"
 msgstr "Fehlende Standardwerte wiederherstellen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:159
 msgid "Add extensions from the global default list that are not yet in the list above"
 msgstr "Erweiterungen aus der globalen Standardliste hinzufügen, die noch nicht in der obigen Liste vorhanden sind"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:163
 msgid "Delete empty sidecar files when loading a directory"
 msgstr "Leere Sidecar-Dateien beim Laden eines Verzeichnisses löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:165
 msgid "Automatically delete zero-byte sidecar files (including orphans) when entering a directory"
 msgstr "Leere Sidecar-Dateien (einschließlich verwaister) beim Öffnen eines Verzeichnisses automatisch löschen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:174
 msgid "Extension used when creating a new sidecar by double-clicking the sidecar column"
 msgstr "Endung beim Erstellen eines neuen Sidecars durch Doppelklick auf die Sidecar-Spalte"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:176
 msgid "Default extension for new sidecar:"
 msgstr "Standardendung fuer neuen Sidecar:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:199 src/pbpicat/ui/settings_dialog.py:351
-#: src/pbpicat/ui/settings_dialog.py:452 src/pbpicat/ui/settings_dialog.py:658
 msgid "Invalid extension"
 msgstr "Ungueltige Endung"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:200 src/pbpicat/ui/settings_dialog.py:659
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .xmp, .prompt.txt)."
 msgstr "\"{ext}\" ist keine gueltige Endung (z. B. .xmp, .prompt.txt)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:374
-#: src/pbpicat/ui/settings_dialog.py:475
 msgid "Restore defaults"
 msgstr "Standardwerte wiederherstellen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:227 src/pbpicat/ui/settings_dialog.py:374
-#: src/pbpicat/ui/settings_dialog.py:475
 msgid "All default extensions are already in the list."
 msgstr "Alle Standardendungen sind bereits in der Liste."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:247
 msgid ""
 "Maximum size of thumbnails displayed in the file list.\n"
 "A navigation restart is required for the change to take effect."
@@ -947,158 +818,129 @@ msgstr ""
 "Ein Neustart der Navigation ist erforderlich, damit die Aenderung wirksam wird."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:262
 msgid "Max width:"
 msgstr "Max. Breite:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:268
 msgid "Max height:"
 msgstr "Max. Hoehe:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:287
 msgid "Recognised image extensions (thumbnail + rename):"
 msgstr "Erkannte Bildendungen (Vorschau + Umbenennen):"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:315 src/pbpicat/ui/settings_dialog.py:420
 msgid "Add extensions from the built-in default list that are not yet in the list above"
 msgstr "Endungen aus der eingebauten Standardliste hinzufuegen, die noch nicht in der Liste oben vorhanden sind"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:325
 msgid "Enlargement/reduction factor per click or double-click"
 msgstr "Vergroesserungs-/Verkleinerungsfaktor pro Klick oder Doppelklick"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:327
 msgid "Zoom step:"
 msgstr "Zoom-Schritt:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:333
 msgid "Maximum zoom allowed in the image viewer"
 msgstr "Maximaler Zoom im Bildbetrachter"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:335
 msgid "Max zoom:"
 msgstr "Max. Zoom:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:339
 msgid "Confirm deletions"
 msgstr "Löschungen bestätigen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:340
 msgid "Ask for confirmation before permanently deleting files"
 msgstr "Vor dem endgültigen Löschen von Dateien zur Bestätigung auffordern"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:352
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "\"{ext}\" ist keine gueltige Endung (z. B. .png, .heic)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:393
 msgid "Recognised video extensions:"
 msgstr "Erkannte Videoendungen:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:427
 msgid "<b>Video marker</b><br>Inserted among the name components at the position chosen in the schema.<br>No '_' in the value. Empty = no marker."
 msgstr "<b>Videomarker</b><br>Wird unter den Namenskomponenten an der im Schema gewaehlten Position eingefuegt.<br>Kein \"_\" im Wert. Leer = kein Marker."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:439
 msgid "e.g. VID  (empty = none)"
 msgstr "z. B. VID  (leer = keiner)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:441
 msgid "Marker:"
 msgstr "Marker:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:453
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .mp4)."
 msgstr "\"{ext}\" ist keine gueltige Endung (z. B. .mp4)."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:498 src/pbpicat/ui/settings_dialog.py:634
 msgid "System default"
 msgstr "Systemstandard"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:507 src/pbpicat/ui/settings_dialog.py:643
 msgid "Interface language:"
 msgstr "Oberflaechen-Sprache:"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:510 src/pbpicat/ui/settings_dialog.py:646
 msgid "A restart is required for the language change to take effect."
 msgstr "Ein Neustart ist erforderlich, damit die Spracheinstellung wirksam wird."
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:520
 msgid "Configuration"
 msgstr "Konfiguration"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:535
 msgid "Rename schema"
 msgstr "Umbenennungsschema"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:536 src/pbpicat/ui/settings_dialog.py:575
 msgid "Sidecar extensions"
 msgstr "Sidecar-Endungen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:537
 msgid "Images"
 msgstr "Bilder"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:538
 msgid "Video"
 msgstr "Video"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:539
 msgid "Thumbnails"
 msgstr "Vorschaubilder"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:566
 msgid "Program settings"
 msgstr "Programmeinstellungen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:576
 msgid "Language"
 msgstr "Sprache"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:589
 msgid "<b>Default sidecar extensions for new catalogs</b>"
 msgstr "<b>Standard-Sidecar-Erweiterungen für neue Kataloge</b>"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:590
 msgid "(e.g. .xmp, .dop, .prompt.txt)"
 msgstr "(z. B. .xmp, .dop, .prompt.txt)"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:616
 msgid "Restore built-in defaults"
 msgstr "Eingebaute Standardwerte wiederherstellen"
 
 # ==AUTO== Automatically translated
-#: src/pbpicat/ui/settings_dialog.py:617
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "Liste auf die eingebauten Standard-Sidecar-Erweiterungen zurücksetzen"
+
+# ==AUTO== Automatically translated

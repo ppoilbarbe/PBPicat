@@ -34,6 +34,10 @@ else:
 
 _artifact_name = f"pbpicat-{_version}-{_os}-{_arch}"
 
+import shutil as _shutil
+_jpegtran = _shutil.which("jpegtran")
+_binaries = [(_jpegtran, ".")] if _jpegtran else []
+
 _locale_root = Path("src/pbpicat/locale")
 _datas = [
     (str(mo), f"pbpicat/locale/{mo.parts[-3]}/LC_MESSAGES")
@@ -46,8 +50,9 @@ _datas = [
 a = Analysis(
     ["src/pbpicat/__main__.py"],
     pathex=["src"],
+    binaries=_binaries,
     datas=_datas,
-    hiddenimports=[],
+    hiddenimports=["piexif"],
     hookspath=[],
     runtime_hooks=[],
     excludes=["tkinter", "unittest", "http", "xml", "numpy", "matplotlib"],

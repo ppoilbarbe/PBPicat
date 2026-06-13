@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtGui import QKeySequence
+from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -232,13 +232,38 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._config = load_config()
-        self._undo_stack: list[tuple[str, list[tuple]]] = []
-        self._undo_total: int = 0
+        self._undo_stack: list[tuple[str, list]] = []
         self._orphan_dlg: _OrphanSidecarsDialog | None = None
+        self._setup_rotation_actions()
         self._setup_ui()
         self._setup_menu()
         self._update_title()
         self.resize(1280, 820)
+
+    def _setup_rotation_actions(self) -> None:
+        self._act_rotate_ccw = QAction(_("Rotate 90° CCW"), self)
+        self._act_rotate_ccw.setIcon(get_icon("object-rotate-left", text_fallback="↺"))
+        self._act_rotate_ccw.setStatusTip(_("Rotate selected image(s) 90° counter-clockwise"))
+        self._act_rotate_ccw.setEnabled(False)
+        self._act_rotate_ccw.triggered.connect(lambda: self._rotate_selected(-90))
+
+        self._act_rotate_cw = QAction(_("Rotate 90° CW"), self)
+        self._act_rotate_cw.setIcon(get_icon("object-rotate-right", text_fallback="↻"))
+        self._act_rotate_cw.setStatusTip(_("Rotate selected image(s) 90° clockwise"))
+        self._act_rotate_cw.setEnabled(False)
+        self._act_rotate_cw.triggered.connect(lambda: self._rotate_selected(90))
+
+        self._act_rotate_180 = QAction(_("Rotate 180°"), self)
+        self._act_rotate_180.setIcon(get_icon("object-flip-vertical", text_fallback="↕"))
+        self._act_rotate_180.setStatusTip(_("Rotate selected image(s) 180°"))
+        self._act_rotate_180.setEnabled(False)
+        self._act_rotate_180.triggered.connect(lambda: self._rotate_selected(180))
+
+        self._act_rotate_auto = QAction(_("Apply EXIF orientation"), self)
+        self._act_rotate_auto.setIcon(get_icon("media-playlist-repeat", text_fallback="EXIF"))
+        self._act_rotate_auto.setStatusTip(_("Apply and remove the EXIF orientation tag"))
+        self._act_rotate_auto.setEnabled(False)
+        self._act_rotate_auto.triggered.connect(lambda: self._rotate_selected("auto"))
 
     def _setup_menu(self) -> None:
         mb = self.menuBar()
@@ -285,6 +310,11 @@ class MainWindow(QMainWindow):
         for act in (self._act_img_open, self._act_img_open_with, self._act_img_template, self._act_img_delete):
             act.setEnabled(False)
         images_menu.addSeparator()
+        images_menu.addAction(self._act_rotate_ccw)
+        images_menu.addAction(self._act_rotate_cw)
+        images_menu.addAction(self._act_rotate_180)
+        images_menu.addAction(self._act_rotate_auto)
+        images_menu.addSeparator()
         act = images_menu.addAction(_("&Refresh"), self._refresh)
         act.setShortcut(QKeySequence(Qt.Key.Key_F5))
         act.setStatusTip(_("Refresh"))
@@ -320,6 +350,12 @@ class MainWindow(QMainWindow):
             self._act_img_template,
             self._act_img_delete,
         )
+        self._file_panel.file_list.set_rotation_actions(
+            self._act_rotate_ccw,
+            self._act_rotate_cw,
+            self._act_rotate_180,
+            self._act_rotate_auto,
+        )
 
     def _setup_ui(self) -> None:
         central = QWidget()
@@ -346,6 +382,7 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.schema_proposed.connect(self._apply_proposed_schema)
         self._file_panel.file_list.set_schema_getter(self._schema_frame.get_fields)
         self._file_panel.file_list.set_video_marker_pos_getter(self._schema_frame.get_video_marker_pos)
+        self._file_panel.file_list.set_rotate_callback(self._rotate_images)
         self._file_panel.file_list.file_count_changed.connect(self._on_file_count_changed)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_rename_btn)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_image_actions)
@@ -391,7 +428,7 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout()
 
         self._undo_btn = QPushButton(_("Undo rename"))
-        self._undo_btn.setToolTip(_("Undo last rename (restores files to their original location)"))
+        self._undo_btn.setToolTip(_("Undo last operation"))
         self._undo_btn.setShortcut(QKeySequence.StandardKey.Undo)
         self._undo_btn.clicked.connect(self._undo_last_rename)
         self._undo_btn.setEnabled(False)
@@ -468,12 +505,26 @@ class MainWindow(QMainWindow):
         self._rename_btn.setEnabled(bool(self._file_panel.file_list.get_selected_files()))
 
     def _update_image_actions(self) -> None:
-        n = len(self._file_panel.file_list.get_selected_files())
+        selected = self._file_panel.file_list.get_selected_files()
+        n = len(selected)
         any_sel = n > 0
         self._act_img_open.setEnabled(any_sel)
         self._act_img_open_with.setEnabled(any_sel)
         self._act_img_template.setEnabled(n == 1)
         self._act_img_delete.setEnabled(any_sel)
+
+        image_exts = set(self._config.get("image_extensions", []))
+        img_sel = [p for p in selected if p.suffix.lower() in image_exts]
+        n_img = len(img_sel)
+        for act in (self._act_rotate_ccw, self._act_rotate_cw, self._act_rotate_180):
+            act.setEnabled(n_img > 0)
+        has_exif = any(self._selected_image_has_exif_orientation(p) for p in img_sel)
+        self._act_rotate_auto.setEnabled(has_exif)
+
+    def _selected_image_has_exif_orientation(self, path) -> bool:
+        from pbpicat.image_ops import get_exif_orientation
+
+        return get_exif_orientation(path) is not None
 
     def _img_open(self) -> None:
         self._file_panel.file_list.open_selected()
@@ -550,6 +601,38 @@ class MainWindow(QMainWindow):
         if self._filter_edit.currentText():
             self._filter_edit.clearEditText()
 
+    def _rotate_selected(self, op) -> None:
+        selected = self._file_panel.file_list.get_selected_files()
+        image_exts = set(self._config.get("image_extensions", []))
+        paths = [p for p in selected if p.suffix.lower() in image_exts]
+        if op == "auto":
+            from pbpicat.image_ops import get_exif_orientation
+
+            paths = [p for p in paths if get_exif_orientation(p) is not None]
+        self._rotate_images(paths, op)
+
+    def _rotate_images(self, paths: list, op) -> None:
+        from pbpicat.image_ops import get_exif_orientation, rotate_lossless
+
+        if not paths:
+            return
+        pairs = []
+        for path in paths:
+            try:
+                orig_orient = get_exif_orientation(path)
+                undo_op = rotate_lossless(path, op)
+                pairs.append((path, undo_op, orig_orient))
+            except RuntimeError as exc:
+                QMessageBox.warning(self, _("Rotation unavailable"), str(exc))
+                break
+            except ValueError:
+                continue
+        if pairs:
+            self._undo_stack.append(("rotation", pairs))
+            self._update_undo_btn()
+            self._status.showMessage(_("{n} file(s) rotated.").format(n=len(pairs)))
+            self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, *_ in pairs})
+
     def _rename_selected(self) -> None:
         files = self._file_panel.file_list.get_selected_files()
         if not files:
@@ -607,7 +690,6 @@ class MainWindow(QMainWindow):
             self._status.showMessage(_("Error: rename cancelled."))
             return
         self._undo_stack.append(("renumber", plan))
-        self._undo_total += 1
         self._update_undo_btn()
         self._status.showMessage(_("{n} file(s) renumbered successfully.").format(n=len(files)))
         self._file_panel.file_list.refresh_and_select(0)
@@ -641,7 +723,6 @@ class MainWindow(QMainWindow):
         save_last_dest(dest_root)
 
         self._undo_stack.append(("rename", plan))
-        self._undo_total += 1
         self._update_undo_btn()
 
         media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
@@ -653,10 +734,19 @@ class MainWindow(QMainWindow):
     def _update_undo_btn(self) -> None:
         n = len(self._undo_stack)
         if n:
-            self._undo_btn.setText(_("Undo rename {n}/{total}").format(n=n, total=self._undo_total))
+            kind = self._undo_stack[-1][0]
+            if kind == "rotation":
+                label = _("Undo rotation ({n})").format(n=n)
+                tip = _("Undo last rotation (restores original pixel data)")
+            else:
+                label = _("Undo rename ({n})").format(n=n)
+                tip = _("Undo last rename (restores files to their original location)")
+            self._undo_btn.setText(label)
+            self._undo_btn.setToolTip(tip)
             self._undo_btn.setEnabled(True)
         else:
             self._undo_btn.setText(_("Undo rename"))
+            self._undo_btn.setToolTip(_("Undo last rename (restores files to their original location)"))
             self._undo_btn.setEnabled(False)
 
     def _undo_last_rename(self) -> None:
@@ -666,17 +756,28 @@ class MainWindow(QMainWindow):
         try:
             if kind == "renumber":
                 undo_renumber(plan)
+            elif kind == "rotation":
+                from pbpicat.image_ops import rotate_lossless, set_exif_orientation
+
+                for path, undo_op, orig_orient in plan:
+                    rotate_lossless(path, undo_op)
+                    if orig_orient is not None:
+                        set_exif_orientation(path, orig_orient)
             else:
                 undo_rename(plan)
-        except (FileNotFoundError, FileExistsError, RuntimeError) as exc:
+        except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as exc:
             QMessageBox.critical(self, _("Undo error"), str(exc))
             self._status.showMessage(_("Error: undo failed."))
             return
         self._undo_stack.pop()
         self._update_undo_btn()
-        self._status.showMessage(_("Last rename undone."))
-        restored = {src for src, _dst in plan}
-        self._file_panel.file_list.refresh_and_select_paths(restored)
+        if kind == "rotation":
+            self._status.showMessage(_("Rotation undone."))
+            self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, *_ in plan})
+        else:
+            self._status.showMessage(_("Last rename undone."))
+            restored = {src for src, _dst in plan}
+            self._file_panel.file_list.refresh_and_select_paths(restored)
 
     def _open_settings(self) -> None:
         dlg = SettingsDialog(self._config, self)
@@ -821,7 +922,6 @@ class MainWindow(QMainWindow):
         set_current_catalog(name)
         self._config = load_config()
         self._undo_stack.clear()
-        self._undo_total = 0
         self._update_undo_btn()
         self._schema_frame.rebuild(self._config)
         self._file_panel.reconfigure(self._config)

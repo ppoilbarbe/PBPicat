@@ -10,6 +10,8 @@ dependencies:
   # Image support (Pillow fallback + HEIC/HEIF)
   - pillow
   - pillow-heif
+  # EXIF manipulation (strip orientation tag after JPEG rotation)
+  - piexif
   # Tests
   - pytest
   - pytest-qt

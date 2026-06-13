@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QPainter, QPixmap
 
 if hasattr(sys, "_MEIPASS"):
-    _RESOURCE_DIR = Path(sys._MEIPASS) / "resources"
+    _RESOURCE_DIR = Path(sys._MEIPASS) / "resources"  # pragma: no cover — set at import time; unreachable in pytest
 else:
     _RESOURCE_DIR = Path(__file__).parent.parent / "resources"
 ICON_SIZE = 22

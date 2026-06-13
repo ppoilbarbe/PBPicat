@@ -78,7 +78,7 @@ translate: $(TRANSLATE_STAMP) ## Extract translatable strings, update .po files 
 
 $(TRANSLATE_STAMP): $(PY_SOURCES) $(PO_FILES)
 	@printf "$(C)Extracting from Python sources...$(R)\n"
-	$(CONDA_RUN) pybabel extract -F babel.cfg --no-wrap \
+	$(CONDA_RUN) pybabel extract -F babel.cfg --no-wrap --no-location \
 	    --project=pbpicat \
 	    --copyright-holder="Philippe Poilbarbe" \
 	    --msgid-bugs-address="philippe@cardolan.net" \
@@ -86,6 +86,7 @@ $(TRANSLATE_STAMP): $(PY_SOURCES) $(PO_FILES)
 	@printf "$(C)Updating .po files...$(R)\n"
 	$(CONDA_RUN) pybabel update -i $(POT_FILE) -d $(LOCALE_DIR) -D pbpicat \
 	    --no-fuzzy-matching --no-wrap
+	$(CONDA_RUN) python tools/fix_po_dates.py
 	@printf "$(C)Compiling .mo files...$(R)\n"
 	$(CONDA_RUN) pybabel compile -d $(LOCALE_DIR) -D pbpicat
 	@printf "$(G)Done.$(R)\n"

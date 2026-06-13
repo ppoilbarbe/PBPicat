@@ -78,12 +78,21 @@ class _ThumbnailWorker(QThread):
 
     thumbnail_ready = Signal(int, QImage)
 
-    def __init__(self, files: list[Path], thumb_w: int, thumb_h: int, image_exts: set[str], parent=None):
+    def __init__(
+        self,
+        files: list[Path],
+        thumb_w: int,
+        thumb_h: int,
+        image_exts: set[str],
+        rows: list[int] | None = None,
+        parent=None,
+    ):
         super().__init__(parent)
         self._files = files
         self._w = thumb_w
         self._h = thumb_h
         self._image_exts = image_exts
+        self._rows = rows  # None → use enumerate index as row number
         self._cancelled = False
 
     def cancel(self) -> None:
@@ -96,7 +105,7 @@ class _ThumbnailWorker(QThread):
             if path.suffix.lower() not in self._image_exts:
                 continue
             image = load_qimage(path, self._w, self._h)
-            self.thumbnail_ready.emit(i, image)
+            self.thumbnail_ready.emit(self._rows[i] if self._rows else i, image)
 
 
 class FileListWidget(QTableWidget):
@@ -134,6 +143,8 @@ class FileListWidget(QTableWidget):
         self._rebuilding: bool = False
         self._auto_selecting: bool = False
         self._ctx_actions: tuple | None = None
+        self._rotation_actions: tuple | None = None
+        self._rotate_callback = None
         self._sidecars_pending_edit: set[Path] = set()
         self._dir_tree = None
         self._apply_config(config)
@@ -159,6 +170,13 @@ class FileListWidget(QTableWidget):
 
     def set_context_actions(self, open_act, open_with_act, template_act, delete_act) -> None:
         self._ctx_actions = (open_act, open_with_act, template_act, delete_act)
+
+    def set_rotation_actions(self, rotate_ccw, rotate_cw, rotate_180, rotate_auto) -> None:
+        self._rotation_actions = (rotate_ccw, rotate_cw, rotate_180, rotate_auto)
+
+    def set_rotate_callback(self, callback) -> None:
+        """callback(paths: list[Path], op) — called when the image viewer requests rotation."""
+        self._rotate_callback = callback
 
     def _apply_config(self, config: dict) -> None:
         legacy = config.get("thumbnail_size", 128)
@@ -321,6 +339,28 @@ class FileListWidget(QTableWidget):
         if first_row is not None:
             self.scrollTo(self.model().index(first_row, 0))
 
+    def refresh_thumbnails_for_paths(self, paths: set[Path]) -> None:
+        """Reload thumbnails only for the given paths without rebuilding the table."""
+        self._stop_worker()
+        placeholder = QPixmap(self._thumb_w, self._thumb_h)
+        placeholder.fill(Qt.lightGray)
+        subset_rows: list[int] = []
+        subset_files: list[Path] = []
+        for row, (path, _) in enumerate(self._display_data):
+            if path in paths and path.suffix.lower() in self._image_exts:
+                widget = self.cellWidget(row, self._THUMB_COL)
+                if isinstance(widget, QLabel):
+                    widget.setPixmap(placeholder)
+                subset_rows.append(row)
+                subset_files.append(path)
+        if not subset_files:
+            return
+        self._worker = _ThumbnailWorker(
+            subset_files, self._thumb_w, self._thumb_h, self._image_exts, rows=subset_rows, parent=self
+        )
+        self._worker.thumbnail_ready.connect(self._on_thumbnail_ready)
+        self._worker.start()
+
     # ------------------------------------------------------------------
     # Private helpers
     # ------------------------------------------------------------------
@@ -369,7 +409,7 @@ class FileListWidget(QTableWidget):
         orphans = []
         seen = set()
         for f in all_files:
-            if f in seen:
+            if f in seen:  # pragma: no cover — Path.iterdir() never yields duplicate paths
                 continue
             name_lower = f.name.lower()
             for ext in self._sidecar_exts:
@@ -449,7 +489,7 @@ class FileListWidget(QTableWidget):
         if not self._display_data:
             return
         paths = [p for p, _ in self._display_data]
-        self._worker = _ThumbnailWorker(paths, self._thumb_w, self._thumb_h, self._image_exts, self)
+        self._worker = _ThumbnailWorker(paths, self._thumb_w, self._thumb_h, self._image_exts, parent=self)
         self._worker.thumbnail_ready.connect(self._on_thumbnail_ready)
         self._worker.start()
 
@@ -501,6 +541,7 @@ class FileListWidget(QTableWidget):
             self._image_viewer.open_with_requested.connect(self._open_with_from_viewer)
             self._image_viewer.template_requested.connect(self._template_from_viewer)
             self._image_viewer.delete_requested.connect(self._delete_from_viewer)
+            self._image_viewer.rotate_requested.connect(self._rotate_from_viewer)
             self._image_viewer.show()
         else:
             self._image_viewer.load_image(path)
@@ -530,7 +571,7 @@ class FileListWidget(QTableWidget):
             self._image_viewer.show_message(_("Cannot display multiple files simultaneously."))
             return
         row = next(iter(rows))
-        if row >= len(self._display_data):
+        if row >= len(self._display_data):  # pragma: no cover — rows == len(_display_data); index always valid
             return
         path, _sidecars = self._display_data[row]
         if path.suffix.lower() in self._image_exts:
@@ -570,6 +611,8 @@ class FileListWidget(QTableWidget):
 
     def focusInEvent(self, event) -> None:  # noqa: N802
         super().focusInEvent(event)
+        if event.reason() == Qt.FocusReason.MouseFocusReason:
+            return
         if self._display_data and not self.selectedIndexes():
             self._auto_selecting = True
             try:
@@ -604,6 +647,10 @@ class FileListWidget(QTableWidget):
             menu.addSeparator()
             menu.addAction(template_act)
             menu.addAction(delete_act)
+        if self._rotation_actions is not None:
+            menu.addSeparator()
+            for act in self._rotation_actions:
+                menu.addAction(act)
         menu.exec(event.globalPos())
         event.accept()
 
@@ -650,6 +697,11 @@ class FileListWidget(QTableWidget):
         row = self._viewer_row()
         if row is not None:
             self._propose_schema(self._display_data[row][0])
+
+    def _rotate_from_viewer(self, op) -> None:
+        row = self._viewer_row()
+        if row is not None and self._rotate_callback is not None:
+            self._rotate_callback([self._display_data[row][0]], op)
 
     def _delete_from_viewer(self) -> None:
         row = self._viewer_row()

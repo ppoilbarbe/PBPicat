@@ -1134,7 +1134,30 @@ def test_load_directory_does_not_trigger_viewer(qtbot, base_config, tmp_path):
 
 
 def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
-    """focusInEvent auto-select must not update the image viewer."""
+    """focusInEvent auto-select (Tab focus) must not update the image viewer."""
+    from PySide6.QtCore import QEvent, Qt
+    from PySide6.QtGui import QFocusEvent
+
+    _img(tmp_path / "a.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.clearSelection()
+
+    viewer = MagicMock()
+    viewer.isVisible.return_value = True
+    w._image_viewer = viewer
+
+    event = QFocusEvent(QEvent.Type.FocusIn, Qt.FocusReason.TabFocusReason)
+    w.focusInEvent(event)
+
+    assert len(w.selectedIndexes()) > 0  # auto-select did happen
+    viewer.load_image.assert_not_called()  # but viewer was not updated
+    viewer.show_message.assert_not_called()
+
+
+def test_focus_in_event_mouse_does_not_auto_select(qtbot, base_config, tmp_path):
+    """Mouse-triggered focus must not auto-select row 0 (the click handles selection)."""
     from PySide6.QtCore import QEvent, Qt
     from PySide6.QtGui import QFocusEvent
 
@@ -1151,6 +1174,388 @@ def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
     event = QFocusEvent(QEvent.Type.FocusIn, Qt.FocusReason.MouseFocusReason)
     w.focusInEvent(event)
 
-    assert len(w.selectedIndexes()) > 0  # auto-select did happen
-    viewer.load_image.assert_not_called()  # but viewer was not updated
+    assert len(w.selectedIndexes()) == 0  # no auto-select: the click will handle it
+    viewer.load_image.assert_not_called()
     viewer.show_message.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# _ThumbnailWorker: branch that actually loads an image (lines 107-108)
+# ---------------------------------------------------------------------------
+
+
+def test_thumbnail_worker_run_loads_image(tmp_path):
+    f = tmp_path / "img.png"
+    _img(f)
+    worker = _ThumbnailWorker([f], 64, 64, {".png"})
+    emitted = []
+    worker.thumbnail_ready.connect(lambda row, img: emitted.append((row, img)))
+    worker.run()
+    assert len(emitted) == 1
+    assert emitted[0][0] == 0
+    assert not emitted[0][1].isNull()
+
+
+def test_thumbnail_worker_run_with_explicit_rows(tmp_path):
+    f = tmp_path / "img.png"
+    _img(f)
+    worker = _ThumbnailWorker([f], 64, 64, {".png"}, rows=[5])
+    emitted = []
+    worker.thumbnail_ready.connect(lambda row, img: emitted.append(row))
+    worker.run()
+    assert emitted == [5]
+
+
+# ---------------------------------------------------------------------------
+# load_directory: remove old watched path when called twice (line 224)
+# ---------------------------------------------------------------------------
+
+
+def test_load_directory_twice_removes_old_watch(qtbot, base_config, tmp_path):
+    sub = tmp_path / "sub"
+    sub.mkdir()
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    assert str(tmp_path) in w._watcher.directories()
+    w.load_directory(str(sub))
+    assert str(sub) in w._watcher.directories()
+    assert str(tmp_path) not in w._watcher.directories()
+
+
+# ---------------------------------------------------------------------------
+# _on_dir_changed_on_disk: starts debounce timer (line 234)
+# ---------------------------------------------------------------------------
+
+
+def test_on_dir_changed_on_disk_starts_debounce(populated_widget):
+    w, _ = populated_widget
+    assert not w._refresh_debounce.isActive()
+    w._on_dir_changed_on_disk()
+    assert w._refresh_debounce.isActive()
+    w._refresh_debounce.stop()
+
+
+# ---------------------------------------------------------------------------
+# refresh_thumbnails_for_paths: image found → loop body + worker start (350-355, 358-362)
+# ---------------------------------------------------------------------------
+
+
+def test_refresh_thumbnails_for_paths_with_image(qtbot, base_config, tmp_path, monkeypatch):
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    # Prevent the worker thread from actually starting
+    monkeypatch.setattr(_ThumbnailWorker, "start", lambda self: None)
+    w.refresh_thumbnails_for_paths({tmp_path / "img.png"})
+    assert w._worker is not None
+
+
+def test_refresh_thumbnails_for_paths_no_match(qtbot, base_config, tmp_path, monkeypatch):
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.refresh_thumbnails_for_paths({tmp_path / "other.png"})  # path not in display_data
+    assert w._worker is None
+
+
+# ---------------------------------------------------------------------------
+# _scan_directory: OSError when unlinking empty sidecar (lines 390-391)
+# ---------------------------------------------------------------------------
+
+
+def test_scan_directory_empty_sidecar_unlink_oserror(qtbot, catalog_env, tmp_path, monkeypatch):
+    config = dict(DEFAULTS)
+    config["delete_empty_sidecars"] = True
+    config["confirm_deletions"] = False
+    _img(tmp_path / "img.png")
+    empty_sc = tmp_path / "img.xmp"
+    empty_sc.write_bytes(b"")
+
+    orig_unlink = Path.unlink
+
+    def fail_xmp_unlink(self, missing_ok=False):
+        if self.suffix == ".xmp":
+            raise OSError("locked")
+        orig_unlink(self, missing_ok=missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", fail_xmp_unlink)
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    assert empty_sc.exists()  # OSError was silenced; file untouched
+
+
+# ---------------------------------------------------------------------------
+# _navigate_viewer: skip video file (line 562)
+# ---------------------------------------------------------------------------
+
+
+def test_navigate_viewer_skips_video(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    config["video_extensions"] = [".mp4"]
+    _img(tmp_path / "a.png")
+    (tmp_path / "b.mp4").write_bytes(b"fake")
+    _img(tmp_path / "c.png")
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    w._image_viewer = mock_viewer
+    w.selectRow(0)  # a.png
+    w._navigate_viewer(+1)  # should skip b.mp4 and land on c.png
+    assert w.get_selected_files()[0].name == "c.png"
+
+
+# ---------------------------------------------------------------------------
+# viewportEvent: ToolTip on NAME_COL shows preview (lines 582-590)
+# ---------------------------------------------------------------------------
+
+
+def test_viewport_event_tooltip_shows_preview(qtbot, base_config, tmp_path, monkeypatch):
+    from PySide6.QtCore import QEvent, QPoint
+
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.set_schema_getter(lambda: ["Nature", "Birds", "", "", "", ""])
+
+    # Aim at the NAME_COL item of row 0 regardless of widget geometry
+    monkeypatch.setattr(w, "itemAt", lambda pos: w.item(0, w._NAME_COL))
+
+    event = MagicMock()
+    event.type.return_value = QEvent.Type.ToolTip
+    event.pos.return_value = QPoint(0, 0)
+    event.globalPos.return_value = QPoint(0, 0)
+
+    result = w.viewportEvent(event)
+    assert result is True
+
+
+# ---------------------------------------------------------------------------
+# _compute_preview_name: video marker branch (lines 600-603)
+# ---------------------------------------------------------------------------
+
+
+def test_compute_preview_name_video_branch(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    config["video_extensions"] = [".mp4"]
+    config["video_marker"] = "VID"
+    (tmp_path / "clip.mp4").write_bytes(b"fake")
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.set_schema_getter(lambda: ["Nature", "", "", "", "", ""])
+    w.set_video_marker_pos_getter(lambda: 1)
+    result = w._compute_preview_name(tmp_path / "clip.mp4")
+    assert "VID" in result
+
+
+# ---------------------------------------------------------------------------
+# keyPressEvent: else branch for unhandled keys (line 631)
+# ---------------------------------------------------------------------------
+
+
+def test_keypressevent_other_key(populated_widget, qtbot):
+    from PySide6.QtCore import QEvent
+    from PySide6.QtGui import QKeyEvent
+
+    w, _ = populated_widget
+    event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key_Space, Qt.NoModifier)
+    w.keyPressEvent(event)  # no crash; falls through to super()
+
+
+# ---------------------------------------------------------------------------
+# contextMenuEvent: select row when not in selection (line 641)
+# ---------------------------------------------------------------------------
+
+
+def test_context_menu_selects_unselected_row(populated_widget, monkeypatch):
+    from PySide6.QtCore import QPoint
+
+    w, _ = populated_widget
+    w.clearSelection()
+    monkeypatch.setattr(w, "rowAt", lambda y: 0)
+
+    event = MagicMock()
+    event.globalPos.return_value = QPoint(100, 10)
+    event.ignore = MagicMock()
+    event.accept = MagicMock()
+
+    w.contextMenuEvent(event)
+
+    assert w.get_selected_files()
+    event.accept.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# contextMenuEvent: ctx_actions and rotation_actions added (lines 644-649, 651-653)
+# ---------------------------------------------------------------------------
+
+
+def test_context_menu_with_all_actions(populated_widget, mock_qmenu, monkeypatch):
+    from PySide6.QtCore import QPoint
+
+    w, _ = populated_widget
+    open_act = MagicMock()
+    open_with_act = MagicMock()
+    template_act = MagicMock()
+    delete_act = MagicMock()
+    w.set_context_actions(open_act, open_with_act, template_act, delete_act)
+    w.set_rotation_actions(MagicMock(), MagicMock(), MagicMock(), MagicMock())
+
+    w.selectRow(0)
+    monkeypatch.setattr(w, "rowAt", lambda y: 0)
+
+    event = MagicMock()
+    event.globalPos.return_value = QPoint(100, 10)
+    event.ignore = MagicMock()
+    event.accept = MagicMock()
+
+    w.contextMenuEvent(event)
+
+    mock_qmenu.addAction.assert_called()
+    event.accept.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# _open_with_from_viewer: with selection (line 694)
+# ---------------------------------------------------------------------------
+
+
+def test_open_with_from_viewer_with_selection(populated_widget):
+    w, _ = populated_widget
+    w.selectRow(0)
+    with patch("pbpicat.ui.file_list_widget.open_with") as mock_open:
+        w._open_with_from_viewer()
+    mock_open.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# _rotate_from_viewer: with selection and callback (lines 702-704)
+# ---------------------------------------------------------------------------
+
+
+def test_rotate_from_viewer_with_selection(populated_widget):
+    w, _ = populated_widget
+    w.selectRow(0)
+    callback = MagicMock()
+    w.set_rotate_callback(callback)
+    w._rotate_from_viewer(90)
+    callback.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# _delete_file: count message when all_files > delete_list_max_files (line 727)
+# ---------------------------------------------------------------------------
+
+
+def test_delete_file_count_message_when_many(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = True
+    config["delete_list_max_files"] = 1
+    config["delete_empty_sidecars"] = False
+    for i in range(3):
+        _img(tmp_path / f"img_{i:03d}.png")
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.selectAll()  # 3 selected → to_delete has 3 entries → len > 1
+
+    with patch.object(QMessageBox, "exec", return_value=QMessageBox.No):
+        w._delete_file(w._display_data[0][0], [])
+
+    assert all((tmp_path / f"img_{i:03d}.png").exists() for i in range(3))
+
+
+# ---------------------------------------------------------------------------
+# _remove_empty_parents: OSError from rmdir (lines 765-766)
+# ---------------------------------------------------------------------------
+
+
+def test_remove_empty_parents_oserror(populated_widget, monkeypatch):
+    w, tmp_path = populated_widget
+    empty = tmp_path / "empty_sub"
+    empty.mkdir()
+
+    def fail_rmdir(self):
+        raise OSError("permission denied")
+
+    monkeypatch.setattr(Path, "rmdir", fail_rmdir)
+    w._remove_empty_parents(empty)  # must not raise
+    assert empty.exists()
+
+
+# ---------------------------------------------------------------------------
+# _propose_schema: info dialog when no match (lines 769-778)
+# and schema dialog accepted (lines 779-784)
+# ---------------------------------------------------------------------------
+
+
+def test_propose_schema_no_match_shows_info(populated_widget):
+    w, tmp_path = populated_widget
+    # No history → _infer_schema returns None
+    with patch.object(QMessageBox, "information", return_value=None) as mock_info:
+        w._propose_schema(tmp_path / "img_001.png")
+    mock_info.assert_called_once()
+
+
+def test_propose_schema_dialog_accepted_emits_signal(populated_widget, monkeypatch):
+    from PySide6.QtWidgets import QDialog
+
+    w, tmp_path = populated_widget
+    monkeypatch.setattr(w, "_infer_schema", lambda p: ["Nature", "Birds", "", "", "", ""])
+
+    received = []
+    w.schema_proposed.connect(lambda fields: received.append(fields))
+
+    with patch.object(_SchemaProposalDialog, "exec", return_value=QDialog.Accepted):
+        w._propose_schema(tmp_path / "img_001.png")
+
+    assert received == [["Nature", "Birds", "", "", "", ""]]
+
+
+def test_propose_schema_dialog_rejected(populated_widget, monkeypatch):
+    from PySide6.QtWidgets import QDialog
+
+    w, tmp_path = populated_widget
+    monkeypatch.setattr(w, "_infer_schema", lambda p: ["Nature", "Birds", "", "", "", ""])
+
+    received = []
+    w.schema_proposed.connect(lambda fields: received.append(fields))
+
+    with patch.object(_SchemaProposalDialog, "exec", return_value=QDialog.Rejected):
+        w._propose_schema(tmp_path / "img_001.png")
+
+    assert received == []
+
+
+# ---------------------------------------------------------------------------
+# Private wrapper methods: _open_selection, _open_with_selection,
+# _open_file, _open_file_with (lines 869, 872, 875, 878)
+# ---------------------------------------------------------------------------
+
+
+def test_private_open_wrappers(populated_widget):
+    w, tmp_path = populated_widget
+    w.selectRow(0)
+
+    with (
+        patch("pbpicat.ui.file_list_widget.open_default") as mock_def,
+        patch("pbpicat.ui.file_list_widget.open_with") as mock_with,
+    ):
+        w._open_selection()
+        w._open_with_selection()
+        w._open_file(tmp_path / "img_001.png")
+        w._open_file_with(tmp_path / "img_001.png")
+
+    assert mock_def.call_count == 2  # _open_selection + _open_file
+    assert mock_with.call_count == 2  # _open_with_selection + _open_file_with

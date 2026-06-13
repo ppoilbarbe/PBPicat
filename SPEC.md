@@ -38,6 +38,10 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Images | Open with… | Ctrl+Shift+O | Open selected file with a chosen application |
 | Images | Template | — | Infer rename template from the selected file name |
 | Images | Delete | Del | Permanently delete the selected file(s) |
+| Images | Rotate 90° CCW | — | Rotate selected image(s) 90° counter-clockwise (lossless) |
+| Images | Rotate 90° CW | — | Rotate selected image(s) 90° clockwise (lossless) |
+| Images | Rotate 180° | — | Rotate selected image(s) 180° (lossless) |
+| Images | Apply EXIF orientation | — | Apply and remove EXIF orientation tag (disabled if absent) |
 | View | Refresh | F5 | Refresh |
 | Settings | Catalog configuration… | Ctrl+, | Open catalog settings |
 | Settings | History… | — | Edit field and filter history |
@@ -46,6 +50,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Help | About | — | About PBPicat |
 
 Images menu actions are disabled when no file is selected; Template is disabled with multiple selection.
+Rotation actions are disabled when no image file is selected; Apply EXIF orientation is additionally disabled when the single selected image has no EXIF orientation tag.
 
 All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
@@ -158,8 +163,16 @@ Multi-selection (ExtendedSelection).
 - **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio`/`.desktop` files; macOS: app name prompt; Windows: "Open as" dialog).
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
 - **Delete** (Del): permanently deletes the file and its sidecars (confirmation dialog if `confirm_deletions=true`). If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
+- **Rotate 90° CCW / CW / 180° / EXIF**: lossless rotation (see below).
 
-Same actions available in the **Images** menu and in the **ImageViewer** toolbar (after zoom buttons, before stretch).
+Same actions available in the **Images** menu and in the **ImageViewer** toolbar (rotation buttons between zoom and action buttons).
+
+**Lossless rotation** (`image_ops.py`):
+- JPEG: uses `pyjpegturbo` (turbojpeg module, optional dep). If absent, a dialog explains the requirement.
+- Other formats (PNG, TIFF, BMP, WebP): uses Pillow (`rotate`, `transpose`). Always lossless for these formats.
+- After JPEG rotation, the EXIF Orientation tag is stripped using `piexif` (required dep).
+- All rotations are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op)])`. Undo button label changes to "Undo rotation N/total".
+- **Apply EXIF orientation**: reads the EXIF Orientation tag, applies the corresponding transform (rotation or flip), then strips the tag. Works for all 8 EXIF orientation values. Disabled in the UI when the image has no orientation tag.
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`
@@ -170,7 +183,8 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 
 #### ImageViewer (`ui/image_viewer.py`)
 Non-modal window opened by double-clicking the preview column.
-Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
+Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
+The **EXIF** (Apply EXIF orientation) button is disabled when the loaded image has no EXIF orientation tag.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
 | Key | Action |

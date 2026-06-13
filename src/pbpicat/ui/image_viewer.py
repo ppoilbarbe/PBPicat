@@ -42,6 +42,7 @@ class ImageViewer(QWidget):
     open_with_requested = Signal()
     template_requested = Signal()
     delete_requested = Signal()
+    rotate_requested = Signal(object)  # int (90, -90, 180) or "auto"
 
     def __init__(
         self,
@@ -59,6 +60,7 @@ class ImageViewer(QWidget):
         self._factor = 1.0  # used only in CUSTOM mode
         self._zoom_min = 0.01
         self._drag_pos: QPoint | None = None
+        self._rotate_auto_btn: QToolButton | None = None
 
         self._setup_ui()
         self._setup_shortcuts()
@@ -147,6 +149,31 @@ class ImageViewer(QWidget):
         tb.addWidget(sep2)
 
         for icon_name, fallback, tip, callback in [
+            ("object-rotate-left", "↺", _("Rotate 90° CCW"), lambda: self.rotate_requested.emit(-90)),
+            ("object-rotate-right", "↻", _("Rotate 90° CW"), lambda: self.rotate_requested.emit(90)),
+            ("object-flip-vertical", "↕", _("Rotate 180°"), lambda: self.rotate_requested.emit(180)),
+        ]:
+            btn = QToolButton()
+            btn.setIcon(get_icon(icon_name, text_fallback=fallback))
+            btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+            btn.setToolTip(tip)
+            btn.clicked.connect(callback)
+            tb.addWidget(btn)
+
+        self._rotate_auto_btn = QToolButton()
+        self._rotate_auto_btn.setIcon(get_icon("media-playlist-repeat", text_fallback="EXIF"))
+        self._rotate_auto_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+        self._rotate_auto_btn.setToolTip(_("Apply EXIF orientation"))
+        self._rotate_auto_btn.clicked.connect(lambda: self.rotate_requested.emit("auto"))
+        self._rotate_auto_btn.setEnabled(False)
+        tb.addWidget(self._rotate_auto_btn)
+
+        sep3 = QToolButton()
+        sep3.setEnabled(False)
+        sep3.setFixedWidth(8)
+        tb.addWidget(sep3)
+
+        for icon_name, fallback, tip, callback in [
             ("open", "▶", _("Open") + "  Ctrl+O", lambda: self.open_requested.emit()),
             ("open_with", "▶…", _("Open with") + "  Ctrl+Shift+O", lambda: self.open_with_requested.emit()),
             ("template", "T", _("Template"), lambda: self.template_requested.emit()),
@@ -207,6 +234,10 @@ class ImageViewer(QWidget):
         else:
             self._zoom_min = 0.01
             self._label.setText(_("Cannot load image."))
+        if self._rotate_auto_btn is not None:
+            from pbpicat.image_ops import get_exif_orientation
+
+            self._rotate_auto_btn.setEnabled(get_exif_orientation(path) is not None)
         self._apply_zoom()
 
     def show_message(self, text: str) -> None:
