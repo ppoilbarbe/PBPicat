@@ -38,8 +38,10 @@ import shutil as _shutil
 _jpegtran = _shutil.which("jpegtran")
 _binaries = [(_jpegtran, ".")] if _jpegtran else []
 
+from PyInstaller.utils.hooks import copy_metadata
+
 _locale_root = Path("src/pbpicat/locale")
-_datas = [
+_datas = copy_metadata("pbpicat") + [
     (str(mo), f"pbpicat/locale/{mo.parts[-3]}/LC_MESSAGES")
     for mo in sorted(_locale_root.glob("*/LC_MESSAGES/pbpicat.mo"))
 ] + [

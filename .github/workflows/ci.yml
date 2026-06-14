@@ -88,6 +88,10 @@ jobs:
           activate-environment: pbpicat
           conda-remove-defaults: 'true'
 
+      - name: Install package
+        shell: bash -el {0}
+        run: pip install -e .
+
       - name: Compile translations
         shell: bash -el {0}
         run: conda run -n pbpicat pybabel compile -d src/pbpicat/locale -D pbpicat

@@ -119,6 +119,7 @@ new-lang: ## Scaffold a new translation (usage: make new-lang LOCALE=de)
 dist: translate ## Build a standalone executable for the current platform
 	$(eval PBPICAT_VERSION := $(shell bash tools/git_version.sh))
 	@printf "$(C)PyInstaller — version: $(PBPICAT_VERSION) — platform: $(shell $(CONDA_RUN) python3 -c 'import sys; print(sys.platform)')$(R)\n"
+	$(CONDA_RUN) pip install -e . -q
 	PBPICAT_VERSION=$(PBPICAT_VERSION) $(CONDA_RUN) pyinstaller --clean --noconfirm \
 	    --distpath dist --workpath build/pyinstaller \
 	    pbpicat.spec

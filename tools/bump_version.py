@@ -9,7 +9,6 @@ Usage:
 
 Files updated:
     pyproject.toml
-    src/pbpicat/__main__.py
 """
 
 import re
@@ -20,11 +19,6 @@ ROOT = Path(__file__).parent.parent
 
 _FILES = [
     (ROOT / "pyproject.toml", re.compile(r'(version\s*=\s*")[0-9]+\.[0-9]+\.[0-9]+(")'), r"\g<1>{version}\g<2>"),
-    (
-        ROOT / "src/pbpicat/__main__.py",
-        re.compile(r'(setApplicationVersion\(")[0-9]+\.[0-9]+\.[0-9]+("\))'),
-        r"\g<1>{version}\g<2>",
-    ),
 ]
 
 

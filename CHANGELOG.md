@@ -6,6 +6,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.10.1] - 2026-06-14
+
+### Fixed
+
+- **About dialog shows wrong version in bundle** — `copy_metadata("pbpicat")` is now included in `pbpicat.spec` so that `importlib.metadata.version()` resolves correctly at runtime inside a PyInstaller bundle. `make dist` now runs `pip install -e .` beforehand to ensure package metadata matches `pyproject.toml`.
+
+### Changed
+
+- **`bump_version.py`** — removed the stale regex entry for `src/pbpicat/__main__.py` (no longer contains a hardcoded version string).
+
 ## [1.10.0] - 2026-06-14
 
 ### Added
