@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-06-14
+
 ### Added
 
 - **Reset EXIF orientation** — new *Images* menu entry and ImageViewer toolbar button (*Reset EXIF orientation*) that sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled when the selected image has no orientation tag. Undoable (`("reset_exif", [(path, orig_orient)])`); status bar shows the count of affected files; undo restores the original tag value.
