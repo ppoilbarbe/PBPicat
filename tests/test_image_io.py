@@ -135,3 +135,10 @@ def test_load_pixmap_both_fail(qapp, tmp_path):
     f.write_text("not an image")
     pix = load_pixmap(f)
     assert pix.isNull()
+
+
+def test_load_pixmap_auto_rotate_false_qt_succeeds(qapp, sample_png):
+    """auto_rotate=False uses QImageReader path (lines 51-55)."""
+    pix = load_pixmap(sample_png, auto_rotate=False)
+    assert not pix.isNull()
+    assert pix.width() == 100

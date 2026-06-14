@@ -118,6 +118,7 @@ DEFAULTS = {
     "delete_empty_sidecars": True,
     "delete_list_max_files": 12,
     "confirm_deletions": True,
+    "exif_auto_rotate": True,
 }
 
 _DEFAULT_GLOBAL_CONFIG: dict = {

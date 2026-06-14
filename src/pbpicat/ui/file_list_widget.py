@@ -85,6 +85,7 @@ class _ThumbnailWorker(QThread):
         thumb_h: int,
         image_exts: set[str],
         rows: list[int] | None = None,
+        auto_rotate: bool = True,
         parent=None,
     ):
         super().__init__(parent)
@@ -93,6 +94,7 @@ class _ThumbnailWorker(QThread):
         self._h = thumb_h
         self._image_exts = image_exts
         self._rows = rows  # None → use enumerate index as row number
+        self._auto_rotate = auto_rotate
         self._cancelled = False
 
     def cancel(self) -> None:
@@ -104,7 +106,7 @@ class _ThumbnailWorker(QThread):
                 break
             if path.suffix.lower() not in self._image_exts:
                 continue
-            image = load_qimage(path, self._w, self._h)
+            image = load_qimage(path, self._w, self._h, auto_rotate=self._auto_rotate)
             self.thumbnail_ready.emit(self._rows[i] if self._rows else i, image)
 
 
@@ -171,8 +173,8 @@ class FileListWidget(QTableWidget):
     def set_context_actions(self, open_act, open_with_act, template_act, delete_act) -> None:
         self._ctx_actions = (open_act, open_with_act, template_act, delete_act)
 
-    def set_rotation_actions(self, rotate_ccw, rotate_cw, rotate_180, rotate_auto) -> None:
-        self._rotation_actions = (rotate_ccw, rotate_cw, rotate_180, rotate_auto)
+    def set_rotation_actions(self, rotate_ccw, rotate_cw, rotate_180, rotate_auto, reset_exif) -> None:
+        self._rotation_actions = (rotate_ccw, rotate_cw, rotate_180, rotate_auto, reset_exif)
 
     def set_rotate_callback(self, callback) -> None:
         """callback(paths: list[Path], op) — called when the image viewer requests rotation."""
@@ -194,6 +196,7 @@ class FileListWidget(QTableWidget):
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
         self._zoom_max_percent: int = config.get("zoom_max_percent", 3200)
+        self._exif_auto_rotate: bool = config.get("exif_auto_rotate", True)
 
     def _setup_table(self) -> None:
         self.setHorizontalHeaderLabels([_("Preview"), _("File name"), _("Sidecar")])
@@ -271,6 +274,8 @@ class FileListWidget(QTableWidget):
         self.verticalHeader().setDefaultSectionSize(self._thumb_h + 8)
         self.setColumnWidth(self._THUMB_COL, self._thumb_w + 8)
         self.setIconSize(QSize(self._thumb_w, self._thumb_h))
+        if self._image_viewer and self._image_viewer.isVisible():
+            self._image_viewer.set_auto_rotate(self._exif_auto_rotate)
         self.refresh()
 
     def set_sidecar_filter(self, pattern: str) -> None:
@@ -356,7 +361,13 @@ class FileListWidget(QTableWidget):
         if not subset_files:
             return
         self._worker = _ThumbnailWorker(
-            subset_files, self._thumb_w, self._thumb_h, self._image_exts, rows=subset_rows, parent=self
+            subset_files,
+            self._thumb_w,
+            self._thumb_h,
+            self._image_exts,
+            rows=subset_rows,
+            auto_rotate=self._exif_auto_rotate,
+            parent=self,
         )
         self._worker.thumbnail_ready.connect(self._on_thumbnail_ready)
         self._worker.start()
@@ -489,7 +500,14 @@ class FileListWidget(QTableWidget):
         if not self._display_data:
             return
         paths = [p for p, _ in self._display_data]
-        self._worker = _ThumbnailWorker(paths, self._thumb_w, self._thumb_h, self._image_exts, parent=self)
+        self._worker = _ThumbnailWorker(
+            paths,
+            self._thumb_w,
+            self._thumb_h,
+            self._image_exts,
+            auto_rotate=self._exif_auto_rotate,
+            parent=self,
+        )
         self._worker.thumbnail_ready.connect(self._on_thumbnail_ready)
         self._worker.start()
 
@@ -534,7 +552,13 @@ class FileListWidget(QTableWidget):
 
     def _show_image(self, path: Path) -> None:
         if self._image_viewer is None or not self._image_viewer.isVisible():
-            self._image_viewer = ImageViewer(path, self, self._zoom_step_percent, self._zoom_max_percent)
+            self._image_viewer = ImageViewer(
+                path,
+                self,
+                self._zoom_step_percent,
+                self._zoom_max_percent,
+                auto_rotate=self._exif_auto_rotate,
+            )
             self._image_viewer.navigate_prev.connect(lambda: self._navigate_viewer(-1))
             self._image_viewer.navigate_next.connect(lambda: self._navigate_viewer(+1))
             self._image_viewer.open_requested.connect(self._open_from_viewer)

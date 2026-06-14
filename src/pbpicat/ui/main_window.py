@@ -114,6 +114,9 @@ class _KeyboardShortcutsDialog(QDialog):
                 row(key(Qt.Modifier.CTRL | Qt.Key.Key_Comma), _("Open catalog settings")),
                 row(key(Qt.Modifier.CTRL | Qt.Modifier.ALT | Qt.Key.Key_Comma), _("Open program settings")),
                 row(key_del, _("Delete selected file(s) and their sidecars")),
+                row("F6", _("Rotate 90° CCW")),
+                row("F7", _("Rotate 180°")),
+                row("F8", _("Rotate 90° CW")),
                 row(f"← / → ({file_list})", _("Move focus to the directory tree")),
                 row(f"→ ({tree_leaf})", _("Move focus to the file list")),
             ]
@@ -121,8 +124,8 @@ class _KeyboardShortcutsDialog(QDialog):
 
         viewer_rows = "".join(
             [
-                row("0", _("Fit window")),
-                row("1", _("Actual size (1:1)")),
+                row("0 / X", _("Fit window")),
+                row("1 / Z", _("Actual size (1:1)")),
                 row("W", _("Fit width")),
                 row("H", _("Fit height")),
                 row("+ / −", _("Zoom in / Zoom out")),
@@ -244,18 +247,21 @@ class MainWindow(QMainWindow):
         self._act_rotate_ccw = QAction(_("Rotate 90° CCW"), self)
         self._act_rotate_ccw.setIcon(get_icon("object-rotate-left", text_fallback="↺"))
         self._act_rotate_ccw.setStatusTip(_("Rotate selected image(s) 90° counter-clockwise"))
+        self._act_rotate_ccw.setShortcut(QKeySequence(Qt.Key.Key_F6))
         self._act_rotate_ccw.setEnabled(False)
         self._act_rotate_ccw.triggered.connect(lambda: self._rotate_selected(-90))
 
         self._act_rotate_cw = QAction(_("Rotate 90° CW"), self)
         self._act_rotate_cw.setIcon(get_icon("object-rotate-right", text_fallback="↻"))
         self._act_rotate_cw.setStatusTip(_("Rotate selected image(s) 90° clockwise"))
+        self._act_rotate_cw.setShortcut(QKeySequence(Qt.Key.Key_F8))
         self._act_rotate_cw.setEnabled(False)
         self._act_rotate_cw.triggered.connect(lambda: self._rotate_selected(90))
 
         self._act_rotate_180 = QAction(_("Rotate 180°"), self)
         self._act_rotate_180.setIcon(get_icon("object-flip-vertical", text_fallback="↕"))
         self._act_rotate_180.setStatusTip(_("Rotate selected image(s) 180°"))
+        self._act_rotate_180.setShortcut(QKeySequence(Qt.Key.Key_F7))
         self._act_rotate_180.setEnabled(False)
         self._act_rotate_180.triggered.connect(lambda: self._rotate_selected(180))
 
@@ -264,6 +270,12 @@ class MainWindow(QMainWindow):
         self._act_rotate_auto.setStatusTip(_("Apply and remove the EXIF orientation tag"))
         self._act_rotate_auto.setEnabled(False)
         self._act_rotate_auto.triggered.connect(lambda: self._rotate_selected("auto"))
+
+        self._act_reset_exif = QAction(_("Reset EXIF orientation"), self)
+        self._act_reset_exif.setIcon(get_icon("edit-clear", "edit-clear", text_fallback="0°"))
+        self._act_reset_exif.setStatusTip(_("Set the EXIF orientation tag to 1 (normal) without rotating pixels"))
+        self._act_reset_exif.setEnabled(False)
+        self._act_reset_exif.triggered.connect(self._reset_exif_selected)
 
     def _setup_menu(self) -> None:
         mb = self.menuBar()
@@ -314,6 +326,7 @@ class MainWindow(QMainWindow):
         images_menu.addAction(self._act_rotate_cw)
         images_menu.addAction(self._act_rotate_180)
         images_menu.addAction(self._act_rotate_auto)
+        images_menu.addAction(self._act_reset_exif)
         images_menu.addSeparator()
         act = images_menu.addAction(_("&Refresh"), self._refresh)
         act.setShortcut(QKeySequence(Qt.Key.Key_F5))
@@ -355,6 +368,7 @@ class MainWindow(QMainWindow):
             self._act_rotate_cw,
             self._act_rotate_180,
             self._act_rotate_auto,
+            self._act_reset_exif,
         )
 
     def _setup_ui(self) -> None:
@@ -520,6 +534,7 @@ class MainWindow(QMainWindow):
             act.setEnabled(n_img > 0)
         has_exif = any(self._selected_image_has_exif_orientation(p) for p in img_sel)
         self._act_rotate_auto.setEnabled(has_exif)
+        self._act_reset_exif.setEnabled(has_exif)
 
     def _selected_image_has_exif_orientation(self, path) -> bool:
         from pbpicat.image_ops import get_exif_orientation
@@ -611,7 +626,37 @@ class MainWindow(QMainWindow):
             paths = [p for p in paths if get_exif_orientation(p) is not None]
         self._rotate_images(paths, op)
 
+    def _reset_exif_selected(self) -> None:
+        selected = self._file_panel.file_list.get_selected_files()
+        image_exts = set(self._config.get("image_extensions", []))
+        from pbpicat.image_ops import get_exif_orientation
+
+        paths = [p for p in selected if p.suffix.lower() in image_exts and get_exif_orientation(p) is not None]
+        self._reset_exif_images(paths)
+
+    def _reset_exif_images(self, paths: list) -> None:
+        from pbpicat.image_ops import get_exif_orientation, set_exif_orientation
+
+        if not paths:
+            return
+        pairs = []
+        for path in paths:
+            orig_orient = get_exif_orientation(path)
+            if orig_orient is None:
+                continue
+            set_exif_orientation(path, 1)
+            pairs.append((path, orig_orient))
+        if pairs:
+            self._undo_stack.append(("reset_exif", pairs))
+            self._update_undo_btn()
+            self._status.showMessage(_("{n} EXIF orientation tag(s) reset.").format(n=len(pairs)))
+            self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, _ in pairs})
+
     def _rotate_images(self, paths: list, op) -> None:
+        if op == "reset_exif":
+            self._reset_exif_images(paths)
+            return
+
         from pbpicat.image_ops import get_exif_orientation, rotate_lossless
 
         if not paths:
@@ -763,6 +808,11 @@ class MainWindow(QMainWindow):
                     rotate_lossless(path, undo_op)
                     if orig_orient is not None:
                         set_exif_orientation(path, orig_orient)
+            elif kind == "reset_exif":
+                from pbpicat.image_ops import set_exif_orientation
+
+                for path, orig_orient in plan:
+                    set_exif_orientation(path, orig_orient)
             else:
                 undo_rename(plan)
         except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as exc:
@@ -774,6 +824,9 @@ class MainWindow(QMainWindow):
         if kind == "rotation":
             self._status.showMessage(_("Rotation undone."))
             self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, *_ in plan})
+        elif kind == "reset_exif":
+            self._status.showMessage(_("EXIF orientation reset undone."))
+            self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, _ in plan})
         else:
             self._status.showMessage(_("Last rename undone."))
             restored = {src for src, _dst in plan}

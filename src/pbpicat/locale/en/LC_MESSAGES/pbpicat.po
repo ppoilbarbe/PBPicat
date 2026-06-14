@@ -135,11 +135,11 @@ msgstr "Field histories"
 msgid "Sidecar filter"
 msgstr "Sidecar filter"
 
-msgid "Fit window  0"
-msgstr "Fit window  0"
+msgid "Fit window  0 / X"
+msgstr ""
 
-msgid "Actual size (1:1)  1"
-msgstr "Actual size (1:1)  1"
+msgid "Actual size (1:1)  1 / Z"
+msgstr ""
 
 msgid "Fit width  W"
 msgstr "Fit width  W"
@@ -164,6 +164,9 @@ msgstr "Rotate 180°"
 
 msgid "Apply EXIF orientation"
 msgstr "Apply EXIF orientation"
+
+msgid "Reset EXIF orientation"
+msgstr "Reset EXIF orientation"
 
 msgid "Cannot load image."
 msgstr "Cannot load image."
@@ -270,6 +273,9 @@ msgstr "Rotate selected image(s) 180°"
 
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Apply and remove the EXIF orientation tag"
+
+msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
+msgstr "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
 
 msgid "&File"
 msgstr "&File"
@@ -418,6 +424,10 @@ msgstr "Rename selected files according to the schema"
 msgid "Choose destination directory"
 msgstr "Choose destination directory"
 
+#, python-brace-format
+msgid "{n} EXIF orientation tag(s) reset."
+msgstr "{n} EXIF orientation tag(s) reset."
+
 msgid "Rotation unavailable"
 msgstr "Rotation unavailable"
 
@@ -490,6 +500,9 @@ msgstr "Error: undo failed."
 
 msgid "Rotation undone."
 msgstr "Rotation undone."
+
+msgid "EXIF orientation reset undone."
+msgstr "EXIF orientation reset undone."
 
 msgid "Last rename undone."
 msgstr "Last rename undone."
@@ -675,6 +688,12 @@ msgstr "Confirm deletions"
 
 msgid "Ask for confirmation before permanently deleting files"
 msgstr "Ask for confirmation before permanently deleting files"
+
+msgid "Apply EXIF rotation"
+msgstr "Apply EXIF rotation"
+
+msgid "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
+msgstr "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
 
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."

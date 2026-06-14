@@ -6,6 +6,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **Reset EXIF orientation** — new *Images* menu entry and ImageViewer toolbar button (*Reset EXIF orientation*) that sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled when the selected image has no orientation tag. Undoable (`("reset_exif", [(path, orig_orient)])`); status bar shows the count of affected files; undo restores the original tag value.
+- **`exif_auto_rotate` setting** (default `true`) — new boolean config key; when false, thumbnails and the ImageViewer display images without applying the EXIF Orientation tag. Exposed in *Settings → Catalog configuration… → Images* as the "Apply EXIF rotation" checkbox. Changing the setting live reloads the current image in an open viewer via `set_auto_rotate()`.
+- **F6 / F7 / F8 keyboard shortcuts** for rotation — *Rotate 90° CCW* (F6), *Rotate 180°* (F7), *Rotate 90° CW* (F8) in the main window; entries added to the keyboard shortcuts dialog.
+- **X and Z as aliases in ImageViewer** — X = Fit window (alias for 0), Z = Actual size / 1:1 (alias for 1); toolbar tooltips updated to show both keys.
+- **Ctrl+click in ImageViewer** — zooms to the clicked point in CUSTOM mode (previously this was done via double-click).
+- **`_sanitize_exif_for_dump()`** in `image_ops.py` — converts Undefined-typed EXIF tags stored as plain integers (seen with some camera firmware) to bytes before calling `piexif.dump()`.
+
+### Changed
+
+- **`load_qimage` / `load_pixmap`** — added `auto_rotate` parameter (default `True`); the Pillow path now calls `ImageOps.exif_transpose()` when `auto_rotate=True`; the `QImageReader` path uses `setAutoTransform(auto_rotate)`.
+- **`set_exif_orientation()`** — reads raw EXIF bytes via Pillow (`img.info["exif"]`) before calling `piexif.load()` to avoid failures on certain JPEG files; is a no-op when the file has no EXIF block; calls `_sanitize_exif_for_dump()` before `piexif.dump()`.
+- **Double-click in ImageViewer** — now centers the viewport on the clicked point instead of zooming to it.
+- **ImageViewer scroll centering** — on mode switch (Fit / 1:1 / Width / Height) and on image load the viewport is now centered; proportional scroll preservation is restricted to CUSTOM zoom mode.
+- **`tools/fix_po_dates.py` → `tools/fix_po_files.py`** — file renamed; `make translate` updated accordingly.
+- **`ruff-pre-commit`** — updated from `v0.15.15` to `v0.15.17` in `.pre-commit-config.yaml`; frozen commit hash replaced with version tag.
+
+### Fixed
+
+- **Zoom step additive instead of multiplicative** — zoom in/out now adds/subtracts the configured step in percentage points (e.g. 23% → 48% → 73% with a 25% step) instead of multiplying by a factor (which gave 23% → 29% → 36%).
+- **`set_exif_orientation()` crash on non-standard EXIF** — `piexif.dump()` raised a type error when camera firmware had stored Undefined-typed values as integers instead of bytes; fixed by sanitizing with `_sanitize_exif_for_dump()` before dumping.
+
 ## [1.9.0] - 2026-06-13
 
 ### Added

@@ -163,12 +163,12 @@ msgid "Sidecar filter"
 msgstr "Filtro sidecar"
 
 # ==AUTO== Automatically translated
-msgid "Fit window  0"
-msgstr "Ajustar ventana  0"
+msgid "Fit window  0 / X"
+msgstr "Ajustar a la ventana  0 / X"
 
 # ==AUTO== Automatically translated
-msgid "Actual size (1:1)  1"
-msgstr "Tamaño real (1:1)  1"
+msgid "Actual size (1:1)  1 / Z"
+msgstr "Tamaño real (1:1)  1 / Z"
 
 # ==AUTO== Automatically translated
 msgid "Fit width  W"
@@ -197,6 +197,10 @@ msgstr "Rotar 180°"
 
 msgid "Apply EXIF orientation"
 msgstr "Aplicar orientación EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Reset EXIF orientation"
+msgstr "Restablecer orientación EXIF"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -330,6 +334,10 @@ msgstr "Rotar imagen(es) seleccionada(s) 180°"
 
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Aplicar y eliminar la etiqueta de orientación EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
+msgstr "Establecer la etiqueta de orientación EXIF en 1 (normal) sin rotar los píxeles"
 
 # ==AUTO== Automatically translated
 msgid "&File"
@@ -525,6 +533,11 @@ msgstr "Renombrar los archivos seleccionados según el esquema"
 msgid "Choose destination directory"
 msgstr "Elegir directorio de destino"
 
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} EXIF orientation tag(s) reset."
+msgstr "{n} etiqueta(s) de orientación EXIF restablecida(s)."
+
 msgid "Rotation unavailable"
 msgstr "Rotación no disponible"
 
@@ -616,6 +629,10 @@ msgstr "Error: no se pudo deshacer."
 # ==AUTO== Automatically translated
 msgid "Rotation undone."
 msgstr "Rotación deshecha."
+
+# ==AUTO== Automatically translated
+msgid "EXIF orientation reset undone."
+msgstr "Restablecimiento de orientación EXIF deshecho."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."
@@ -858,6 +875,14 @@ msgid "Ask for confirmation before permanently deleting files"
 msgstr "Pedir confirmación antes de eliminar archivos permanentemente"
 
 # ==AUTO== Automatically translated
+msgid "Apply EXIF rotation"
+msgstr "Aplicar rotación EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
+msgstr "Rotar automáticamente las miniaturas y el visor según la etiqueta de orientación EXIF de la imagen"
+
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "«{ext}» no es una extensión válida (p. ej. .png, .heic)."
@@ -942,5 +967,3 @@ msgstr "Restaurar valores predeterminados integrados"
 # ==AUTO== Automatically translated
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "Restablecer la lista con las extensiones sidecar predeterminadas integradas"
-
-# ==AUTO== Automatically translated

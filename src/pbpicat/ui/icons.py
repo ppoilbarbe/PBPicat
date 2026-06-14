@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QPainter, QPixmap
 
 if hasattr(sys, "_MEIPASS"):
+    # Used only in bundle.
     _RESOURCE_DIR = Path(sys._MEIPASS) / "resources"  # pragma: no cover — set at import time; unreachable in pytest
 else:
     _RESOURCE_DIR = Path(__file__).parent.parent / "resources"

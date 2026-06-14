@@ -50,17 +50,21 @@ class ImageViewer(QWidget):
         parent=None,
         zoom_step_percent: int = DEFAULTS["zoom_step_percent"],
         zoom_max_percent: int = DEFAULTS["zoom_max_percent"],
+        auto_rotate: bool = True,
     ):
         super().__init__(parent, Qt.Window)
         self.setMinimumSize(300, 200)
 
-        self._zoom_step = 1.0 + zoom_step_percent / 100.0
+        self._zoom_step = zoom_step_percent / 100.0
         self._zoom_max = zoom_max_percent / 100.0
         self._mode = _ZoomMode.FIT_WINDOW
         self._factor = 1.0  # used only in CUSTOM mode
         self._zoom_min = 0.01
         self._drag_pos: QPoint | None = None
         self._rotate_auto_btn: QToolButton | None = None
+        self._reset_exif_btn: QToolButton | None = None
+        self._auto_rotate = auto_rotate
+        self._current_path: Path | None = None
 
         self._setup_ui()
         self._setup_shortcuts()
@@ -106,8 +110,8 @@ class ImageViewer(QWidget):
         tb.setSpacing(2)
 
         specs = [
-            ("zoom_fit", "⊡", _("Fit window  0"), self._act_fit_window),
-            ("zoom_original", "1:1", _("Actual size (1:1)  1"), self._act_1to1),
+            ("zoom_fit", "⊡", _("Fit window  0 / X"), self._act_fit_window),
+            ("zoom_original", "1:1", _("Actual size (1:1)  1 / Z"), self._act_1to1),
             ("zoom_width", "↔", _("Fit width  W"), self._act_fit_width),
             ("zoom_height", "↕", _("Fit height  H"), self._act_fit_height),
         ]
@@ -168,6 +172,14 @@ class ImageViewer(QWidget):
         self._rotate_auto_btn.setEnabled(False)
         tb.addWidget(self._rotate_auto_btn)
 
+        self._reset_exif_btn = QToolButton()
+        self._reset_exif_btn.setIcon(get_icon("edit-clear", "edit-clear", text_fallback="0°"))
+        self._reset_exif_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+        self._reset_exif_btn.setToolTip(_("Reset EXIF orientation"))
+        self._reset_exif_btn.clicked.connect(lambda: self.rotate_requested.emit("reset_exif"))
+        self._reset_exif_btn.setEnabled(False)
+        tb.addWidget(self._reset_exif_btn)
+
         sep3 = QToolButton()
         sep3.setEnabled(False)
         sep3.setFixedWidth(8)
@@ -197,7 +209,9 @@ class ImageViewer(QWidget):
     def _setup_shortcuts(self) -> None:
         pairs = [
             (QKeySequence(Qt.Key.Key_0), self._act_fit_window),
+            (QKeySequence(Qt.Key.Key_X), self._act_fit_window),
             (QKeySequence(Qt.Key.Key_1), self._act_1to1),
+            (QKeySequence(Qt.Key.Key_Z), self._act_1to1),
             (QKeySequence(Qt.Key.Key_W), self._act_fit_width),
             (QKeySequence(Qt.Key.Key_H), self._act_fit_height),
             (QKeySequence(Qt.Key.Key_Plus), self._act_zoom_in),
@@ -224,8 +238,9 @@ class ImageViewer(QWidget):
     # ------------------------------------------------------------------
 
     def load_image(self, path: Path) -> None:
+        self._current_path = path
         self.setWindowTitle(path.name)
-        self._pixmap = load_pixmap(path)
+        self._pixmap = load_pixmap(path, auto_rotate=self._auto_rotate)
         if not self._pixmap.isNull():
             w, h = self._pixmap.width(), self._pixmap.height()
             min_dim = min(w, h)
@@ -237,8 +252,17 @@ class ImageViewer(QWidget):
         if self._rotate_auto_btn is not None:
             from pbpicat.image_ops import get_exif_orientation
 
-            self._rotate_auto_btn.setEnabled(get_exif_orientation(path) is not None)
-        self._apply_zoom()
+            has_exif = get_exif_orientation(path) is not None
+            self._rotate_auto_btn.setEnabled(has_exif)
+            self._reset_exif_btn.setEnabled(has_exif)
+        self._apply_zoom(center=True)
+
+    def set_auto_rotate(self, value: bool) -> None:
+        if self._auto_rotate == value:
+            return
+        self._auto_rotate = value
+        if self._current_path is not None:
+            self.load_image(self._current_path)
 
     def show_message(self, text: str) -> None:
         self._pixmap = QPixmap()
@@ -254,10 +278,10 @@ class ImageViewer(QWidget):
         self._set_mode(_ZoomMode.ONE_TO_ONE)
 
     def _act_zoom_in(self) -> None:
-        self._apply_custom(self._current_factor() * self._zoom_step)
+        self._apply_custom(self._current_factor() + self._zoom_step)
 
     def _act_zoom_out(self) -> None:
-        self._apply_custom(self._current_factor() / self._zoom_step)
+        self._apply_custom(self._current_factor() - self._zoom_step)
 
     def _act_fit_width(self) -> None:
         self._set_mode(_ZoomMode.FIT_WIDTH)
@@ -275,7 +299,7 @@ class ImageViewer(QWidget):
     def _set_mode(self, mode: _ZoomMode) -> None:
         self._mode = mode
         self._update_button_states()
-        self._apply_zoom()
+        self._apply_zoom(center=True)
 
     def _apply_custom(self, factor: float) -> None:
         self._factor = max(self._zoom_min, min(self._zoom_max, factor))
@@ -303,7 +327,7 @@ class ImageViewer(QWidget):
             return 1.0
         return self._factor  # CUSTOM
 
-    def _apply_zoom(self) -> None:
+    def _apply_zoom(self, center: bool = False) -> None:
         if self._pixmap.isNull():
             return
 
@@ -323,20 +347,30 @@ class ImageViewer(QWidget):
             th = max(1, int(orig_h * self._factor))
             scaled = self._pixmap.scaled(tw, th, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        # Preserve scroll centre across zoom changes
         hbar = self._scroll.horizontalScrollBar()
         vbar = self._scroll.verticalScrollBar()
-        hmax_before = hbar.maximum() or 1
-        vmax_before = vbar.maximum() or 1
-        hpct = hbar.value() / hmax_before
-        vpct = vbar.value() / vmax_before
+
+        # For CUSTOM (zoom in/out): preserve scroll centre by percentage
+        if self._mode == _ZoomMode.CUSTOM:
+            hmax_before = hbar.maximum() or 1
+            vmax_before = vbar.maximum() or 1
+            hpct = hbar.value() / hmax_before
+            vpct = vbar.value() / vmax_before
 
         self._label.setPixmap(scaled)
         self._label.resize(scaled.size())
 
-        # Restore scroll position
-        hbar.setValue(int(hpct * hbar.maximum()))
-        vbar.setValue(int(vpct * vbar.maximum()))
+        if self._mode == _ZoomMode.CUSTOM:
+            hbar.setValue(int(hpct * hbar.maximum()))
+            vbar.setValue(int(vpct * vbar.maximum()))
+        elif center:
+            if self._mode == _ZoomMode.ONE_TO_ONE:
+                hbar.setValue(hbar.maximum() // 2)
+                vbar.setValue(vbar.maximum() // 2)
+            elif self._mode == _ZoomMode.FIT_WIDTH:
+                vbar.setValue(vbar.maximum() // 2)
+            elif self._mode == _ZoomMode.FIT_HEIGHT:
+                hbar.setValue(hbar.maximum() // 2)
 
         # Update zoom label
         factor = scaled.width() / orig_w if orig_w else 1.0
@@ -362,6 +396,9 @@ class ImageViewer(QWidget):
         if obj is self._label:
             etype = event.type()
             if etype == QEvent.Type.MouseButtonPress and event.button() == Qt.LeftButton:
+                if event.modifiers() & Qt.ControlModifier:
+                    self._zoom_to_point(event.position().toPoint())
+                    return True
                 self._drag_pos = event.globalPosition().toPoint()
                 self._label.setCursor(Qt.OpenHandCursor)
                 return False
@@ -381,9 +418,17 @@ class ImageViewer(QWidget):
                 return False
             if etype == QEvent.Type.MouseButtonDblClick and event.button() == Qt.LeftButton:
                 self._drag_pos = None
-                self._zoom_to_point(event.position().toPoint())
+                self._center_on_label_pos(event.position().toPoint())
                 return True
         return super().eventFilter(obj, event)
+
+    def _center_on_label_pos(self, label_pos) -> None:
+        """Scroll to center the viewport on the given label-coordinate point."""
+        hbar = self._scroll.horizontalScrollBar()
+        vbar = self._scroll.verticalScrollBar()
+        vp = self._scroll.viewport()
+        hbar.setValue(int(label_pos.x() - vp.width() / 2))
+        vbar.setValue(int(label_pos.y() - vp.height() / 2))
 
     def _zoom_to_point(self, label_pos) -> None:
         label_w = self._label.width()
@@ -393,7 +438,7 @@ class ImageViewer(QWidget):
             return
         fx = label_pos.x() / label_w
         fy = label_pos.y() / label_h
-        self._factor = max(self._zoom_min, min(self._zoom_max, self._current_factor() * self._zoom_step))
+        self._factor = max(self._zoom_min, min(self._zoom_max, self._current_factor() + self._zoom_step))
         self._mode = _ZoomMode.CUSTOM
         self._update_button_states()
         self._apply_zoom()
@@ -414,4 +459,4 @@ class ImageViewer(QWidget):
 
     def showEvent(self, event) -> None:  # noqa: N802
         super().showEvent(event)
-        self._apply_zoom()
+        self._apply_zoom(center=True)

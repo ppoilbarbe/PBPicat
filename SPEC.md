@@ -38,10 +38,11 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Images | Open with… | Ctrl+Shift+O | Open selected file with a chosen application |
 | Images | Template | — | Infer rename template from the selected file name |
 | Images | Delete | Del | Permanently delete the selected file(s) |
-| Images | Rotate 90° CCW | — | Rotate selected image(s) 90° counter-clockwise (lossless) |
-| Images | Rotate 90° CW | — | Rotate selected image(s) 90° clockwise (lossless) |
-| Images | Rotate 180° | — | Rotate selected image(s) 180° (lossless) |
+| Images | Rotate 90° CCW | F6 | Rotate selected image(s) 90° counter-clockwise (lossless) |
+| Images | Rotate 90° CW | F8 | Rotate selected image(s) 90° clockwise (lossless) |
+| Images | Rotate 180° | F7 | Rotate selected image(s) 180° (lossless) |
 | Images | Apply EXIF orientation | — | Apply and remove EXIF orientation tag (disabled if absent) |
+| Images | Reset EXIF orientation | — | Set EXIF Orientation tag to 1 (normal) without rotating pixels (disabled if absent) |
 | View | Refresh | F5 | Refresh |
 | Settings | Catalog configuration… | Ctrl+, | Open catalog settings |
 | Settings | History… | — | Edit field and filter history |
@@ -50,7 +51,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Help | About | — | About PBPicat |
 
 Images menu actions are disabled when no file is selected; Template is disabled with multiple selection.
-Rotation actions are disabled when no image file is selected; Apply EXIF orientation is additionally disabled when the single selected image has no EXIF orientation tag.
+Rotation actions are disabled when no image file is selected; Apply EXIF orientation and Reset EXIF orientation are additionally disabled when no selected image has an EXIF orientation tag.
 
 All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
@@ -83,6 +84,7 @@ All actions set `setStatusTip()` so the status bar shows the description when ho
 | `delete_empty_sidecars` | bool | true | If true, zero-byte sidecar files (including orphans) are deleted automatically when loading a directory |
 | `confirm_deletions` | bool | true | If true, show a confirmation dialog before deleting files (default Yes) |
 | `delete_list_max_files` | int | 12 | When deleting more files than this threshold, show the count instead of listing file names |
+| `exif_auto_rotate` | bool | true | If true, thumbnails and ImageViewer auto-rotate images according to the EXIF Orientation tag |
 
 ## Rename Schema
 - N editable combobox fields with per-field history
@@ -163,16 +165,17 @@ Multi-selection (ExtendedSelection).
 - **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio`/`.desktop` files; macOS: app name prompt; Windows: "Open as" dialog).
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
 - **Delete** (Del): permanently deletes the file and its sidecars (confirmation dialog if `confirm_deletions=true`). If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
-- **Rotate 90° CCW / CW / 180° / EXIF**: lossless rotation (see below).
+- **Rotate 90° CCW / CW / 180° / Apply EXIF / Reset EXIF**: rotation actions (see below).
 
 Same actions available in the **Images** menu and in the **ImageViewer** toolbar (rotation buttons between zoom and action buttons).
 
-**Lossless rotation** (`image_ops.py`):
-- JPEG: uses `pyjpegturbo` (turbojpeg module, optional dep). If absent, a dialog explains the requirement.
+**Rotation actions** (`image_ops.py`):
+- JPEG lossless rotation: uses `pyjpegturbo` (turbojpeg module, optional dep). If absent, a dialog explains the requirement.
 - Other formats (PNG, TIFF, BMP, WebP): uses Pillow (`rotate`, `transpose`). Always lossless for these formats.
 - After JPEG rotation, the EXIF Orientation tag is stripped using `piexif` (required dep).
-- All rotations are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op)])`. Undo button label changes to "Undo rotation N/total".
+- All rotations and EXIF resets are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op, orig_orient)])` or `("reset_exif", [(path, orig_orient)])`. Undo button label changes accordingly.
 - **Apply EXIF orientation**: reads the EXIF Orientation tag, applies the corresponding transform (rotation or flip), then strips the tag. Works for all 8 EXIF orientation values. Disabled in the UI when the image has no orientation tag.
+- **Reset EXIF orientation**: sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled in the UI when the image has no orientation tag.
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`
@@ -183,20 +186,23 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 
 #### ImageViewer (`ui/image_viewer.py`)
 Non-modal window opened by double-clicking the preview column.
-Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
-The **EXIF** (Apply EXIF orientation) button is disabled when the loaded image has no EXIF orientation tag.
+Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | **0°** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
+The **EXIF** (Apply EXIF orientation) and **0°** (Reset EXIF orientation) buttons are disabled when the loaded image has no EXIF orientation tag.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
 | Key | Action |
 |-----|--------|
-| 0 | Fit window (default) |
-| 1 | Actual size (1:1) |
+| 0 / X | Fit window (default) |
+| 1 / Z | Actual size (1:1) |
 | W | Fit width |
 | H | Fit height |
 | + / − | Zoom in / out (also numpad) |
 | ↑ / ↓ | Navigate prev/next image |
 | Del | Delete current image and sidecars |
 | Escape | Close window |
+
+Mouse gestures: **double-click** centers the viewport on the clicked point; **Ctrl+click** zooms to the clicked point (CUSTOM mode).
+When switching zoom mode or loading a new image, the viewport is centered; in CUSTOM mode, scroll position is preserved proportionally.
 
 ## Rename Logic (`src/renamer.py`)
 1. `validate_schema(fields)` → `(dirs, parts, numeric_spec)` or `ValueError`
@@ -214,7 +220,7 @@ Action buttons emit signals (`open_requested`, `open_with_requested`, `template_
 Menu **Settings → Catalog configuration…** (Ctrl+,) — tabs:
 - **Rename Schema**: QSpinBox (field count 1–12) + dynamic QFormLayout (titles); max history and max deletion list size
 - **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported); QComboBox "Default extension for new sidecar" populated from the list; "Delete empty sidecar files" checkbox
-- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer; "Confirm deletions" checkbox (default checked)
+- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer; "Confirm deletions" checkbox (default checked); "Apply EXIF rotation" checkbox (default checked) — controls `exif_auto_rotate`
 - **Video**: QListWidget extensions + marker field
 - **Thumbnails**: max width/height
 - OK → `save_config()` + `schema_frame.rebuild(config)`

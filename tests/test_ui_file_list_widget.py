@@ -353,6 +353,22 @@ def test_reconfigure(qtbot, catalog_env, tmp_path):
     assert w._thumb_w == 64
 
 
+def test_reconfigure_with_visible_image_viewer(qtbot, catalog_env, tmp_path):
+    """reconfigure propagates auto_rotate to a visible image viewer (line 278)."""
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    _img(tmp_path / "img.png")
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    w._image_viewer = mock_viewer
+    w.reconfigure(dict(config))
+    mock_viewer.set_auto_rotate.assert_called_once()
+
+
 # ---------------------------------------------------------------------------
 # _delete_file (no confirmation)
 # ---------------------------------------------------------------------------
@@ -1410,7 +1426,7 @@ def test_context_menu_with_all_actions(populated_widget, mock_qmenu, monkeypatch
     template_act = MagicMock()
     delete_act = MagicMock()
     w.set_context_actions(open_act, open_with_act, template_act, delete_act)
-    w.set_rotation_actions(MagicMock(), MagicMock(), MagicMock(), MagicMock())
+    w.set_rotation_actions(MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock())
 
     w.selectRow(0)
     monkeypatch.setattr(w, "rowAt", lambda y: 0)

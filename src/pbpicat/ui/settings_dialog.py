@@ -341,6 +341,13 @@ class _ImageTab(QWidget):
         self._confirm_deletions_cb.setChecked(self._config.get("confirm_deletions", True))
         root.addWidget(self._confirm_deletions_cb)
 
+        self._exif_auto_rotate_cb = QCheckBox(_("Apply EXIF rotation"))
+        self._exif_auto_rotate_cb.setToolTip(
+            _("Automatically rotate thumbnails and viewer according to the image EXIF orientation tag")
+        )
+        self._exif_auto_rotate_cb.setChecked(self._config.get("exif_auto_rotate", True))
+        root.addWidget(self._exif_auto_rotate_cb)
+
     def _add_ext(self) -> None:
         raw = self._ext_edit.text().strip().lower()
         if not raw.startswith("."):
@@ -378,6 +385,7 @@ class _ImageTab(QWidget):
         config["zoom_step_percent"] = self._step_spin.value()
         config["zoom_max_percent"] = self._max_spin.value()
         config["confirm_deletions"] = self._confirm_deletions_cb.isChecked()
+        config["exif_auto_rotate"] = self._exif_auto_rotate_cb.isChecked()
 
 
 class _VideoTab(QWidget):

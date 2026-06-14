@@ -163,12 +163,12 @@ msgid "Sidecar filter"
 msgstr "Sidecar 过滤器"
 
 # ==AUTO== Automatically translated
-msgid "Fit window  0"
-msgstr "适合窗口  0"
+msgid "Fit window  0 / X"
+msgstr "适合窗口  0 / X"
 
 # ==AUTO== Automatically translated
-msgid "Actual size (1:1)  1"
-msgstr "实际大小 (1:1)  1"
+msgid "Actual size (1:1)  1 / Z"
+msgstr "实际大小 (1:1)  1 / Z"
 
 # ==AUTO== Automatically translated
 msgid "Fit width  W"
@@ -197,6 +197,10 @@ msgstr "旋转180°"
 
 msgid "Apply EXIF orientation"
 msgstr "应用EXIF方向"
+
+# ==AUTO== Automatically translated
+msgid "Reset EXIF orientation"
+msgstr "重置 EXIF 方向"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -330,6 +334,10 @@ msgstr "将选中的图像旋转180°"
 
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "应用并删除EXIF方向标签"
+
+# ==AUTO== Automatically translated
+msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
+msgstr "将 EXIF 方向标签设为 1（正常），不旋转像素"
 
 # ==AUTO== Automatically translated
 msgid "&File"
@@ -525,6 +533,11 @@ msgstr "根据方案重命名所选文件"
 msgid "Choose destination directory"
 msgstr "选择目标目录"
 
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} EXIF orientation tag(s) reset."
+msgstr "已重置 {n} 个 EXIF 方向标签。"
+
 msgid "Rotation unavailable"
 msgstr "旋转不可用"
 
@@ -616,6 +629,10 @@ msgstr "错误：撤销失败。"
 # ==AUTO== Automatically translated
 msgid "Rotation undone."
 msgstr "旋转已撤销。"
+
+# ==AUTO== Automatically translated
+msgid "EXIF orientation reset undone."
+msgstr "EXIF 方向重置已撤销。"
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."
@@ -858,6 +875,14 @@ msgid "Ask for confirmation before permanently deleting files"
 msgstr "永久删除文件前询问确认"
 
 # ==AUTO== Automatically translated
+msgid "Apply EXIF rotation"
+msgstr "应用 EXIF 旋转"
+
+# ==AUTO== Automatically translated
+msgid "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
+msgstr "根据图像的 EXIF 方向标签自动旋转缩略图和查看器"
+
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "「{ext}」不是有效扩展名（例如 .png、.heic）。"
@@ -942,5 +967,3 @@ msgstr "恢复内置默认值"
 # ==AUTO== Automatically translated
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "将列表重置为内置默认 sidecar 扩展名"
-
-# ==AUTO== Automatically translated

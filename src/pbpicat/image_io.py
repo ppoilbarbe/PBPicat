@@ -15,10 +15,10 @@ def _pillow_to_qimage(pil_img) -> QImage:
     return img.copy()
 
 
-def load_qimage(path: Path, max_w: int = 0, max_h: int = 0) -> QImage:
+def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = True) -> QImage:
     """Load an image as QImage, with optional scaling. Thread-safe."""
     reader = QImageReader(str(path))
-    reader.setAutoTransform(True)
+    reader.setAutoTransform(auto_rotate)
     if max_w > 0 and max_h > 0:
         orig = reader.size()
         if orig.isValid():
@@ -28,10 +28,12 @@ def load_qimage(path: Path, max_w: int = 0, max_h: int = 0) -> QImage:
         return image
 
     try:
-        from PIL import Image
+        from PIL import Image, ImageOps
 
         pil_img = Image.open(str(path))
         pil_img.load()
+        if auto_rotate:
+            pil_img = ImageOps.exif_transpose(pil_img)
         if max_w > 0 and max_h > 0:
             pil_img.thumbnail((max_w, max_h), Image.LANCZOS)
         return _pillow_to_qimage(pil_img)
@@ -39,17 +41,26 @@ def load_qimage(path: Path, max_w: int = 0, max_h: int = 0) -> QImage:
         return QImage()
 
 
-def load_pixmap(path: Path) -> QPixmap:
+def load_pixmap(path: Path, auto_rotate: bool = True) -> QPixmap:
     """Load an image as QPixmap. Must be called from the main thread."""
-    pix = QPixmap(str(path))
-    if not pix.isNull():
-        return pix
+    if auto_rotate:
+        pix = QPixmap(str(path))
+        if not pix.isNull():
+            return pix
+    else:
+        reader = QImageReader(str(path))
+        reader.setAutoTransform(False)
+        image = reader.read()
+        if not image.isNull():
+            return QPixmap.fromImage(image)
 
     try:
-        from PIL import Image
+        from PIL import Image, ImageOps
 
         pil_img = Image.open(str(path))
         pil_img.load()
+        if auto_rotate:
+            pil_img = ImageOps.exif_transpose(pil_img)
         img = _pillow_to_qimage(pil_img)
         if not img.isNull():
             return QPixmap.fromImage(img)

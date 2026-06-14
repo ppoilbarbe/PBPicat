@@ -135,11 +135,11 @@ msgstr "Historiques des champs"
 msgid "Sidecar filter"
 msgstr "Filtre sidecar"
 
-msgid "Fit window  0"
-msgstr "Adapter à la fenêtre  0"
+msgid "Fit window  0 / X"
+msgstr "Adapter à la fenêtre  0 / X"
 
-msgid "Actual size (1:1)  1"
-msgstr "Taille réelle (1:1)  1"
+msgid "Actual size (1:1)  1 / Z"
+msgstr "Taille réelle (1:1)  1 / Z"
 
 msgid "Fit width  W"
 msgstr "Adapter à la largeur  W"
@@ -164,6 +164,9 @@ msgstr "Rotation 180°"
 
 msgid "Apply EXIF orientation"
 msgstr "Appliquer l'orientation EXIF"
+
+msgid "Reset EXIF orientation"
+msgstr "Réinitialiser l'orientation EXIF"
 
 msgid "Cannot load image."
 msgstr "Impossible de charger l'image."
@@ -275,6 +278,9 @@ msgstr "Pivoter la/les image(s) sélectionnée(s) de 180°"
 
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Appliquer et supprimer le tag d'orientation EXIF"
+
+msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
+msgstr "Mettre le tag d'orientation EXIF à 1 (normal) sans faire pivoter les pixels"
 
 msgid "&File"
 msgstr "&Fichier"
@@ -423,6 +429,10 @@ msgstr "Renomme les fichiers sélectionnés selon le schéma"
 msgid "Choose destination directory"
 msgstr "Choisir le répertoire destination"
 
+#, python-brace-format
+msgid "{n} EXIF orientation tag(s) reset."
+msgstr "{n} tag(s) d'orientation EXIF réinitialisé(s)."
+
 msgid "Rotation unavailable"
 msgstr "Rotation indisponible"
 
@@ -495,6 +505,9 @@ msgstr "Erreur : annulation impossible."
 
 msgid "Rotation undone."
 msgstr "Rotation annulée."
+
+msgid "EXIF orientation reset undone."
+msgstr "Réinitialisation de l'orientation EXIF annulée."
 
 msgid "Last rename undone."
 msgstr "Dernier renommage annulé."
@@ -680,6 +693,12 @@ msgstr "Confirmation des suppressions"
 
 msgid "Ask for confirmation before permanently deleting files"
 msgstr "Demander une confirmation avant de supprimer définitivement les fichiers"
+
+msgid "Apply EXIF rotation"
+msgstr "Appliquer la rotation EXIF"
+
+msgid "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
+msgstr "Faire pivoter automatiquement les imagettes et le visualiseur selon le tag d'orientation EXIF de l'image"
 
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."

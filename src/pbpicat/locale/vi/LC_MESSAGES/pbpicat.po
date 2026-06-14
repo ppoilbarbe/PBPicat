@@ -163,12 +163,12 @@ msgid "Sidecar filter"
 msgstr "Bộ lọc sidecar"
 
 # ==AUTO== Automatically translated
-msgid "Fit window  0"
-msgstr "Vừa cửa sổ  0"
+msgid "Fit window  0 / X"
+msgstr "Vừa cửa sổ  0 / X"
 
 # ==AUTO== Automatically translated
-msgid "Actual size (1:1)  1"
-msgstr "Kích thước thực (1:1)  1"
+msgid "Actual size (1:1)  1 / Z"
+msgstr "Kích thước thực (1:1)  1 / Z"
 
 # ==AUTO== Automatically translated
 msgid "Fit width  W"
@@ -197,6 +197,10 @@ msgstr "Xoay 180°"
 
 msgid "Apply EXIF orientation"
 msgstr "Áp dụng định hướng EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Reset EXIF orientation"
+msgstr "Đặt lại hướng EXIF"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -330,6 +334,10 @@ msgstr "Xoay (các) ảnh được chọn 180°"
 
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Áp dụng và xóa thẻ định hướng EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
+msgstr "Đặt thẻ hướng EXIF về 1 (bình thường) mà không xoay các điểm ảnh"
 
 # ==AUTO== Automatically translated
 msgid "&File"
@@ -525,6 +533,11 @@ msgstr "Đổi tên các tệp đã chọn theo lược đồ"
 msgid "Choose destination directory"
 msgstr "Chọn thư mục đích"
 
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} EXIF orientation tag(s) reset."
+msgstr "{n} thẻ hướng EXIF đã được đặt lại."
+
 msgid "Rotation unavailable"
 msgstr "Không thể xoay"
 
@@ -616,6 +629,10 @@ msgstr "Lỗi: hoàn tác không thành công."
 # ==AUTO== Automatically translated
 msgid "Rotation undone."
 msgstr "Đã hoàn tác xoay."
+
+# ==AUTO== Automatically translated
+msgid "EXIF orientation reset undone."
+msgstr "Việc đặt lại hướng EXIF đã được hoàn tác."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."
@@ -858,6 +875,14 @@ msgid "Ask for confirmation before permanently deleting files"
 msgstr "Hỏi xác nhận trước khi xóa vĩnh viễn các tệp"
 
 # ==AUTO== Automatically translated
+msgid "Apply EXIF rotation"
+msgstr "Áp dụng xoay EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Automatically rotate thumbnails and viewer according to the image EXIF orientation tag"
+msgstr "Tự động xoay hình thu nhỏ và trình xem theo thẻ hướng EXIF của ảnh"
+
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "«{ext}» không phải là phần mở rộng hợp lệ (ví dụ .png, .heic)."
@@ -942,5 +967,3 @@ msgstr "Khôi phục giá trị mặc định tích hợp"
 # ==AUTO== Automatically translated
 msgid "Reset the list to the built-in default sidecar extensions"
 msgstr "Đặt lại danh sách về các phần mở rộng sidecar mặc định tích hợp"
-
-# ==AUTO== Automatically translated

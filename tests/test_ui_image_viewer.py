@@ -393,3 +393,47 @@ def test_current_factor_custom_mode(qtbot, catalog_env, sample_png):
     viewer._apply_custom(2.0)  # mode = CUSTOM, _factor = 2.0
     factor = viewer._current_factor()
     assert factor == 2.0
+
+
+# ---------------------------------------------------------------------------
+# set_auto_rotate
+# ---------------------------------------------------------------------------
+
+
+def test_set_auto_rotate_same_value_no_reload(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png, auto_rotate=True)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "load_image") as mock_load:
+        viewer.set_auto_rotate(True)
+    mock_load.assert_not_called()
+
+
+def test_set_auto_rotate_different_value_reloads(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png, auto_rotate=True)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "load_image") as mock_load:
+        viewer.set_auto_rotate(False)
+    mock_load.assert_called_once_with(sample_png)
+
+
+# ---------------------------------------------------------------------------
+# Ctrl+Click → _zoom_to_point (lines 400-401, 439-449)
+# ---------------------------------------------------------------------------
+
+
+def test_event_filter_ctrl_click_zooms_to_point(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    viewer.resize(600, 400)
+    press = QMouseEvent(
+        QEvent.Type.MouseButtonPress,
+        QPoint(50, 50),
+        viewer._label.mapToGlobal(QPoint(50, 50)),
+        Qt.LeftButton,
+        Qt.LeftButton,
+        Qt.ControlModifier,
+    )
+    result = viewer.eventFilter(viewer._label, press)
+    assert result is True
+    assert viewer._mode == _ZoomMode.CUSTOM

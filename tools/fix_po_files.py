@@ -1,9 +1,10 @@
-"""Normalise PO headers after pybabel update.
+"""Normalise PO files after pybabel update.
 
 - Resets POT-Creation-Date to a fixed sentinel (the .pot is untracked, so its
   timestamp would otherwise generate a spurious diff on every run).
 - Strips the version number from Project-Id-Version so it never needs updating.
 - Removes obsolete entries (lines starting with #~) left by pybabel update.
+- Removes trailing comment-only lines (e.g. # AUTO markers) left at EOF.
 
 Called by `make translate` immediately after `pybabel update`.
 """
@@ -29,6 +30,10 @@ for po in sorted(locale_dir.glob("*/LC_MESSAGES/*.po")):
     new = _DATE_RE.sub(lambda _: f'"POT-Creation-Date: {POT_DATE_SENTINEL}\\n"', text)
     new = _VER_RE.sub(lambda _: '"Project-Id-Version: PBPicat\\n"', new)
     new = _OBSOLETE_RE.sub("", new)
-    new = new.rstrip("\n") + "\n"
+    # Strip trailing comment-only and blank lines (e.g. # AUTO markers left by pybabel).
+    lines = new.splitlines()
+    while lines and (lines[-1].lstrip().startswith("#") or lines[-1].strip() == ""):
+        lines.pop()
+    new = "\n".join(lines).rstrip("\n") + "\n"
     if new != text:
         po.write_text(new, encoding="utf-8")

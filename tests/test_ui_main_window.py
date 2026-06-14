@@ -1013,3 +1013,89 @@ def test_undo_rotation_no_exif_restore_when_none(window, tmp_path, monkeypatch):
     ):
         window._undo_last_rename()
     mock_set.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# _reset_exif_selected / _reset_exif_images (lines 629-653, 656-658)
+# ---------------------------------------------------------------------------
+
+
+def test_reset_exif_images_empty(window):
+    """_reset_exif_images with empty list returns without touching undo stack."""
+    window._reset_exif_images([])
+    assert len(window._undo_stack) == 0
+
+
+def test_reset_exif_images_skips_file_without_exif(window, tmp_path):
+    """_reset_exif_images skips files where get_exif_orientation returns None."""
+    f = _img(tmp_path / "img.jpg")
+    with patch("pbpicat.image_ops.get_exif_orientation", return_value=None):
+        window._reset_exif_images([f])
+    assert len(window._undo_stack) == 0
+
+
+def test_reset_exif_images_success(window, tmp_path, monkeypatch):
+    """_reset_exif_images resets orientation and pushes to undo stack."""
+    f = _img(tmp_path / "img.jpg")
+    monkeypatch.setattr(
+        window._file_panel.file_list,
+        "refresh_thumbnails_for_paths",
+        lambda paths: None,
+    )
+    with (
+        patch("pbpicat.image_ops.get_exif_orientation", return_value=6),
+        patch("pbpicat.image_ops.set_exif_orientation") as mock_set,
+    ):
+        window._reset_exif_images([f])
+    mock_set.assert_called_once_with(f, 1)
+    assert len(window._undo_stack) == 1
+    kind, pairs = window._undo_stack[0]
+    assert kind == "reset_exif"
+    assert pairs == [(f, 6)]
+
+
+def test_reset_exif_selected(window, tmp_path, monkeypatch):
+    """_reset_exif_selected filters by extension and EXIF tag presence."""
+    f = _img(tmp_path / "img.jpg")
+    monkeypatch.setattr(window._file_panel.file_list, "get_selected_files", lambda: [f])
+    monkeypatch.setattr(
+        window._file_panel.file_list,
+        "refresh_thumbnails_for_paths",
+        lambda paths: None,
+    )
+    with (
+        patch("pbpicat.image_ops.get_exif_orientation", return_value=6),
+        patch("pbpicat.image_ops.set_exif_orientation"),
+    ):
+        window._reset_exif_selected()
+    assert len(window._undo_stack) == 1
+
+
+def test_rotate_images_reset_exif_op(window, tmp_path):
+    """_rotate_images with op='reset_exif' delegates to _reset_exif_images."""
+    f = _img(tmp_path / "img.jpg")
+    with patch.object(window, "_reset_exif_images") as mock_reset:
+        window._rotate_images([f], "reset_exif")
+    mock_reset.assert_called_once_with([f])
+
+
+# ---------------------------------------------------------------------------
+# Undo reset_exif (lines 811-815, 827-829)
+# ---------------------------------------------------------------------------
+
+
+def test_undo_reset_exif(window, tmp_path, monkeypatch):
+    """Undoing reset_exif restores the original EXIF orientation."""
+    f = _img(tmp_path / "img.jpg")
+    window._undo_stack.append(("reset_exif", [(f, 6)]))
+    window._update_undo_btn()
+    monkeypatch.setattr(
+        window._file_panel.file_list,
+        "refresh_thumbnails_for_paths",
+        lambda paths: None,
+    )
+    with patch("pbpicat.image_ops.set_exif_orientation") as mock_set:
+        window._undo_last_rename()
+    mock_set.assert_called_once_with(f, 6)
+    assert len(window._undo_stack) == 0
+    assert "EXIF" in window._status.currentMessage()

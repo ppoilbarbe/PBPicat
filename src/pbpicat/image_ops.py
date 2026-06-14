@@ -135,13 +135,36 @@ def _jpeg_apply(path: Path, op: int | str, strip_exif_orientation: bool) -> None
         _strip_jpeg_orientation(path)
 
 
+def _sanitize_exif_for_dump(exif_dict: dict) -> None:
+    """Convert Undefined-typed tags stored as int to bytes so piexif.dump() succeeds.
+
+    Some camera firmware encodes Undefined EXIF values as a plain integer instead of
+    bytes.  piexif.dump() rejects those with a type error, so we coerce them here.
+    """
+    import piexif
+
+    for ifd_name, ifd_data in exif_dict.items():
+        if not isinstance(ifd_data, dict):
+            continue
+        for tag, val in list(ifd_data.items()):
+            info = piexif.TAGS.get(ifd_name, {}).get(tag)
+            if isinstance(info, dict) and info.get("type") == piexif.TYPES.Undefined and isinstance(val, int):
+                ifd_data[tag] = val.to_bytes(1, "big")
+
+
 def set_exif_orientation(path: Path, value: int) -> None:
-    """Set EXIF Orientation tag to value in a JPEG file in-place (requires piexif)."""
+    """Set EXIF Orientation tag to value in a JPEG file in-place (requires piexif + Pillow)."""
     try:
         import piexif
+        from PIL import Image
 
-        exif = piexif.load(str(path))
+        with Image.open(path) as img:
+            raw_exif = img.info.get("exif", b"")
+        if not raw_exif:
+            return
+        exif = piexif.load(raw_exif)
         exif["0th"][piexif.ImageIFD.Orientation] = value
+        _sanitize_exif_for_dump(exif)
         piexif.insert(piexif.dump(exif), str(path))
     except Exception:  # noqa: BLE001
         pass

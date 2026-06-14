@@ -86,7 +86,7 @@ $(TRANSLATE_STAMP): $(PY_SOURCES) $(PO_FILES)
 	@printf "$(C)Updating .po files...$(R)\n"
 	$(CONDA_RUN) pybabel update -i $(POT_FILE) -d $(LOCALE_DIR) -D pbpicat \
 	    --no-fuzzy-matching --no-wrap
-	$(CONDA_RUN) python tools/fix_po_dates.py
+	$(CONDA_RUN) python tools/fix_po_files.py
 	@printf "$(C)Compiling .mo files...$(R)\n"
 	$(CONDA_RUN) pybabel compile -d $(LOCALE_DIR) -D pbpicat
 	@printf "$(G)Done.$(R)\n"
