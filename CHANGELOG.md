@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`--dev-config-dir DIR` CLI flag** — overrides the XDG configuration directory at launch, enabling isolated test runs without touching the real config.
 - **`set_base_dir()`** in `config.py` — public function to redirect `_BASE_DIR`, `_CATALOG_CONF`, and `_GLOBAL_CONFIG_PATH` before `init_catalogs()` is called.
 - **`make run ARGS="..."`** — the `run` Makefile target now forwards `$(ARGS)` to the Python invocation so extra flags can be passed from the command line.
-- **`argparse_qt.py`** — new module exposing `add_qt_arguments(parser)`: adds all Qt command-line flags as `--double-dash` argparse options grouped under *Qt options*; each option appends its single-dash equivalent to `args.qt_args` for direct forwarding to `QApplication`.
+- **`argparse_qt.py`** — new module exposing `add_qt_arguments(parser)`: adds all Qt command-line flags as `--double-dash` argparse options grouped under *Qt options*; each option appends its single-dash equivalent to `args.qt_args` for direct forwarding to `QApplication`. Qt options are hidden from the `usage:` line to reduce noise while remaining fully visible in the `--help` output.
 
 ### Changed
 
