@@ -174,8 +174,8 @@ msgstr "Impossible de charger l'image."
 msgid " (max)"
 msgstr " (max)"
 
-msgid "Keyboard shortcuts"
-msgstr "Raccourcis clavier"
+msgid "Shortcuts"
+msgstr "Raccourcis"
 
 msgid "Close"
 msgstr "Fermer"
@@ -185,6 +185,12 @@ msgstr "Fenêtre principale"
 
 msgid "Image viewer"
 msgstr "Visualiseur d'images"
+
+msgid "Keyboard"
+msgstr "Clavier"
+
+msgid "Mouse"
+msgstr "Souris"
 
 # ==AUTO== Automatically translated
 msgid "file list"
@@ -252,6 +258,30 @@ msgstr "Supprimer l'image actuelle et ses fichiers annexes"
 
 msgid "Close image viewer"
 msgstr "Fermer le visualiseur d'images"
+
+msgid "Left-click + drag"
+msgstr "Clic gauche + glisser"
+
+msgid "Pan image"
+msgstr "Déplacer l'image"
+
+msgid "Double left-click"
+msgstr "Double clic gauche"
+
+msgid "Center on clicked point"
+msgstr "Centrer sur le point cliqué"
+
+msgid "left-click"
+msgstr "clic gauche"
+
+msgid "Zoom in centered on point"
+msgstr "Zoom avant centré sur le point"
+
+msgid "right-click"
+msgstr "clic droit"
+
+msgid "Zoom out centered on point"
+msgstr "Zoom arrière centré sur le point"
 
 msgid "Orphan sidecars"
 msgstr "Sidecars orphelins"
@@ -360,11 +390,11 @@ msgstr "&Paramètres du programme…"
 msgid "&Help"
 msgstr "&Aide"
 
-msgid "&Keyboard shortcuts…"
-msgstr "&Raccourcis clavier…"
+msgid "&Shortcuts…"
+msgstr "&Raccourcis…"
 
-msgid "Show keyboard shortcuts"
-msgstr "Afficher les raccourcis clavier"
+msgid "Show shortcuts"
+msgstr "Afficher les raccourcis"
 
 msgid "&About"
 msgstr "À &propos"

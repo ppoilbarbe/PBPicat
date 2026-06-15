@@ -136,10 +136,10 @@ msgid "Sidecar filter"
 msgstr "Sidecar filter"
 
 msgid "Fit window  0 / X"
-msgstr ""
+msgstr "Fit window  0 / X"
 
 msgid "Actual size (1:1)  1 / Z"
-msgstr ""
+msgstr "Actual size (1:1)  1 / Z"
 
 msgid "Fit width  W"
 msgstr "Fit width  W"
@@ -174,8 +174,8 @@ msgstr "Cannot load image."
 msgid " (max)"
 msgstr " (max)"
 
-msgid "Keyboard shortcuts"
-msgstr "Keyboard shortcuts"
+msgid "Shortcuts"
+msgstr "Shortcuts"
 
 msgid "Close"
 msgstr "Close"
@@ -185,6 +185,12 @@ msgstr "Main window"
 
 msgid "Image viewer"
 msgstr "Image viewer"
+
+msgid "Keyboard"
+msgstr "Keyboard"
+
+msgid "Mouse"
+msgstr "Mouse"
 
 msgid "file list"
 msgstr "file list"
@@ -248,6 +254,30 @@ msgstr "Delete current image and its sidecars"
 
 msgid "Close image viewer"
 msgstr "Close image viewer"
+
+msgid "Left-click + drag"
+msgstr "Left-click + drag"
+
+msgid "Pan image"
+msgstr "Pan image"
+
+msgid "Double left-click"
+msgstr "Double left-click"
+
+msgid "Center on clicked point"
+msgstr "Center on clicked point"
+
+msgid "left-click"
+msgstr "left-click"
+
+msgid "Zoom in centered on point"
+msgstr "Zoom in centered on point"
+
+msgid "right-click"
+msgstr "right-click"
+
+msgid "Zoom out centered on point"
+msgstr "Zoom out centered on point"
 
 msgid "Orphan sidecars"
 msgstr "Orphan sidecars"
@@ -355,11 +385,11 @@ msgstr "&Program settings…"
 msgid "&Help"
 msgstr "&Help"
 
-msgid "&Keyboard shortcuts…"
-msgstr "&Keyboard shortcuts…"
+msgid "&Shortcuts…"
+msgstr "&Shortcuts…"
 
-msgid "Show keyboard shortcuts"
-msgstr "Show keyboard shortcuts"
+msgid "Show shortcuts"
+msgstr "Show shortcuts"
 
 msgid "&About"
 msgstr "&About"

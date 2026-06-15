@@ -47,7 +47,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Settings | Catalog configuration… | Ctrl+, | Open catalog settings |
 | Settings | History… | — | Edit field and filter history |
 | Settings | Program settings… | Ctrl+Alt+, | Open program settings |
-| Help | Keyboard shortcuts… | F1 | Show keyboard shortcuts |
+| Help | Shortcuts… | F1 | Show shortcuts window (non-modal) |
 | Help | About | — | About PBPicat |
 
 Images menu actions are disabled when no file is selected; Template is disabled with multiple selection.
@@ -201,7 +201,7 @@ Action buttons emit signals (`open_requested`, `open_with_requested`, `template_
 | Del | Delete current image and sidecars |
 | Escape | Close window |
 
-Mouse gestures: **double-click** centers the viewport on the clicked point; **Ctrl+click** zooms to the clicked point (CUSTOM mode).
+Mouse gestures: **double-click** centers the viewport on the clicked point; **Ctrl+left-click** zooms in centered on the clicked point; **Ctrl+right-click** zooms out centered on the clicked point (both CUSTOM mode).
 When switching zoom mode or loading a new image, the viewport is centered; in CUSTOM mode, scroll position is preserved proportionally.
 
 ## Rename Logic (`src/renamer.py`)
@@ -243,7 +243,8 @@ Menu **Settings → Histories…**
 | Active catalog name | `$XDG_CONFIG_HOME/pbpicat/catalog.conf` |
 | App config + `last_dest` | `$XDG_CONFIG_HOME/pbpicat/<catalog>/settings.json` |
 | Field histories + sidecar filter history | `$XDG_CONFIG_HOME/pbpicat/<catalog>/history.json` |
-| Window geometry, last source dir (`source/last_dir`), video marker pos (`schema/video_marker_pos`) | `$XDG_CONFIG_HOME/pbpicat/<catalog>/ui.conf` (QSettings IniFormat) |
+| Last source dir (`source/last_dir`), video marker pos (`schema/video_marker_pos`) | `$XDG_CONFIG_HOME/pbpicat/<catalog>/ui.conf` (QSettings IniFormat) |
+| Window geometry for all windows except About | `$XDG_CONFIG_HOME/pbpicat/app.conf` (QSettings IniFormat, via `app_qsettings()`) |
 | Program-level settings (default sidecars, language) | `$XDG_CONFIG_HOME/pbpicat/global_settings.json` |
 
 `$XDG_CONFIG_HOME` defaults to `~/.config` if unset.
@@ -254,11 +255,13 @@ Menu **Settings → Histories…**
 ## Internationalisation
 `src/pbpicat/i18n.py` — call `i18n.setup(app)` once before creating any window.
 - Uses `gettext` + a `QTranslator` bridge (`_GettextTranslator`).
+- Also loads `qtbase_<lang>.qm` via `QLibraryInfo.TranslationsPath` so Qt's built-in strings (standard button labels: OK, Cancel, Close, Yes, No…) are translated.
 - `.mo` files in `src/pbpicat/locale/<lang>/LC_MESSAGES/pbpicat.mo`.
 - Locales: `en`, `fr`, `de`, `es`, `it`, `ru`, `vi`, `zh_CN`.
 - Language resolved: config `language` key → system env vars → `locale.getlocale()` → "en".
 - `available_languages()` scans `.mo` files; `language_name` msgid holds the native name.
 - All UI strings wrapped in `_()` (installed by `gettext.NullTranslations.install()`).
+- Key names localised via `QKeySequence.toString(NativeText)` (e.g. Del → Suppr, Esc → Échap on FR keyboards); mouse button names translated via gettext.
 
 ## Distribution (`pbpicat.spec`)
 PyInstaller one-file build; artifact named `PBPicat-<version>-<os>-<arch>`.
@@ -280,7 +283,7 @@ PBPicat/
 └── src/pbpicat/
     ├── __main__.py        # CLI arg parsing (--dev-config-dir + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app) before creating MainWindow
     ├── argparse_qt.py     # add_qt_arguments(parser): Qt flags as --double-dash options, collected in args.qt_args
-    ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf
+    ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf, app_qsettings() → app.conf
     ├── i18n.py            # gettext bootstrap
     ├── renamer.py         # pure logic (no Qt)
     ├── locale/            # en fr de es it ru vi zh_CN

@@ -6,23 +6,24 @@ from unittest.mock import MagicMock, patch
 import pytest
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox
 
-from pbpicat.ui.main_window import MainWindow, _KeyboardShortcutsDialog, _OrphanSidecarsDialog
+from pbpicat.ui.main_window import MainWindow, _OrphanSidecarsDialog, _ShortcutsDialog
 
 # ---------------------------------------------------------------------------
-# _KeyboardShortcutsDialog
+# _ShortcutsDialog
 # ---------------------------------------------------------------------------
 
 
 def test_keyboard_shortcuts_dialog_creation(qtbot, catalog_env):
-    dlg = _KeyboardShortcutsDialog()
+    dlg = _ShortcutsDialog()
     qtbot.addWidget(dlg)
     assert dlg.windowTitle() != ""
 
 
 def test_keyboard_shortcuts_dialog_html():
-    html = _KeyboardShortcutsDialog._build_html()
+    html = _ShortcutsDialog._build_html()
     assert "<html>" in html
     assert "<table>" in html
+    assert "<h3>" in html
 
 
 # ---------------------------------------------------------------------------
@@ -408,7 +409,7 @@ def test_close_event_saves_state(window, catalog_env):
 
 
 def test_show_keyboard_shortcuts(window, catalog_env):
-    with patch.object(_KeyboardShortcutsDialog, "exec", return_value=0):
+    with patch.object(_ShortcutsDialog, "exec", return_value=0):
         window._show_keyboard_shortcuts()
 
 

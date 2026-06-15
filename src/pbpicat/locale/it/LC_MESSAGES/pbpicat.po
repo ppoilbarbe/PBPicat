@@ -22,13 +22,16 @@ msgstr ""
 msgid "language_name"
 msgstr "Italiano"
 
+# ==AUTO== Automatically translated
 msgid "No EXIF orientation tag to apply."
 msgstr "Nessun tag di orientamento EXIF da applicare."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Unsupported EXIF orientation value: {v}"
 msgstr "Valore di orientamento EXIF non supportato: {v}"
 
+# ==AUTO== Automatically translated
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -62,6 +65,7 @@ msgstr "Modello proposto"
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Modello rilevato — confermare per applicare ai campi:"
 
+# ==AUTO== Automatically translated
 msgid "(empty)"
 msgstr "(vuoto)"
 
@@ -86,6 +90,7 @@ msgstr "Nome file ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "Impossibile visualizzare più file contemporaneamente."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Eliminare definitivamente {count} file?"
@@ -186,15 +191,19 @@ msgstr "Ingrandisci  +"
 msgid "Zoom out  −"
 msgstr "Riduci  −"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CCW"
 msgstr "Ruota 90° in senso antiorario"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CW"
 msgstr "Ruota 90° in senso orario"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 180°"
 msgstr "Ruota 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply EXIF orientation"
 msgstr "Applica orientamento EXIF"
 
@@ -210,8 +219,9 @@ msgstr "Impossibile caricare l'immagine."
 msgid " (max)"
 msgstr " (max)"
 
-msgid "Keyboard shortcuts"
-msgstr "Scorciatoie da tastiera"
+# ==AUTO== Automatically translated
+msgid "Shortcuts"
+msgstr "Scorciatoie"
 
 # ==AUTO== Automatically translated
 msgid "Close"
@@ -221,8 +231,17 @@ msgstr "Chiudi"
 msgid "Main window"
 msgstr "Finestra principale"
 
+# ==AUTO== Automatically translated
 msgid "Image viewer"
 msgstr "Visualizzatore di immagini"
+
+# ==AUTO== Automatically translated
+msgid "Keyboard"
+msgstr "Tastiera"
+
+# ==AUTO== Automatically translated
+msgid "Mouse"
+msgstr "Mouse"
 
 # ==AUTO== Automatically translated
 msgid "file list"
@@ -296,14 +315,49 @@ msgstr "Adatta all'altezza"
 msgid "Zoom in / Zoom out"
 msgstr "Ingrandisci / Riduci"
 
+# ==AUTO== Automatically translated
 msgid "Navigate to previous / next image"
 msgstr "Naviga all'immagine precedente / successiva"
 
+# ==AUTO== Automatically translated
 msgid "Delete current image and its sidecars"
 msgstr "Eliminare l'immagine corrente e i suoi sidecar"
 
+# ==AUTO== Automatically translated
 msgid "Close image viewer"
 msgstr "Chiudere il visualizzatore di immagini"
+
+# ==AUTO== Automatically translated
+msgid "Left-click + drag"
+msgstr "Clic sinistro + trascinamento"
+
+# ==AUTO== Automatically translated
+msgid "Pan image"
+msgstr "Sposta immagine"
+
+# ==AUTO== Automatically translated
+msgid "Double left-click"
+msgstr "Doppio clic sinistro"
+
+# ==AUTO== Automatically translated
+msgid "Center on clicked point"
+msgstr "Centra sul punto cliccato"
+
+# ==AUTO== Automatically translated
+msgid "left-click"
+msgstr "clic sinistro"
+
+# ==AUTO== Automatically translated
+msgid "Zoom in centered on point"
+msgstr "Ingrandimento centrato sul punto"
+
+# ==AUTO== Automatically translated
+msgid "right-click"
+msgstr "clic destro"
+
+# ==AUTO== Automatically translated
+msgid "Zoom out centered on point"
+msgstr "Riduzione centrata sul punto"
 
 # ==AUTO== Automatically translated
 msgid "Orphan sidecars"
@@ -322,9 +376,11 @@ msgstr "Elimina tutti"
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} file sidecar orfano/i:"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° counter-clockwise"
 msgstr "Ruota le immagini selezionate di 90° in senso antiorario"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° clockwise"
 msgstr "Ruota le immagini selezionate di 90° in senso orario"
 
@@ -332,6 +388,7 @@ msgstr "Ruota le immagini selezionate di 90° in senso orario"
 msgid "Rotate selected image(s) 180°"
 msgstr "Ruota le immagini selezionate di 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Applica e rimuovi il tag di orientamento EXIF"
 
@@ -443,12 +500,13 @@ msgstr "&Impostazioni del programma…"
 msgid "&Help"
 msgstr "&Aiuto"
 
-msgid "&Keyboard shortcuts…"
-msgstr "&Scorciatoie da tastiera…"
+# ==AUTO== Automatically translated
+msgid "&Shortcuts…"
+msgstr "&Scorciatoie…"
 
 # ==AUTO== Automatically translated
-msgid "Show keyboard shortcuts"
-msgstr "Mostra scorciatoie da tastiera"
+msgid "Show shortcuts"
+msgstr "Mostra scorciatoie"
 
 # ==AUTO== Automatically translated
 msgid "&About"
@@ -490,6 +548,7 @@ msgstr "Rinumera da 1"
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Rinumera tutti i file della directory corrente a partire da 1"
 
+# ==AUTO== Automatically translated
 msgid "Undo last operation"
 msgstr "Annulla ultima operazione"
 
@@ -538,6 +597,7 @@ msgstr "Scegli directory di destinazione"
 msgid "{n} EXIF orientation tag(s) reset."
 msgstr "{n} tag di orientamento EXIF reimpostato/i."
 
+# ==AUTO== Automatically translated
 msgid "Rotation unavailable"
 msgstr "Rotazione non disponibile"
 
@@ -602,6 +662,7 @@ msgstr "Specificare una directory di destinazione."
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} file rinominato/i con successo."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Annulla rotazione ({n})"
@@ -610,6 +671,7 @@ msgstr "Annulla rotazione ({n})"
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Annulla ultima rotazione (ripristina i dati pixel originali)"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rename ({n})"
 msgstr "Annulla ridenominazione ({n})"
@@ -758,9 +820,11 @@ msgstr "Max voci cronologia:"
 msgid "Maximum number of values kept per field history and sidecar filter history"
 msgstr "Numero massimo di valori conservati per cronologia campo e filtro sidecar"
 
+# ==AUTO== Automatically translated
 msgid "Max files listed in deletion confirmation:"
 msgstr "Numero massimo di file elencati nella conferma di eliminazione:"
 
+# ==AUTO== Automatically translated
 msgid "When deleting more files than this threshold, show the count instead of listing each file name"
 msgstr "Quando si eliminano più file di questa soglia, mostra il conteggio invece di elencare i nomi dei file"
 

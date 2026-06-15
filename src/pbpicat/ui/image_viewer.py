@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pbpicat.config import DEFAULTS, qsettings
+from pbpicat.config import DEFAULTS, app_qsettings
 from pbpicat.image_io import load_pixmap
 
 from .icons import ICON_SIZE as _ICON_SIZE
@@ -69,7 +69,7 @@ class ImageViewer(QWidget):
         self._setup_ui()
         self._setup_shortcuts()
 
-        saved_geom = qsettings().value("image_viewer/geometry")
+        saved_geom = app_qsettings().value("image_viewer/geometry")
         if saved_geom:
             self.restoreGeometry(saved_geom)
 
@@ -402,6 +402,10 @@ class ImageViewer(QWidget):
                 self._drag_pos = event.globalPosition().toPoint()
                 self._label.setCursor(Qt.OpenHandCursor)
                 return False
+            if etype == QEvent.Type.MouseButtonPress and event.button() == Qt.RightButton:
+                if event.modifiers() & Qt.ControlModifier:
+                    self._zoom_to_point(event.position().toPoint(), direction=-1)
+                    return True
             if etype == QEvent.Type.MouseMove and (event.buttons() & Qt.LeftButton) and self._drag_pos is not None:
                 pos = event.globalPosition().toPoint()
                 delta = pos - self._drag_pos
@@ -430,15 +434,15 @@ class ImageViewer(QWidget):
         hbar.setValue(int(label_pos.x() - vp.width() / 2))
         vbar.setValue(int(label_pos.y() - vp.height() / 2))
 
-    def _zoom_to_point(self, label_pos) -> None:
+    def _zoom_to_point(self, label_pos, direction: int = 1) -> None:
         label_w = self._label.width()
         label_h = self._label.height()
         if label_w == 0 or label_h == 0:
-            self._act_zoom_in()
+            self._act_zoom_in() if direction > 0 else self._act_zoom_out()
             return
         fx = label_pos.x() / label_w
         fy = label_pos.y() / label_h
-        self._factor = max(self._zoom_min, min(self._zoom_max, self._current_factor() + self._zoom_step))
+        self._factor = max(self._zoom_min, min(self._zoom_max, self._current_factor() + direction * self._zoom_step))
         self._mode = _ZoomMode.CUSTOM
         self._update_button_states()
         self._apply_zoom()
@@ -449,7 +453,7 @@ class ImageViewer(QWidget):
         vbar.setValue(int(fy * self._label.height() - vp.height() / 2))
 
     def closeEvent(self, event) -> None:  # noqa: N802
-        qsettings().setValue("image_viewer/geometry", self.saveGeometry())
+        app_qsettings().setValue("image_viewer/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     def resizeEvent(self, event) -> None:  # noqa: N802

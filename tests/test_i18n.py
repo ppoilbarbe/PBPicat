@@ -206,8 +206,9 @@ def test_setup_installs_qt_translator(qapp, monkeypatch):
     monkeypatch.setattr("pbpicat.config.load_global_config", lambda: {"language": "en"})
     with patch.object(qapp, "installTranslator") as mock_install:
         setup(qapp)
-    mock_install.assert_called_once()
-    assert isinstance(mock_install.call_args[0][0], _GettextTranslator)
+    # First call: gettext translator; second call: Qt built-in translator (if found)
+    assert mock_install.call_count >= 1
+    assert isinstance(mock_install.call_args_list[0][0][0], _GettextTranslator)
 
 
 def test_setup_is_idempotent(qapp, monkeypatch):

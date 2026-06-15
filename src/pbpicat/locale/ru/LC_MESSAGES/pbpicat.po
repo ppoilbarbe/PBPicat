@@ -22,13 +22,16 @@ msgstr ""
 msgid "language_name"
 msgstr "Русский"
 
+# ==AUTO== Automatically translated
 msgid "No EXIF orientation tag to apply."
 msgstr "Тег ориентации EXIF отсутствует."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Unsupported EXIF orientation value: {v}"
 msgstr "Неподдерживаемое значение ориентации EXIF: {v}"
 
+# ==AUTO== Automatically translated
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -62,6 +65,7 @@ msgstr "Предложенный шаблон"
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Обнаружен шаблон — подтвердите применение к полям:"
 
+# ==AUTO== Automatically translated
 msgid "(empty)"
 msgstr "(пусто)"
 
@@ -86,6 +90,7 @@ msgstr "Имя файла ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "Невозможно отобразить несколько файлов одновременно."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Удалить {count} файлов безвозвратно?"
@@ -186,15 +191,19 @@ msgstr "Увеличить  +"
 msgid "Zoom out  −"
 msgstr "Уменьшить  −"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CCW"
 msgstr "Повернуть на 90° против часовой стрелки"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CW"
 msgstr "Повернуть на 90° по часовой стрелке"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 180°"
 msgstr "Повернуть на 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply EXIF orientation"
 msgstr "Применить ориентацию EXIF"
 
@@ -210,7 +219,8 @@ msgstr "Не удаётся загрузить изображение."
 msgid " (max)"
 msgstr " (макс)"
 
-msgid "Keyboard shortcuts"
+# ==AUTO== Automatically translated
+msgid "Shortcuts"
 msgstr "Сочетания клавиш"
 
 # ==AUTO== Automatically translated
@@ -221,8 +231,17 @@ msgstr "Закрыть"
 msgid "Main window"
 msgstr "Главное окно"
 
+# ==AUTO== Automatically translated
 msgid "Image viewer"
 msgstr "Просмотрщик изображений"
+
+# ==AUTO== Automatically translated
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+# ==AUTO== Automatically translated
+msgid "Mouse"
+msgstr "Мышь"
 
 # ==AUTO== Automatically translated
 msgid "file list"
@@ -296,14 +315,49 @@ msgstr "По высоте"
 msgid "Zoom in / Zoom out"
 msgstr "Увеличить / Уменьшить"
 
+# ==AUTO== Automatically translated
 msgid "Navigate to previous / next image"
 msgstr "Перейти к предыдущему / следующему изображению"
 
+# ==AUTO== Automatically translated
 msgid "Delete current image and its sidecars"
 msgstr "Удалить текущее изображение и его вспомогательные файлы"
 
+# ==AUTO== Automatically translated
 msgid "Close image viewer"
 msgstr "Закрыть просмотрщик изображений"
+
+# ==AUTO== Automatically translated
+msgid "Left-click + drag"
+msgstr "Нажать левую кнопку + перетащить"
+
+# ==AUTO== Automatically translated
+msgid "Pan image"
+msgstr "Прокрутить изображение"
+
+# ==AUTO== Automatically translated
+msgid "Double left-click"
+msgstr "Двойной щелчок левой кнопкой"
+
+# ==AUTO== Automatically translated
+msgid "Center on clicked point"
+msgstr "Центрировать на нажатой точке"
+
+# ==AUTO== Automatically translated
+msgid "left-click"
+msgstr "щелчок левой кнопкой"
+
+# ==AUTO== Automatically translated
+msgid "Zoom in centered on point"
+msgstr "Увеличить, центрируя на точке"
+
+# ==AUTO== Automatically translated
+msgid "right-click"
+msgstr "щелчок правой кнопкой"
+
+# ==AUTO== Automatically translated
+msgid "Zoom out centered on point"
+msgstr "Уменьшить, центрируя на точке"
 
 # ==AUTO== Automatically translated
 msgid "Orphan sidecars"
@@ -322,9 +376,11 @@ msgstr "Удалить все"
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} осиротевший(-их) sidecar-файл(ов):"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° counter-clockwise"
 msgstr "Повернуть выбранные изображения на 90° против часовой стрелки"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° clockwise"
 msgstr "Повернуть выбранные изображения на 90° по часовой стрелке"
 
@@ -332,6 +388,7 @@ msgstr "Повернуть выбранные изображения на 90° �
 msgid "Rotate selected image(s) 180°"
 msgstr "Повернуть выбранные изображения на 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Применить и удалить тег ориентации EXIF"
 
@@ -443,11 +500,12 @@ msgstr "&Настройки программы…"
 msgid "&Help"
 msgstr "&Справка"
 
-msgid "&Keyboard shortcuts…"
+# ==AUTO== Automatically translated
+msgid "&Shortcuts…"
 msgstr "&Сочетания клавиш…"
 
 # ==AUTO== Automatically translated
-msgid "Show keyboard shortcuts"
+msgid "Show shortcuts"
 msgstr "Показать сочетания клавиш"
 
 # ==AUTO== Automatically translated
@@ -490,6 +548,7 @@ msgstr "Перенумеровать с 1"
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Перенумеровать все файлы в текущем каталоге начиная с 1"
 
+# ==AUTO== Automatically translated
 msgid "Undo last operation"
 msgstr "Отменить последнее действие"
 
@@ -538,6 +597,7 @@ msgstr "Выбрать каталог назначения"
 msgid "{n} EXIF orientation tag(s) reset."
 msgstr "{n} тег(ов) ориентации EXIF сброшено."
 
+# ==AUTO== Automatically translated
 msgid "Rotation unavailable"
 msgstr "Поворот недоступен"
 
@@ -602,6 +662,7 @@ msgstr "Укажите каталог назначения."
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} файл(ов) успешно переименован(о)."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Отменить поворот ({n})"
@@ -610,6 +671,7 @@ msgstr "Отменить поворот ({n})"
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Отменить последний поворот (восстанавливает исходные данные пикселей)"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rename ({n})"
 msgstr "Отменить переименование ({n})"
@@ -758,9 +820,11 @@ msgstr "Макс. записей истории:"
 msgid "Maximum number of values kept per field history and sidecar filter history"
 msgstr "Максимальное число значений, хранимых в истории каждого поля и фильтра sidecar"
 
+# ==AUTO== Automatically translated
 msgid "Max files listed in deletion confirmation:"
 msgstr "Максимальное количество файлов в подтверждении удаления:"
 
+# ==AUTO== Automatically translated
 msgid "When deleting more files than this threshold, show the count instead of listing each file name"
 msgstr "Если количество файлов превышает этот порог, отображается количество вместо перечисления имён файлов"
 

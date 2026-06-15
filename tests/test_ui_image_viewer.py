@@ -60,7 +60,7 @@ def test_image_viewer_restores_geometry(qtbot, catalog_env, sample_png, monkeypa
     mock_qs.value.return_value = fake_geom
     mock_qs.setValue = MagicMock()
     mock_qs.sync = MagicMock()
-    monkeypatch.setattr("pbpicat.ui.image_viewer.qsettings", lambda: mock_qs)
+    monkeypatch.setattr("pbpicat.ui.image_viewer.app_qsettings", lambda: mock_qs)
     viewer = ImageViewer(sample_png)
     qtbot.addWidget(viewer)
 
@@ -69,7 +69,7 @@ def test_image_viewer_no_screen(qtbot, catalog_env, sample_png, monkeypatch):
     """Branch: screen() returns None → fallback resize."""
     mock_qs = MagicMock()
     mock_qs.value.return_value = None
-    monkeypatch.setattr("pbpicat.ui.image_viewer.qsettings", lambda: mock_qs)
+    monkeypatch.setattr("pbpicat.ui.image_viewer.app_qsettings", lambda: mock_qs)
     with patch.object(ImageViewer, "screen", return_value=None):
         with patch.object(ImageViewer, "parent", return_value=None):
             viewer = ImageViewer(sample_png)
@@ -336,7 +336,7 @@ def test_zoom_to_point_zero_size(qtbot, catalog_env, sample_png, monkeypatch):
 def test_close_event_saves_geometry(qtbot, catalog_env, sample_png, monkeypatch):
     mock_qs = MagicMock()
     mock_qs.value.return_value = None
-    monkeypatch.setattr("pbpicat.ui.image_viewer.qsettings", lambda: mock_qs)
+    monkeypatch.setattr("pbpicat.ui.image_viewer.app_qsettings", lambda: mock_qs)
     viewer = ImageViewer(sample_png)
     qtbot.addWidget(viewer)
     viewer.close()
@@ -437,3 +437,36 @@ def test_event_filter_ctrl_click_zooms_to_point(qtbot, catalog_env, sample_png):
     result = viewer.eventFilter(viewer._label, press)
     assert result is True
     assert viewer._mode == _ZoomMode.CUSTOM
+
+
+def test_event_filter_ctrl_right_click_zooms_out_to_point(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    viewer.resize(600, 400)
+    viewer._apply_custom(2.0)
+    factor_before = viewer._current_factor()
+    press = QMouseEvent(
+        QEvent.Type.MouseButtonPress,
+        QPoint(50, 50),
+        viewer._label.mapToGlobal(QPoint(50, 50)),
+        Qt.RightButton,
+        Qt.RightButton,
+        Qt.ControlModifier,
+    )
+    result = viewer.eventFilter(viewer._label, press)
+    assert result is True
+    assert viewer._mode == _ZoomMode.CUSTOM
+    assert viewer._current_factor() < factor_before
+
+
+def test_zoom_to_point_zero_size_zoom_out(qtbot, catalog_env, sample_png, monkeypatch):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._apply_custom(2.0)
+    factor_before = viewer._current_factor()
+    monkeypatch.setattr(viewer._label, "width", lambda: 0)
+    monkeypatch.setattr(viewer._label, "height", lambda: 0)
+    viewer._zoom_to_point(QPoint(10, 10), direction=-1)
+    assert viewer._mode == _ZoomMode.CUSTOM
+    assert viewer._current_factor() < factor_before

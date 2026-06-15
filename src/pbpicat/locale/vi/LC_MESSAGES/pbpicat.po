@@ -22,13 +22,16 @@ msgstr ""
 msgid "language_name"
 msgstr "Tiếng Việt"
 
+# ==AUTO== Automatically translated
 msgid "No EXIF orientation tag to apply."
 msgstr "Không có thẻ định hướng EXIF để áp dụng."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Unsupported EXIF orientation value: {v}"
 msgstr "Giá trị định hướng EXIF không được hỗ trợ: {v}"
 
+# ==AUTO== Automatically translated
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -62,6 +65,7 @@ msgstr "Mẫu đề xuất"
 msgid "Detected template — confirm to apply to fields:"
 msgstr "Mẫu được phát hiện — xác nhận để áp dụng cho các trường:"
 
+# ==AUTO== Automatically translated
 msgid "(empty)"
 msgstr "(trống)"
 
@@ -86,6 +90,7 @@ msgstr "Tên tệp ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "Không thể hiển thị nhiều tệp cùng lúc."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Xóa vĩnh viễn {count} tệp?"
@@ -186,15 +191,19 @@ msgstr "Phóng to  +"
 msgid "Zoom out  −"
 msgstr "Thu nhỏ  −"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CCW"
 msgstr "Xoay 90° ngược chiều kim đồng hồ"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CW"
 msgstr "Xoay 90° theo chiều kim đồng hồ"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 180°"
 msgstr "Xoay 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply EXIF orientation"
 msgstr "Áp dụng định hướng EXIF"
 
@@ -210,8 +219,9 @@ msgstr "Không thể tải hình ảnh."
 msgid " (max)"
 msgstr " (tối đa)"
 
-msgid "Keyboard shortcuts"
-msgstr "Phím tắt bàn phím"
+# ==AUTO== Automatically translated
+msgid "Shortcuts"
+msgstr "Phím tắt"
 
 # ==AUTO== Automatically translated
 msgid "Close"
@@ -221,8 +231,17 @@ msgstr "Đóng"
 msgid "Main window"
 msgstr "Cửa sổ chính"
 
+# ==AUTO== Automatically translated
 msgid "Image viewer"
 msgstr "Trình xem ảnh"
+
+# ==AUTO== Automatically translated
+msgid "Keyboard"
+msgstr "Bàn phím"
+
+# ==AUTO== Automatically translated
+msgid "Mouse"
+msgstr "Chuột"
 
 # ==AUTO== Automatically translated
 msgid "file list"
@@ -296,14 +315,49 @@ msgstr "Vừa chiều cao"
 msgid "Zoom in / Zoom out"
 msgstr "Phóng to / Thu nhỏ"
 
+# ==AUTO== Automatically translated
 msgid "Navigate to previous / next image"
 msgstr "Điều hướng đến ảnh trước / tiếp theo"
 
+# ==AUTO== Automatically translated
 msgid "Delete current image and its sidecars"
 msgstr "Xóa ảnh hiện tại và các tệp phụ của nó"
 
+# ==AUTO== Automatically translated
 msgid "Close image viewer"
 msgstr "Đóng trình xem ảnh"
+
+# ==AUTO== Automatically translated
+msgid "Left-click + drag"
+msgstr "Nhấp chuột trái + kéo"
+
+# ==AUTO== Automatically translated
+msgid "Pan image"
+msgstr "Di chuyển ảnh"
+
+# ==AUTO== Automatically translated
+msgid "Double left-click"
+msgstr "Nhấp đúp chuột trái"
+
+# ==AUTO== Automatically translated
+msgid "Center on clicked point"
+msgstr "Căn giữa điểm được nhấp"
+
+# ==AUTO== Automatically translated
+msgid "left-click"
+msgstr "nhấp chuột trái"
+
+# ==AUTO== Automatically translated
+msgid "Zoom in centered on point"
+msgstr "Phóng to lấy điểm làm tâm"
+
+# ==AUTO== Automatically translated
+msgid "right-click"
+msgstr "nhấp chuột phải"
+
+# ==AUTO== Automatically translated
+msgid "Zoom out centered on point"
+msgstr "Thu nhỏ lấy điểm làm tâm"
 
 # ==AUTO== Automatically translated
 msgid "Orphan sidecars"
@@ -322,9 +376,11 @@ msgstr "Xóa tất cả"
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} tệp sidecar mồ côi:"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° counter-clockwise"
 msgstr "Xoay (các) ảnh được chọn 90° ngược chiều kim đồng hồ"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° clockwise"
 msgstr "Xoay (các) ảnh được chọn 90° theo chiều kim đồng hồ"
 
@@ -332,6 +388,7 @@ msgstr "Xoay (các) ảnh được chọn 90° theo chiều kim đồng hồ"
 msgid "Rotate selected image(s) 180°"
 msgstr "Xoay (các) ảnh được chọn 180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Áp dụng và xóa thẻ định hướng EXIF"
 
@@ -443,11 +500,12 @@ msgstr "&Cài đặt chương trình…"
 msgid "&Help"
 msgstr "&Trợ giúp"
 
-msgid "&Keyboard shortcuts…"
-msgstr "Phím tắt &bàn phím…"
+# ==AUTO== Automatically translated
+msgid "&Shortcuts…"
+msgstr "&Phím tắt…"
 
 # ==AUTO== Automatically translated
-msgid "Show keyboard shortcuts"
+msgid "Show shortcuts"
 msgstr "Hiển thị phím tắt"
 
 # ==AUTO== Automatically translated
@@ -490,6 +548,7 @@ msgstr "Đánh số lại từ 1"
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "Đánh số lại tất cả tệp trong thư mục hiện tại bắt đầu từ 1"
 
+# ==AUTO== Automatically translated
 msgid "Undo last operation"
 msgstr "Hoàn tác thao tác cuối"
 
@@ -538,6 +597,7 @@ msgstr "Chọn thư mục đích"
 msgid "{n} EXIF orientation tag(s) reset."
 msgstr "{n} thẻ hướng EXIF đã được đặt lại."
 
+# ==AUTO== Automatically translated
 msgid "Rotation unavailable"
 msgstr "Không thể xoay"
 
@@ -602,6 +662,7 @@ msgstr "Vui lòng chỉ định thư mục đích."
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} tệp đã được đổi tên thành công."
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Hoàn tác xoay ({n})"
@@ -610,6 +671,7 @@ msgstr "Hoàn tác xoay ({n})"
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Hoàn tác lần xoay cuối (khôi phục dữ liệu điểm ảnh gốc)"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rename ({n})"
 msgstr "Hoàn tác đổi tên ({n})"
@@ -758,9 +820,11 @@ msgstr "Số mục lịch sử tối đa:"
 msgid "Maximum number of values kept per field history and sidecar filter history"
 msgstr "Số giá trị tối đa lưu trong lịch sử mỗi trường và lịch sử bộ lọc sidecar"
 
+# ==AUTO== Automatically translated
 msgid "Max files listed in deletion confirmation:"
 msgstr "Số tệp tối đa hiển thị trong xác nhận xóa:"
 
+# ==AUTO== Automatically translated
 msgid "When deleting more files than this threshold, show the count instead of listing each file name"
 msgstr "Khi xóa nhiều tệp hơn ngưỡng này, hiển thị số lượng thay vì liệt kê tên từng tệp"
 

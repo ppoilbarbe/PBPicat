@@ -248,6 +248,15 @@ def qsettings() -> QSettings:
     return QSettings(str(_qsettings_path()), QSettings.Format.IniFormat)
 
 
+def app_qsettings() -> QSettings:
+    """Return a QSettings instance for application-level state (window geometry, etc.).
+
+    Stored in <config_dir>/app.conf, independent of the active catalog.
+    """
+    _BASE_DIR.mkdir(parents=True, exist_ok=True)
+    return QSettings(str(_BASE_DIR / "app.conf"), QSettings.Format.IniFormat)
+
+
 def load_config() -> dict:
     config = DEFAULTS.copy()
     path = _config_path()

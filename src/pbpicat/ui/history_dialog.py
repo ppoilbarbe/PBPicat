@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pbpicat.config import load_all_history, save_all_history
+from pbpicat.config import app_qsettings, load_all_history, save_all_history
 
 
 class _FieldHistoryWidget(QWidget):
@@ -138,6 +138,13 @@ class HistoryDialog(QDialog):
         self._config = config
         self._field_widgets: list[_FieldHistoryWidget] = []
         self._setup_ui()
+        geom = app_qsettings().value("history_dialog/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+
+    def done(self, result) -> None:  # noqa: N802
+        app_qsettings().setValue("history_dialog/geometry", self.saveGeometry())
+        super().done(result)
 
     def _setup_ui(self) -> None:
         root = QVBoxLayout(self)

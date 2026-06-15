@@ -27,6 +27,7 @@ from pbpicat.config import (
     DEFAULT_SIDECAR_EXTENSIONS,
     DEFAULT_VIDEO_EXTENSIONS,
     DEFAULTS,
+    app_qsettings,
     load_global_config,
     save_config,
     save_global_config,
@@ -529,6 +530,13 @@ class SettingsDialog(QDialog):
         self.setMinimumSize(460, 420)
         self._config = dict(config)
         self._setup_ui()
+        geom = app_qsettings().value("settings_dialog/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+
+    def done(self, result) -> None:  # noqa: N802
+        app_qsettings().setValue("settings_dialog/geometry", self.saveGeometry())
+        super().done(result)
 
     def _setup_ui(self) -> None:
         root = QVBoxLayout(self)
@@ -575,6 +583,13 @@ class GlobalSettingsDialog(QDialog):
         self.setMinimumSize(460, 380)
         self._global_config = load_global_config()
         self._setup_ui()
+        geom = app_qsettings().value("global_settings_dialog/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+
+    def done(self, result) -> None:  # noqa: N802
+        app_qsettings().setValue("global_settings_dialog/geometry", self.saveGeometry())
+        super().done(result)
 
     def _setup_ui(self) -> None:
         root = QVBoxLayout(self)

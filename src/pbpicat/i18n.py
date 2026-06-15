@@ -10,7 +10,7 @@ import locale
 import os
 from pathlib import Path
 
-from PySide6.QtCore import QTranslator
+from PySide6.QtCore import QLibraryInfo, QLocale, QTranslator
 from PySide6.QtWidgets import QApplication
 
 _DOMAIN = "pbpicat"
@@ -72,3 +72,8 @@ def setup(app: QApplication) -> None:
     t.install()
     translator = _GettextTranslator(t, app)
     app.installTranslator(translator)
+
+    qt_translator = QTranslator(app)
+    translations_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+    if qt_translator.load(QLocale(lang), "qtbase", "_", translations_path):
+        app.installTranslator(qt_translator)

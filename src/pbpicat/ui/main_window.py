@@ -26,6 +26,7 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import (
+    app_qsettings,
     create_catalog,
     current_catalog,
     delete_catalog,
@@ -58,10 +59,10 @@ from .schema_frame import SchemaFrame
 from .settings_dialog import GlobalSettingsDialog, SettingsDialog
 
 
-class _KeyboardShortcutsDialog(QDialog):
+class _ShortcutsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(_("Keyboard shortcuts"))
+        self.setWindowTitle(_("Shortcuts"))
         self.setMinimumSize(520, 440)
         root = QVBoxLayout(self)
         root.setSpacing(8)
@@ -71,8 +72,15 @@ class _KeyboardShortcutsDialog(QDialog):
         browser.setHtml(self._build_html())
         root.addWidget(browser)
         close_btn = QPushButton(_("Close"))
-        close_btn.clicked.connect(self.accept)
+        close_btn.clicked.connect(self.close)
         root.addWidget(close_btn, alignment=Qt.AlignRight)
+        geom = app_qsettings().value("shortcuts_dialog/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+
+    def done(self, result) -> None:  # noqa: N802
+        app_qsettings().setValue("shortcuts_dialog/geometry", self.saveGeometry())
+        super().done(result)
 
     @staticmethod
     def _build_html() -> str:
@@ -84,16 +92,19 @@ class _KeyboardShortcutsDialog(QDialog):
             "body{font-family:sans-serif;margin:0;padding:8px;}"
             "h2{color:#2c5f9e;font-size:12pt;margin:14px 0 4px 0;"
             "border-bottom:1px solid #aac;padding-bottom:3px;}"
+            "h3{color:#4a7ab5;font-size:10pt;margin:10px 0 2px 0;}"
             "table{border-collapse:collapse;width:100%;margin-bottom:6px;}"
             "td{padding:4px 10px;vertical-align:top;}"
             "td:first-child{font-family:monospace;font-weight:bold;color:#444;"
-            "white-space:nowrap;width:170px;}"
+            "white-space:nowrap;width:210px;}"
             "tr:nth-child(even){background:#f0f4f8;}"
             "</style>"
         )
 
         title_main = _("Main window")
         title_viewer = _("Image viewer")
+        title_keyboard = _("Keyboard")
+        title_mouse = _("Mouse")
 
         def key(seq) -> str:
             return QKeySequence(seq).toString(QKeySequence.SequenceFormat.NativeText)
@@ -102,6 +113,8 @@ class _KeyboardShortcutsDialog(QDialog):
         key_esc = key(Qt.Key.Key_Escape)
         file_list = _("file list")
         tree_leaf = _("tree leaf")
+
+        ctrl = key(Qt.Modifier.CTRL | Qt.Key.Key_A)[:-1]
 
         main_rows = "".join(
             [
@@ -122,7 +135,7 @@ class _KeyboardShortcutsDialog(QDialog):
             ]
         )
 
-        viewer_rows = "".join(
+        viewer_kb_rows = "".join(
             [
                 row("0 / X", _("Fit window")),
                 row("1 / Z", _("Actual size (1:1)")),
@@ -135,12 +148,24 @@ class _KeyboardShortcutsDialog(QDialog):
             ]
         )
 
+        viewer_mouse_rows = "".join(
+            [
+                row(_("Left-click + drag"), _("Pan image")),
+                row(_("Double left-click"), _("Center on clicked point")),
+                row(f"{ctrl}{_('left-click')}", _("Zoom in centered on point")),
+                row(f"{ctrl}{_('right-click')}", _("Zoom out centered on point")),
+            ]
+        )
+
         return (
             f"<html><head>{style}</head><body>"
             f"<h2>{title_main}</h2>"
             f"<table>{main_rows}</table>"
             f"<h2>{title_viewer}</h2>"
-            f"<table>{viewer_rows}</table>"
+            f"<h3>{title_keyboard}</h3>"
+            f"<table>{viewer_kb_rows}</table>"
+            f"<h3>{title_mouse}</h3>"
+            f"<table>{viewer_mouse_rows}</table>"
             "</body></html>"
         )
 
@@ -152,6 +177,13 @@ class _OrphanSidecarsDialog(QDialog):
         self.setMinimumWidth(420)
         self._orphans: list = list(orphans)
         self._setup_ui()
+        geom = app_qsettings().value("orphan_sidecars_dialog/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+
+    def done(self, result) -> None:  # noqa: N802
+        app_qsettings().setValue("orphan_sidecars_dialog/geometry", self.saveGeometry())
+        super().done(result)
 
     def _setup_ui(self) -> None:
         root = QVBoxLayout(self)
@@ -237,11 +269,16 @@ class MainWindow(QMainWindow):
         self._config = load_config()
         self._undo_stack: list[tuple[str, list]] = []
         self._orphan_dlg: _OrphanSidecarsDialog | None = None
+        self._shortcuts_dlg: _ShortcutsDialog | None = None
         self._setup_rotation_actions()
         self._setup_ui()
         self._setup_menu()
         self._update_title()
-        self.resize(1280, 820)
+        geom = app_qsettings().value("main_window/geometry")
+        if geom:
+            self.restoreGeometry(geom)
+        else:
+            self.resize(1280, 820)
 
     def _setup_rotation_actions(self) -> None:
         self._act_rotate_ccw = QAction(_("Rotate 90° CCW"), self)
@@ -348,9 +385,9 @@ class MainWindow(QMainWindow):
         act.setIcon(get_icon("preferences-system", "preferences-system"))
 
         help_menu = mb.addMenu(_("&Help"))
-        act = help_menu.addAction(_("&Keyboard shortcuts…"), self._show_keyboard_shortcuts)
+        act = help_menu.addAction(_("&Shortcuts…"), self._show_keyboard_shortcuts)
         act.setShortcut(QKeySequence(Qt.Key.Key_F1))
-        act.setStatusTip(_("Show keyboard shortcuts"))
+        act.setStatusTip(_("Show shortcuts"))
         act.setIcon(get_icon("help-keyboard-shortcuts", "help-keyboard-shortcuts"))
         help_menu.addSeparator()
         act = help_menu.addAction(_("&About"), self._about)
@@ -404,10 +441,6 @@ class MainWindow(QMainWindow):
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
         self._file_panel.dir_tree.select_path(load_last_source_dir())
-
-        geom = qsettings().value("main_window/geometry")
-        if geom:
-            self.restoreGeometry(geom)
 
     def _build_dest_zone(self) -> QHBoxLayout:
         layout = QHBoxLayout()
@@ -967,9 +1000,8 @@ class MainWindow(QMainWindow):
     def _save_current_catalog_state(self) -> None:
         save_last_source_dir(self._file_panel.dir_tree.current_path())
         save_last_dest(self._dest_edit.text().strip())
-        qs = qsettings()
-        qs.setValue("main_window/geometry", self.saveGeometry())
-        qs.sync()
+        app_qsettings().setValue("main_window/geometry", self.saveGeometry())
+        qsettings().sync()
 
     def _switch_to_catalog(self, name: str) -> None:
         if name == current_catalog():
@@ -992,8 +1024,11 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
     def _show_keyboard_shortcuts(self) -> None:
-        dlg = _KeyboardShortcutsDialog(self)
-        dlg.exec()
+        if self._shortcuts_dlg is None:
+            self._shortcuts_dlg = _ShortcutsDialog(self)
+        self._shortcuts_dlg.show()
+        self._shortcuts_dlg.raise_()
+        self._shortcuts_dlg.activateWindow()
 
     def _about(self) -> None:
         from email.utils import getaddresses

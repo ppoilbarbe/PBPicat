@@ -22,13 +22,16 @@ msgstr ""
 msgid "language_name"
 msgstr "简体中文"
 
+# ==AUTO== Automatically translated
 msgid "No EXIF orientation tag to apply."
 msgstr "未找到EXIF方向标签。"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Unsupported EXIF orientation value: {v}"
 msgstr "不支持的EXIF方向值：{v}"
 
+# ==AUTO== Automatically translated
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -62,6 +65,7 @@ msgstr "建议模板"
 msgid "Detected template — confirm to apply to fields:"
 msgstr "检测到模板 — 确认以应用于字段："
 
+# ==AUTO== Automatically translated
 msgid "(empty)"
 msgstr "（空）"
 
@@ -86,6 +90,7 @@ msgstr "文件名 ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "无法同时显示多个文件。"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "永久删除 {count} 个文件？"
@@ -186,15 +191,19 @@ msgstr "放大  +"
 msgid "Zoom out  −"
 msgstr "缩小  −"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CCW"
 msgstr "逆时针旋转90°"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 90° CW"
 msgstr "顺时针旋转90°"
 
+# ==AUTO== Automatically translated
 msgid "Rotate 180°"
 msgstr "旋转180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply EXIF orientation"
 msgstr "应用EXIF方向"
 
@@ -210,8 +219,9 @@ msgstr "无法加载图像。"
 msgid " (max)"
 msgstr "（最大）"
 
-msgid "Keyboard shortcuts"
-msgstr "键盘快捷键"
+# ==AUTO== Automatically translated
+msgid "Shortcuts"
+msgstr "快捷键"
 
 # ==AUTO== Automatically translated
 msgid "Close"
@@ -221,8 +231,17 @@ msgstr "关闭"
 msgid "Main window"
 msgstr "主窗口"
 
+# ==AUTO== Automatically translated
 msgid "Image viewer"
 msgstr "图片查看器"
+
+# ==AUTO== Automatically translated
+msgid "Keyboard"
+msgstr "键盘"
+
+# ==AUTO== Automatically translated
+msgid "Mouse"
+msgstr "鼠标"
 
 # ==AUTO== Automatically translated
 msgid "file list"
@@ -296,14 +315,49 @@ msgstr "适合高度"
 msgid "Zoom in / Zoom out"
 msgstr "放大 / 缩小"
 
+# ==AUTO== Automatically translated
 msgid "Navigate to previous / next image"
 msgstr "导航到上一张/下一张图片"
 
+# ==AUTO== Automatically translated
 msgid "Delete current image and its sidecars"
 msgstr "删除当前图片及其附属文件"
 
+# ==AUTO== Automatically translated
 msgid "Close image viewer"
 msgstr "关闭图片查看器"
+
+# ==AUTO== Automatically translated
+msgid "Left-click + drag"
+msgstr "左键单击 + 拖动"
+
+# ==AUTO== Automatically translated
+msgid "Pan image"
+msgstr "平移图像"
+
+# ==AUTO== Automatically translated
+msgid "Double left-click"
+msgstr "左键双击"
+
+# ==AUTO== Automatically translated
+msgid "Center on clicked point"
+msgstr "以点击点为中心"
+
+# ==AUTO== Automatically translated
+msgid "left-click"
+msgstr "左键单击"
+
+# ==AUTO== Automatically translated
+msgid "Zoom in centered on point"
+msgstr "以点为中心放大"
+
+# ==AUTO== Automatically translated
+msgid "right-click"
+msgstr "右键单击"
+
+# ==AUTO== Automatically translated
+msgid "Zoom out centered on point"
+msgstr "以点为中心缩小"
 
 # ==AUTO== Automatically translated
 msgid "Orphan sidecars"
@@ -322,9 +376,11 @@ msgstr "全部删除"
 msgid "{n} orphan sidecar file(s):"
 msgstr "{n} 个孤立旁注文件："
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° counter-clockwise"
 msgstr "将选中的图像逆时针旋转90°"
 
+# ==AUTO== Automatically translated
 msgid "Rotate selected image(s) 90° clockwise"
 msgstr "将选中的图像顺时针旋转90°"
 
@@ -332,6 +388,7 @@ msgstr "将选中的图像顺时针旋转90°"
 msgid "Rotate selected image(s) 180°"
 msgstr "将选中的图像旋转180°"
 
+# ==AUTO== Automatically translated
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "应用并删除EXIF方向标签"
 
@@ -443,12 +500,13 @@ msgstr "程序设置(&P)…"
 msgid "&Help"
 msgstr "帮助(&H)"
 
-msgid "&Keyboard shortcuts…"
-msgstr "键盘快捷键(&K)…"
+# ==AUTO== Automatically translated
+msgid "&Shortcuts…"
+msgstr "&快捷键…"
 
 # ==AUTO== Automatically translated
-msgid "Show keyboard shortcuts"
-msgstr "显示键盘快捷键"
+msgid "Show shortcuts"
+msgstr "显示快捷键"
 
 # ==AUTO== Automatically translated
 msgid "&About"
@@ -490,6 +548,7 @@ msgstr "从 1 开始重新编号"
 msgid "Renumber all files in the current directory starting from 1"
 msgstr "从 1 开始重新编号当前目录中的所有文件"
 
+# ==AUTO== Automatically translated
 msgid "Undo last operation"
 msgstr "撤销上一操作"
 
@@ -538,6 +597,7 @@ msgstr "选择目标目录"
 msgid "{n} EXIF orientation tag(s) reset."
 msgstr "已重置 {n} 个 EXIF 方向标签。"
 
+# ==AUTO== Automatically translated
 msgid "Rotation unavailable"
 msgstr "旋转不可用"
 
@@ -602,6 +662,7 @@ msgstr "请指定目标目录。"
 msgid "{n} file(s) renamed successfully."
 msgstr "{n} 个文件已成功重命名。"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "撤销旋转（{n}）"
@@ -610,6 +671,7 @@ msgstr "撤销旋转（{n}）"
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "撤销上次旋转（恢复原始像素数据）"
 
+# ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Undo rename ({n})"
 msgstr "撤销重命名（{n}）"
@@ -758,9 +820,11 @@ msgstr "最大历史条目数："
 msgid "Maximum number of values kept per field history and sidecar filter history"
 msgstr "每个字段历史记录和 sidecar 过滤器历史记录中保留的最大值数"
 
+# ==AUTO== Automatically translated
 msgid "Max files listed in deletion confirmation:"
 msgstr "删除确认中最多列出的文件数："
 
+# ==AUTO== Automatically translated
 msgid "When deleting more files than this threshold, show the count instead of listing each file name"
 msgstr "删除文件数超过此阈值时，显示数量而非列出每个文件名"
 

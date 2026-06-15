@@ -12,6 +12,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`set_base_dir()`** in `config.py` — public function to redirect `_BASE_DIR`, `_CATALOG_CONF`, and `_GLOBAL_CONFIG_PATH` before `init_catalogs()` is called.
 - **`make run ARGS="..."`** — the `run` Makefile target now forwards `$(ARGS)` to the Python invocation so extra flags can be passed from the command line.
 - **`argparse_qt.py`** — new module exposing `add_qt_arguments(parser)`: adds all Qt command-line flags as `--double-dash` argparse options grouped under *Qt options*; each option appends its single-dash equivalent to `args.qt_args` for direct forwarding to `QApplication`. Qt options are hidden from the `usage:` line to reduce noise while remaining fully visible in the `--help` output.
+- **Ctrl+right-click zoom out** in the image viewer — symmetric with Ctrl+left-click zoom in; both center the zoom on the clicked pixel.
+- **Mouse shortcuts section** in the shortcuts window — viewer mouse shortcuts (pan, center on point, zoom in/out centered on point) listed under a *Mouse* subsection alongside the existing *Keyboard* subsection.
+- **`app_qsettings()`** in `config.py` — application-level `QSettings` stored in `~/.config/pbpicat/app.conf`, independent of the active catalog.
+- **Persistent window geometry** — position and size of all windows (main window, image viewer, shortcuts, settings, global settings, field histories) are saved and restored between sessions; stored at application level so they survive catalog changes. The *About* dialog is excluded.
+- **Qt built-in translations** — standard dialog button labels (*OK*, *Cancel*, *Close*, *Yes*, *No*, …) are now displayed in the active UI language by loading the appropriate `qtbase_<lang>.qm` file at startup.
 
 ### Changed
 
@@ -19,6 +24,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`load_current_catalog_name()`** — falls back to the first available catalog (instead of `"default"`) when `catalog.conf` is absent or invalid.
 - **`init_catalogs()`** — no longer creates the `default` directory unconditionally; it only creates it when no catalog exists yet.
 - **`fix_po_files.py`** — now also strips pybabel location comments (`#: file.py:N`) to eliminate spurious line-number churn in `.po` diffs.
+- **Shortcuts window renamed** — formerly *Keyboard shortcuts*, now *Shortcuts*; made non-modal so it can stay open while working.
+- **Key names localised** — *Del* and *Esc* now display as *Suppr* and *Échap* on French keyboards via `QKeySequence.toString(NativeText)`; mouse button names (*left-click*, *right-click*) are translated into each UI language.
 
 ## [1.10.1] - 2026-06-14
 
