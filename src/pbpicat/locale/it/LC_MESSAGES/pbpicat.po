@@ -689,8 +689,8 @@ msgid "No catalogs"
 msgstr "Nessun catalogo"
 
 # ==AUTO== Automatically translated
-msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
-msgstr "Non ci sono altri cataloghi da eliminare («default» non può essere eliminato)."
+msgid "The last catalog cannot be deleted."
+msgstr "L'ultimo catalogo non può essere eliminato."
 
 # ==AUTO== Automatically translated
 msgid "Delete catalog"

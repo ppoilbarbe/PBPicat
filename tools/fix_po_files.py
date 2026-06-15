@@ -24,12 +24,15 @@ _VER_RE = re.compile(r'"Project-Id-Version: [^\\"]+\\n"')
 # Obsolete entries: one or more consecutive lines beginning with #~, plus the
 # blank line that separates them from the next block.
 _OBSOLETE_RE = re.compile(r"(?:^#~[^\n]*\n)+\n?", re.MULTILINE)
+# Location comments (#: file.py:line) injected by pybabel when --no-location is omitted.
+_LOCATION_RE = re.compile(r"^#:[ \t][^\n]*\n", re.MULTILINE)
 
 for po in sorted(locale_dir.glob("*/LC_MESSAGES/*.po")):
     text = po.read_text(encoding="utf-8")
     new = _DATE_RE.sub(lambda _: f'"POT-Creation-Date: {POT_DATE_SENTINEL}\\n"', text)
     new = _VER_RE.sub(lambda _: '"Project-Id-Version: PBPicat\\n"', new)
     new = _OBSOLETE_RE.sub("", new)
+    new = _LOCATION_RE.sub("", new)
     # Strip trailing comment-only and blank lines (e.g. # AUTO markers left by pybabel).
     lines = new.splitlines()
     while lines and (lines[-1].lstrip().startswith("#") or lines[-1].strip() == ""):

@@ -314,6 +314,16 @@ def test_list_catalogs_base_missing(tmp_path, monkeypatch):
     assert cfg.list_catalogs() == ["default"]
 
 
+def test_set_base_dir(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_BASE_DIR", cfg._BASE_DIR)
+    monkeypatch.setattr(cfg, "_CATALOG_CONF", cfg._CATALOG_CONF)
+    monkeypatch.setattr(cfg, "_GLOBAL_CONFIG_PATH", cfg._GLOBAL_CONFIG_PATH)
+    cfg.set_base_dir(tmp_path / "custom")
+    assert cfg._BASE_DIR == tmp_path / "custom"
+    assert cfg._CATALOG_CONF == tmp_path / "custom" / "catalog.conf"
+    assert cfg._GLOBAL_CONFIG_PATH == tmp_path / "custom" / "global_settings.json"
+
+
 def test_create_catalog(patched_paths):
     cfg.create_catalog("new_cat")
     assert (patched_paths.parent / "new_cat").is_dir()
@@ -326,9 +336,9 @@ def test_delete_catalog(patched_paths):
     assert not cat_dir.exists()
 
 
-def test_delete_catalog_default_raises(patched_paths):
-    with pytest.raises(ValueError):
-        cfg.delete_catalog("default")
+def test_delete_catalog_default_allowed(patched_paths):
+    cfg.delete_catalog("default")
+    assert not patched_paths.exists()
 
 
 def test_init_catalogs_creates_default(tmp_path, monkeypatch):

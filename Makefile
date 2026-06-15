@@ -51,8 +51,8 @@ install: ## Install the package in editable mode and register git hooks
 	$(CONDA_RUN) pip install -e ".[dev]"
 	$(CONDA_RUN) pre-commit install
 
-run: ## Launch PBPicat
-	$(CONDA_RUN) python3 -m pbpicat
+run: ## Launch PBPicat (pass extra flags with ARGS="...")
+	$(CONDA_RUN) python3 -m pbpicat $(ARGS)
 
 test: ## Run the test suite
 	$(CONDA_RUN) pytest

@@ -550,8 +550,8 @@ msgstr "Un catalogue nommé « {name} » existe déjà."
 msgid "No catalogs"
 msgstr "Aucun catalogue"
 
-msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
-msgstr "Il n'y a aucun catalogue supplémentaire à supprimer (« default » ne peut pas être supprimé)."
+msgid "The last catalog cannot be deleted."
+msgstr "Le dernier catalogue ne peut pas être supprimé."
 
 msgid "Delete catalog"
 msgstr "Supprimer un catalogue"

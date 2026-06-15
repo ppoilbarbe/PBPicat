@@ -689,8 +689,8 @@ msgid "No catalogs"
 msgstr "Không có danh mục"
 
 # ==AUTO== Automatically translated
-msgid "There are no additional catalogs to delete (\"default\" cannot be deleted)."
-msgstr "Không có danh mục bổ sung nào để xóa («default» không thể xóa)."
+msgid "The last catalog cannot be deleted."
+msgstr "Không thể xóa danh mục cuối cùng."
 
 # ==AUTO== Automatically translated
 msgid "Delete catalog"

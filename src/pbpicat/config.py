@@ -12,6 +12,15 @@ _GLOBAL_CONFIG_PATH = _BASE_DIR / "global_settings.json"
 
 _current_catalog: str = "default"
 
+
+def set_base_dir(path: Path) -> None:
+    """Override the base config directory. Must be called before init_catalogs()."""
+    global _BASE_DIR, _CATALOG_CONF, _GLOBAL_CONFIG_PATH
+    _BASE_DIR = path
+    _CATALOG_CONF = _BASE_DIR / "catalog.conf"
+    _GLOBAL_CONFIG_PATH = _BASE_DIR / "global_settings.json"
+
+
 DEFAULT_SIDECAR_EXTENSIONS = [".xmp", ".dop", ".pp3"]
 
 DEFAULT_VIDEO_EXTENSIONS = [
@@ -158,7 +167,7 @@ def current_catalog() -> str:
 
 
 def load_current_catalog_name() -> str:
-    """Read catalog.conf; validate that the named directory exists; fall back to 'default'."""
+    """Read catalog.conf; validate that the named directory exists; fall back to first available."""
     if _CATALOG_CONF.exists():
         try:
             name = _CATALOG_CONF.read_text(encoding="utf-8").strip()
@@ -166,7 +175,8 @@ def load_current_catalog_name() -> str:
                 return name
         except OSError:
             pass
-    return "default"
+    catalogs = list_catalogs()
+    return catalogs[0] if catalogs else "default"
 
 
 def set_current_catalog(name: str) -> None:
@@ -193,8 +203,6 @@ def create_catalog(name: str, initial_config: dict | None = None) -> None:
 
 
 def delete_catalog(name: str) -> None:
-    if name == "default":
-        raise ValueError("The default catalog cannot be deleted.")
     shutil.rmtree(_BASE_DIR / name)
 
 
@@ -210,20 +218,22 @@ def duplicate_catalog(source_name: str, dest_name: str) -> None:
 
 
 def init_catalogs() -> None:
-    """Ensure the default catalog exists, migrate legacy files if needed, load active catalog."""
+    """Ensure at least one catalog exists, migrate legacy files if needed, load active catalog."""
     global _current_catalog
     _BASE_DIR.mkdir(parents=True, exist_ok=True)
     default_dir = _BASE_DIR / "default"
-    default_dir.mkdir(exist_ok=True)
     # Migrate files from pre-catalog layout (directly in _BASE_DIR) into default/
     for filename in ("settings.json", "history.json", "ui.conf"):
         src = _BASE_DIR / filename
         dst = default_dir / filename
         if src.exists():
+            default_dir.mkdir(exist_ok=True)
             if not dst.exists():
                 src.rename(dst)
             else:
                 src.unlink()
+    if not list_catalogs():
+        default_dir.mkdir(exist_ok=True)
     _current_catalog = load_current_catalog_name()
 
 

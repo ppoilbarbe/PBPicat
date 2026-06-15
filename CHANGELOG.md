@@ -6,6 +6,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **`--dev-config-dir DIR` CLI flag** — overrides the XDG configuration directory at launch, enabling isolated test runs without touching the real config.
+- **`set_base_dir()`** in `config.py` — public function to redirect `_BASE_DIR`, `_CATALOG_CONF`, and `_GLOBAL_CONFIG_PATH` before `init_catalogs()` is called.
+- **`make run ARGS="..."`** — the `run` Makefile target now forwards `$(ARGS)` to the Python invocation so extra flags can be passed from the command line.
+- **`argparse_qt.py`** — new module exposing `add_qt_arguments(parser)`: adds all Qt command-line flags as `--double-dash` argparse options grouped under *Qt options*; each option appends its single-dash equivalent to `args.qt_args` for direct forwarding to `QApplication`.
+
+### Changed
+
+- **Any catalog can now be deleted** — the hard-coded protection of the `"default"` catalog is removed; the UI prevents deleting the *last* remaining catalog instead (message: *"The last catalog cannot be deleted."*). When the active catalog is deleted the app switches to the next available catalog instead of always falling back to `"default"`.
+- **`load_current_catalog_name()`** — falls back to the first available catalog (instead of `"default"`) when `catalog.conf` is absent or invalid.
+- **`init_catalogs()`** — no longer creates the `default` directory unconditionally; it only creates it when no catalog exists yet.
+- **`fix_po_files.py`** — now also strips pybabel location comments (`#: file.py:N`) to eliminate spurious line-number churn in `.po` diffs.
+
 ## [1.10.1] - 2026-06-14
 
 ### Fixed

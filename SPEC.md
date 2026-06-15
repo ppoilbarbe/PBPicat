@@ -17,13 +17,13 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | `$XDG_CONFIG_HOME/pbpicat/<name>/` | Per-catalog directory |
 
 **Startup:** `init_catalogs()` is called before `i18n.setup()` in `__main__.py`. It:
-1. Ensures `$XDG_CONFIG_HOME/pbpicat/default/` exists.
-2. Migrates any files found directly in the base directory (pre-catalog layout) into `default/`.
-3. Reads `catalog.conf`; validates that the named directory exists; falls back to `"default"`.
+1. Migrates any files found directly in the base directory (pre-catalog layout) into `default/`.
+2. Creates `default/` only if no catalog directory exists yet.
+3. Reads `catalog.conf`; validates that the named directory exists; falls back to the first available catalog.
 
 **Rules:**
-- The catalog named `"default"` always exists and cannot be deleted.
-- `catalog.conf` missing or pointing to a nonexistent directory → `"default"` is used.
+- Any catalog can be deleted, **except** the last remaining one.
+- `catalog.conf` missing or pointing to a nonexistent directory → first available catalog is used.
 - New catalogs start with default settings and empty history.
 - Valid catalog names: letters, digits, hyphens, underscores only.
 
@@ -57,7 +57,7 @@ All actions set `setStatusTip()` so the status bar shows the description when ho
 
 **Catalog menu behaviour:**
 - **New catalog…** — prompts for a name, creates the directory, switches to it.
-- **Delete catalog…** — picks an existing non-default catalog; if it is current, switches to `default` first.
+- **Delete catalog…** — picks any existing catalog (blocked only when one catalog remains); if it is current, switches to the next available catalog first.
 - Separator + dynamic list of all catalogs (checkmark on the active one) for one-click switching.
 
 **Window title:** Shows `[catalog_name]` after the app title when not on `"default"`.
@@ -249,6 +249,7 @@ Menu **Settings → Histories…**
 `$XDG_CONFIG_HOME` defaults to `~/.config` if unset.
 `config.py` handles one-shot migration from legacy QSettings if `history.json` is absent.
 `init_catalogs()` handles one-shot migration from pre-catalog flat layout (files directly in base dir → `default/`).
+`--dev-config-dir DIR` CLI flag overrides `_BASE_DIR` before `init_catalogs()` via `set_base_dir()`.
 
 ## Internationalisation
 `src/pbpicat/i18n.py` — call `i18n.setup(app)` once before creating any window.
@@ -277,7 +278,8 @@ PBPicat/
 ├── pyproject.toml
 ├── SPEC.md
 └── src/pbpicat/
-    ├── __main__.py        # calls init_catalogs() then i18n.setup(app) before creating MainWindow
+    ├── __main__.py        # CLI arg parsing (--dev-config-dir + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app) before creating MainWindow
+    ├── argparse_qt.py     # add_qt_arguments(parser): Qt flags as --double-dash options, collected in args.qt_args
     ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf
     ├── i18n.py            # gettext bootstrap
     ├── renamer.py         # pure logic (no Qt)

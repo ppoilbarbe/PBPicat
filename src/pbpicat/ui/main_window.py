@@ -908,15 +908,17 @@ class MainWindow(QMainWindow):
         self._switch_to_catalog(name)
 
     def _delete_catalog_action(self) -> None:
-        candidates = [c for c in list_catalogs() if c != "default"]
-        if not candidates:
+        all_catalogs = list_catalogs()
+        if len(all_catalogs) <= 1:
             QMessageBox.information(
                 self,
                 _("No catalogs"),
-                _('There are no additional catalogs to delete ("default" cannot be deleted).'),
+                _("The last catalog cannot be deleted."),
             )
             return
-        name, ok = QInputDialog.getItem(self, _("Delete catalog"), _("Select catalog to delete:"), candidates, 0, False)
+        name, ok = QInputDialog.getItem(
+            self, _("Delete catalog"), _("Select catalog to delete:"), all_catalogs, 0, False
+        )
         if not ok:
             return
         reply = QMessageBox.question(
@@ -928,7 +930,8 @@ class MainWindow(QMainWindow):
         if reply != QMessageBox.Yes:
             return
         if current_catalog() == name:
-            self._switch_to_catalog("default")
+            fallback = next(c for c in all_catalogs if c != name)
+            self._switch_to_catalog(fallback)
         delete_catalog(name)
         self._status.showMessage(_('Catalog "{name}" deleted.').format(name=name))
 
