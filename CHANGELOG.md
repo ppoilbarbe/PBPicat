@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-06-24
+
 ### Added
 
 - **`hooks/pyi_rth_fonts.py`** — PyInstaller runtime hook for portable
