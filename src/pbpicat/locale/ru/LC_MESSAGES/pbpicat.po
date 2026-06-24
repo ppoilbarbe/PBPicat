@@ -90,6 +90,18 @@ msgstr "Имя файла ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "Невозможно отобразить несколько файлов одновременно."
 
+#, python-brace-format
+msgid "Move {count} files to trash?"
+msgstr "Переместить {count} файлов в корзину?"
+
+#, python-brace-format
+msgid ""
+"Move to trash:\n"
+"{names}"
+msgstr ""
+"Переместить в корзину:\n"
+"{names}"
+
 # ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
@@ -107,6 +119,10 @@ msgstr ""
 # ==AUTO== Automatically translated
 msgid "Confirm deletion"
 msgstr "Подтвердить удаление"
+
+#, python-brace-format
+msgid "Could not move to trash: {name}"
+msgstr "Не удалось переместить в корзину: {name}"
 
 # ==AUTO== Automatically translated
 msgid "Deletion error"
@@ -952,6 +968,13 @@ msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "«{ext}» — недопустимое расширение (например .png, .heic)."
 
 # ==AUTO== Automatically translated
+msgid "Move deleted files to trash"
+msgstr "Перемещать удалённые файлы в корзину"
+
+msgid "Send files to the system trash instead of deleting them permanently"
+msgstr "Отправлять файлы в корзину вместо постоянного удаления"
+
+# ==AUTO== Automatically translated
 msgid "Recognised video extensions:"
 msgstr "Распознаваемые расширения видеофайлов:"
 
@@ -1007,6 +1030,9 @@ msgstr "Видео"
 # ==AUTO== Automatically translated
 msgid "Thumbnails"
 msgstr "Миниатюры"
+
+msgid "Behaviour"
+msgstr "Поведение"
 
 # ==AUTO== Automatically translated
 msgid "Program settings"

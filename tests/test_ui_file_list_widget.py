@@ -65,6 +65,7 @@ def base_config(catalog_env):
     c = dict(DEFAULTS)
     c["confirm_deletions"] = False
     c["delete_empty_sidecars"] = False
+    c["use_trash"] = False
     return c
 
 
@@ -419,6 +420,7 @@ def test_delete_file_count_exceeds_max(qtbot, catalog_env, tmp_path):
     config["confirm_deletions"] = True
     config["delete_list_max_files"] = 1
     config["delete_empty_sidecars"] = False
+    config["use_trash"] = False
     files = []
     for i in range(3):
         f = tmp_path / f"img_{i:03d}.jpg"
@@ -435,6 +437,7 @@ def test_delete_file_with_confirmation(qtbot, catalog_env, tmp_path):
     config = dict(DEFAULTS)
     config["confirm_deletions"] = True
     config["delete_empty_sidecars"] = False
+    config["use_trash"] = False
     f = tmp_path / "img.png"
     _img(f)
     w = FileListWidget(config)
@@ -1479,6 +1482,7 @@ def test_delete_file_count_message_when_many(qtbot, catalog_env, tmp_path):
     config["confirm_deletions"] = True
     config["delete_list_max_files"] = 1
     config["delete_empty_sidecars"] = False
+    config["use_trash"] = False
     for i in range(3):
         _img(tmp_path / f"img_{i:03d}.png")
     w = FileListWidget(config)
@@ -1575,3 +1579,68 @@ def test_private_open_wrappers(populated_widget):
 
     assert mock_def.call_count == 2  # _open_selection + _open_file
     assert mock_with.call_count == 2  # _open_with_selection + _open_file_with
+
+
+# ---------------------------------------------------------------------------
+# use_trash mode
+# ---------------------------------------------------------------------------
+
+
+def test_use_trash_calls_move_to_trash(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    config["use_trash"] = True
+    f = tmp_path / "img.png"
+    _img(f)
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.selectRow(0)
+
+    with patch("pbpicat.ui.file_list_widget.QFile.moveToTrash", return_value=True) as mock_trash:
+        w._delete_file(f, [])
+
+    mock_trash.assert_called_once_with(str(f))
+
+
+def test_use_trash_error_shows_warning(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    config["use_trash"] = True
+    f = tmp_path / "img.png"
+    _img(f)
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.selectRow(0)
+
+    with (
+        patch("pbpicat.ui.file_list_widget.QFile.moveToTrash", return_value=False),
+        patch.object(QMessageBox, "warning", return_value=None) as mock_warn,
+    ):
+        w._delete_file(f, [])
+
+    mock_warn.assert_called_once()
+
+
+def test_use_trash_confirmation_message(qtbot, catalog_env, tmp_path):
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = True
+    config["delete_empty_sidecars"] = False
+    config["use_trash"] = True
+    f = tmp_path / "img.png"
+    _img(f)
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+
+    with (
+        patch.object(QMessageBox, "setText") as mock_set_text,
+        patch.object(QMessageBox, "exec", return_value=QMessageBox.No),
+    ):
+        w._delete_file(f, [])
+
+    assert mock_set_text.call_args is not None
+    assert "trash" in mock_set_text.call_args[0][0].lower()

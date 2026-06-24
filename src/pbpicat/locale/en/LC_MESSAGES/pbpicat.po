@@ -75,6 +75,18 @@ msgid "Cannot display multiple files simultaneously."
 msgstr "Cannot display multiple files simultaneously."
 
 #, python-brace-format
+msgid "Move {count} files to trash?"
+msgstr "Move {count} files to trash?"
+
+#, python-brace-format
+msgid ""
+"Move to trash:\n"
+"{names}"
+msgstr ""
+"Move to trash:\n"
+"{names}"
+
+#, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Permanently delete {count} files?"
 
@@ -88,6 +100,10 @@ msgstr ""
 
 msgid "Confirm deletion"
 msgstr "Confirm deletion"
+
+#, python-brace-format
+msgid "Could not move to trash: {name}"
+msgstr "Could not move to trash: {name}"
 
 msgid "Deletion error"
 msgstr "Deletion error"
@@ -729,6 +745,12 @@ msgstr "Automatically rotate thumbnails and viewer according to the image EXIF o
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "'{ext}' is not a valid extension (e.g. .png, .heic)."
 
+msgid "Move deleted files to trash"
+msgstr "Move deleted files to trash"
+
+msgid "Send files to the system trash instead of deleting them permanently"
+msgstr "Send files to the system trash instead of deleting them permanently"
+
 msgid "Recognised video extensions:"
 msgstr "Recognised video extensions:"
 
@@ -771,6 +793,9 @@ msgstr "Video"
 
 msgid "Thumbnails"
 msgstr "Thumbnails"
+
+msgid "Behaviour"
+msgstr "Behaviour"
 
 msgid "Program settings"
 msgstr "Program settings"

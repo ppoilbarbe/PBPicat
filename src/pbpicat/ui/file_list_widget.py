@@ -5,6 +5,7 @@ from pathlib import Path
 
 from PySide6.QtCore import (
     QEvent,
+    QFile,
     QFileSystemWatcher,
     QItemSelectionModel,
     QMimeData,
@@ -192,6 +193,7 @@ class FileListWidget(QTableWidget):
         self._delete_empty_sidecars: bool = config.get("delete_empty_sidecars", True)
         self._delete_list_max_files: int = config.get("delete_list_max_files", 12)
         self._confirm_deletions: bool = config.get("confirm_deletions", True)
+        self._use_trash: bool = config.get("use_trash", True)
         self._schema_field_count: int = config.get("schema_field_count", 6)
         self._schema_field_titles: list[str] = config.get("schema_field_titles", [])
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
@@ -323,6 +325,34 @@ class FileListWidget(QTableWidget):
         self.refresh()
         if self._display_data:
             row = min(row, len(self._display_data) - 1)
+            self.selectRow(row)
+            self.scrollTo(self.model().index(row, 0))
+
+    def _delete_rows_and_select(self, next_row: int) -> None:
+        """Remove deleted files from the table without regenerating thumbnails for remaining rows."""
+        self._refresh_debounce.stop()
+        self._stop_worker()
+        self._scan_directory()
+        new_display = self._apply_filter()
+        new_path_set = {p for p, _ in new_display}
+
+        self._rebuilding = True
+        try:
+            for row in reversed(range(len(self._display_data))):
+                if self._display_data[row][0] not in new_path_set:
+                    self.removeRow(row)
+        finally:
+            self._rebuilding = False
+
+        self._display_data = new_display
+        self.file_count_changed.emit(len(self._display_data))
+        self.setHorizontalHeaderItem(
+            self._NAME_COL,
+            QTableWidgetItem(_("File name ({n})").format(n=len(self._display_data))),
+        )
+
+        if self._display_data:
+            row = min(next_row, len(self._display_data) - 1)
             self.selectRow(row)
             self.scrollTo(self.model().index(row, 0))
 
@@ -747,11 +777,18 @@ class FileListWidget(QTableWidget):
             all_files.extend(scs)
 
         if self._confirm_deletions:
-            if len(all_files) > self._delete_list_max_files:
-                body = _("Permanently delete {count} files?").format(count=len(all_files))
+            if self._use_trash:
+                if len(all_files) > self._delete_list_max_files:
+                    body = _("Move {count} files to trash?").format(count=len(all_files))
+                else:
+                    names = "\n".join(f.name for f in all_files)
+                    body = _("Move to trash:\n{names}").format(names=names)
             else:
-                names = "\n".join(f.name for f in all_files)
-                body = _("Permanently delete:\n{names}").format(names=names)
+                if len(all_files) > self._delete_list_max_files:
+                    body = _("Permanently delete {count} files?").format(count=len(all_files))
+                else:
+                    names = "\n".join(f.name for f in all_files)
+                    body = _("Permanently delete:\n{names}").format(names=names)
             msg = QMessageBox(parent)
             msg.setWindowTitle(_("Confirm deletion"))
             msg.setText(body)
@@ -765,17 +802,22 @@ class FileListWidget(QTableWidget):
         errors = []
         for f in all_files:
             dirs_to_clean.add(f.parent)
-            try:
-                f.unlink()
-            except OSError as exc:
-                errors.append(f"{f.name} : {exc}")
+            if self._use_trash:
+                if not QFile.moveToTrash(str(f)):
+                    errors.append(_("Could not move to trash: {name}").format(name=f.name))
+            else:
+                try:
+                    f.unlink()
+                except OSError as exc:
+                    errors.append(f"{f.name} : {exc}")
 
-        for d in sorted(dirs_to_clean, key=lambda p: len(p.parts), reverse=True):
-            self._remove_empty_parents(d)
+        if not self._use_trash:
+            for d in sorted(dirs_to_clean, key=lambda p: len(p.parts), reverse=True):
+                self._remove_empty_parents(d)
 
         if errors:
             QMessageBox.warning(parent, _("Deletion error"), "\n".join(errors))
-        self.refresh_and_select(next_row)
+        self._delete_rows_and_select(next_row)
 
     def _remove_empty_parents(self, directory: Path) -> None:
         d = directory

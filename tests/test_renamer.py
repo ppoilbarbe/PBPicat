@@ -1,4 +1,4 @@
-"""Tests unitaires pour src/renamer.py (sans dépendance Qt)."""
+"""Unit tests for src/renamer.py (no Qt dependency)."""
 
 from pathlib import Path
 
@@ -345,7 +345,7 @@ def test_undo_rename_non_empty_dest_not_removed(tmp_path):
 
 def test_undo_rename_oserror_rollback(tmp_path):
     src1 = tmp_path / "sub1" / "orig1.jpg"
-    # Blocker est un fichier : mkdir("blocker") échoue → OSError
+    # blocker is a file: mkdir("blocker") fails → OSError
     blocker = tmp_path / "sub2"
     blocker.write_text("file, not dir")
     src2 = blocker / "orig2.jpg"
@@ -356,11 +356,11 @@ def test_undo_rename_oserror_rollback(tmp_path):
     dst2.write_text("b")
     with pytest.raises(RuntimeError, match="Erreur lors de l'annulation"):
         undo_rename([(src1, dst1), (src2, dst2)])
-    assert dst1.exists()  # rollback a restauré dst1
+    assert dst1.exists()  # rollback restored dst1
 
 
 def test_undo_rename_rollback_inner_oserror(tmp_path, monkeypatch):
-    """Couvre le except OSError silencieux dans la boucle de rollback d'undo_rename."""
+    """Covers the silent OSError except in the undo_rename rollback loop."""
     src1 = tmp_path / "sub1" / "orig1.jpg"
     src2 = tmp_path / "sub2" / "orig2.jpg"
     dst1 = tmp_path / "out" / "dst1.jpg"
@@ -384,7 +384,7 @@ def test_undo_rename_rollback_inner_oserror(tmp_path, monkeypatch):
 
 
 def test_undo_rename_dest_dir_rmdir_oserror(tmp_path, monkeypatch):
-    """Couvre le except OSError silencieux dans le nettoyage du répertoire destination."""
+    """Covers the silent OSError except when cleaning up the destination directory."""
     src = tmp_path / "sub" / "img.jpg"
     dst = tmp_path / "out" / "renamed.jpg"
     dst.parent.mkdir(parents=True)
@@ -394,12 +394,12 @@ def test_undo_rename_dest_dir_rmdir_oserror(tmp_path, monkeypatch):
         raise OSError("busy")
 
     monkeypatch.setattr(Path, "rmdir", mock_rmdir)
-    undo_rename([(src, dst)])  # ne doit pas lever d'exception malgré rmdir raté
+    undo_rename([(src, dst)])  # must not raise despite failed rmdir
     assert src.exists()
 
 
 def test_execute_rename_rollback_inner_oserror(tmp_path, monkeypatch):
-    """Couvre le except OSError silencieux dans la boucle de rollback d'execute_rename."""
+    """Covers the silent OSError except in the execute_rename rollback loop."""
     src1 = tmp_path / "a.jpg"
     src2 = tmp_path / "b.jpg"
     src1.write_text("a")
@@ -422,7 +422,7 @@ def test_execute_rename_rollback_inner_oserror(tmp_path, monkeypatch):
 
 
 def test_execute_rename_source_dir_rmdir_oserror(tmp_path, monkeypatch):
-    """Couvre le except OSError silencieux dans le nettoyage du répertoire source."""
+    """Covers the silent OSError except when cleaning up the source directory."""
     subdir = tmp_path / "sub"
     subdir.mkdir()
     src = subdir / "img.jpg"
@@ -433,7 +433,7 @@ def test_execute_rename_source_dir_rmdir_oserror(tmp_path, monkeypatch):
         raise OSError("busy")
 
     monkeypatch.setattr(Path, "rmdir", mock_rmdir)
-    execute_rename([(src, dst)])  # ne doit pas lever d'exception malgré rmdir raté
+    execute_rename([(src, dst)])  # must not raise despite failed rmdir
     assert dst.exists()
 
 
@@ -455,7 +455,7 @@ def test_renumber_plan_empty_list():
 
 
 def test_renumber_plan_already_correct(tmp_path):
-    """Fichiers déjà numérotés depuis 1 sans trous → plan vide."""
+    """Files already numbered from 1 with no gaps → empty plan."""
     f1 = tmp_path / "abc_01.jpg"
     f2 = tmp_path / "abc_02.jpg"
     f1.touch()
@@ -465,7 +465,7 @@ def test_renumber_plan_already_correct(tmp_path):
 
 
 def test_renumber_plan_fills_gaps(tmp_path):
-    """Trous dans la numérotation : 001, 003, 005 → 001, 002, 003."""
+    """Gaps in numbering: 001, 003, 005 → 001, 002, 003."""
     f1 = tmp_path / "abc_001.jpg"
     f3 = tmp_path / "abc_003.jpg"
     f5 = tmp_path / "abc_005.jpg"
@@ -483,8 +483,8 @@ def test_renumber_plan_fills_gaps(tmp_path):
 
 def test_renumber_plan_circular_conflict_structure(tmp_path):
     """
-    002, 003 → 001, 002 : la destination 002 du second fichier est la source du premier.
-    Le plan doit inclure les deux paires (le conflit est résolu par execute_renumber).
+    002, 003 → 001, 002: destination 002 of the second file is the source of the first.
+    The plan must include both pairs (the conflict is resolved by execute_renumber).
     """
     f2 = tmp_path / "abc_002.jpg"
     f3 = tmp_path / "abc_003.jpg"
@@ -498,7 +498,7 @@ def test_renumber_plan_circular_conflict_structure(tmp_path):
 
 
 def test_renumber_plan_separate_counters(tmp_path):
-    """Images et vidéos ont des compteurs séparés démarrant à 1."""
+    """Images and videos have separate counters starting at 1."""
     img1 = tmp_path / "x_003.jpg"
     img2 = tmp_path / "x_007.jpg"
     vid1 = tmp_path / "x_005.mp4"
@@ -519,7 +519,7 @@ def test_renumber_plan_separate_counters(tmp_path):
 
 
 def test_renumber_plan_includes_sidecars(tmp_path):
-    """Les sidecars sont inclus dans le plan."""
+    """Sidecars are included in the plan."""
     f3 = tmp_path / "abc_003.jpg"
     sc3 = tmp_path / "abc_003.xmp"
     f3.touch()
@@ -531,7 +531,7 @@ def test_renumber_plan_includes_sidecars(tmp_path):
 
 
 def test_renumber_plan_multidot_sidecar(tmp_path):
-    """Extensions sidecar multi-points correctement traitées."""
+    """Multi-dot sidecar extensions are handled correctly."""
     f3 = tmp_path / "abc_003.jpg"
     sc3 = tmp_path / "abc_003.prompt.txt"
     f3.touch()
@@ -542,21 +542,21 @@ def test_renumber_plan_multidot_sidecar(tmp_path):
 
 
 def test_renumber_plan_sidecar_no_op_excluded(tmp_path):
-    """Sidecar déjà au bon nom exclu du plan."""
+    """Sidecar already at the correct name is excluded from the plan."""
     f2 = tmp_path / "abc_002.jpg"
     sc2 = tmp_path / "abc_002.xmp"
     f2.touch()
     sc2.touch()
-    # Renumérotation donne 001 au premier fichier : f2→abc_001, sc2→abc_001.xmp
+    # renumbering assigns 001 to the first file: f2→abc_001, sc2→abc_001.xmp
     plan = build_renumber_plan(["abc", "", "", "", "", "###"], [f2], [".xmp"], [".jpg"])
-    # f2 est à 002, cible est 001 → changement
+    # f2 is at 002, target is 001 → change
     dsts = {dst.name for _, dst in plan}
     assert "abc_001.jpg" in dsts
     assert "abc_001.xmp" in dsts
 
 
 def test_renumber_plan_video_marker(tmp_path):
-    """Le marqueur vidéo est appliqué lors de la renumérotation."""
+    """Video marker is applied during renumbering."""
     vid = tmp_path / "abc_VID_003.mp4"
     vid.touch()
     plan = build_renumber_plan(
@@ -573,7 +573,7 @@ def test_renumber_plan_video_marker(tmp_path):
 
 
 def test_renumber_plan_extension_lowercased(tmp_path):
-    """L'extension de destination est mise en minuscules."""
+    """Destination extension is lowercased."""
     src = tmp_path / "ABC_003.JPG"
     src.touch()
     plan = build_renumber_plan(["ABC", "", "", "", "", "###"], [src], [], [".jpg"])
@@ -582,7 +582,7 @@ def test_renumber_plan_extension_lowercased(tmp_path):
 
 
 def test_renumber_plan_numeric_only_schema(tmp_path):
-    """Schéma purement numérique : stem = numéro seul."""
+    """Purely numeric schema: stem is the number alone."""
     f3 = tmp_path / "003.jpg"
     f3.touch()
     plan = build_renumber_plan(["###", "", "", "", "", ""], [f3], [], [".jpg"])
@@ -605,14 +605,14 @@ def test_execute_renumber_basic(tmp_path):
 
 
 def test_execute_renumber_empty_plan(tmp_path):
-    execute_renumber([])  # ne doit pas lever d'exception
+    execute_renumber([])  # must not raise
 
 
 def test_execute_renumber_circular_conflict(tmp_path):
     """
-    Cas circulaire : abc_002 → abc_001, abc_003 → abc_002.
-    Sans deux phases, abc_002 serait écrasé avant que son contenu soit sauvegardé.
-    abc_002.jpg existe toujours après (c'est la destination de abc_003).
+    Circular case: abc_002 → abc_001, abc_003 → abc_002.
+    Without two phases, abc_002 would be overwritten before its content is saved.
+    abc_002.jpg still exists after (it is the destination of abc_003).
     """
     f2 = tmp_path / "abc_002.jpg"
     f3 = tmp_path / "abc_003.jpg"
@@ -621,11 +621,11 @@ def test_execute_renumber_circular_conflict(tmp_path):
     execute_renumber([(f2, tmp_path / "abc_001.jpg"), (f3, tmp_path / "abc_002.jpg")])
     assert (tmp_path / "abc_001.jpg").read_text() == "two"
     assert (tmp_path / "abc_002.jpg").read_text() == "three"
-    assert not (tmp_path / "abc_003.jpg").exists()  # f3 déplacé vers abc_002
+    assert not (tmp_path / "abc_003.jpg").exists()  # f3 moved to abc_002
 
 
 def test_execute_renumber_rollback_phase1(tmp_path, monkeypatch):
-    """Erreur en phase 1 : les fichiers déjà renommés en tmp sont restaurés."""
+    """Phase 1 error: files already renamed to tmp are restored."""
     f1 = tmp_path / "abc_001.jpg"
     f2 = tmp_path / "abc_002.jpg"
     f1.write_text("one")
@@ -649,7 +649,7 @@ def test_execute_renumber_rollback_phase1(tmp_path, monkeypatch):
 
 
 def test_execute_renumber_rollback_phase2(tmp_path, monkeypatch):
-    """Erreur en phase 2 : tous les fichiers sont restaurés à leur nom original."""
+    """Phase 2 error: all files are restored to their original name."""
     f1 = tmp_path / "abc_002.jpg"
     f2 = tmp_path / "abc_003.jpg"
     f1.write_text("two")
@@ -659,7 +659,7 @@ def test_execute_renumber_rollback_phase2(tmp_path, monkeypatch):
     orig = Path.rename
 
     def mock_rename(self, target):
-        # Laisser passer la phase 1 (2 appels), échouer au premier appel de phase 2
+        # let phase 1 pass (2 calls), fail on the first phase 2 call
         phase1_done[0] += 1
         if phase1_done[0] == 3:
             raise OSError("disk full")
@@ -681,7 +681,7 @@ def test_execute_renumber_rollback_phase2(tmp_path, monkeypatch):
 
 
 def test_undo_renumber_basic(tmp_path):
-    """Annulation simple : les fichiers retrouvent leur nom d'origine."""
+    """Simple undo: files revert to their original name."""
     original = tmp_path / "abc_003.jpg"
     renamed = tmp_path / "abc_001.jpg"
     renamed.write_text("data")
@@ -692,20 +692,20 @@ def test_undo_renumber_basic(tmp_path):
 
 def test_undo_renumber_circular_conflict(tmp_path):
     """
-    Cas qui provoquait le bug : après renumérotation 003,005 → 001,002,
-    l'annulation veut faire 001→003 et 002→005, mais abc_003 est aussi une cible
-    de la première paire → conflit circulaire résolu par undo_renumber.
+    Case that triggered the bug: after renumbering 003,005 → 001,002,
+    undo wants 001→003 and 002→005, but abc_003 is also a target
+    of the first pair → circular conflict resolved by undo_renumber.
     """
-    # Situation après renumérotation de abc_003.jpg, abc_005.jpg → abc_001.jpg, abc_002.jpg
+    # state after renumbering abc_003.jpg, abc_005.jpg → abc_001.jpg, abc_002.jpg
     new1 = tmp_path / "abc_001.jpg"
     new2 = tmp_path / "abc_002.jpg"
     new1.write_text("three")
     new2.write_text("five")
 
-    original1 = tmp_path / "abc_003.jpg"  # nom d'origine de new1
-    original2 = tmp_path / "abc_005.jpg"  # nom d'origine de new2
+    original1 = tmp_path / "abc_003.jpg"  # original name of new1
+    original2 = tmp_path / "abc_005.jpg"  # original name of new2
 
-    # plan stocké lors de la renumérotation : (original, renamed)
+    # plan stored during renumbering: (original, renamed)
     undo_renumber([(original1, new1), (original2, new2)])
 
     assert original1.read_text() == "three"
@@ -715,7 +715,7 @@ def test_undo_renumber_circular_conflict(tmp_path):
 
 
 def test_undo_renumber_with_sidecar(tmp_path):
-    """L'annulation restaure aussi les sidecars."""
+    """Undo also restores sidecars."""
     orig_img = tmp_path / "abc_003.jpg"
     orig_sc = tmp_path / "abc_003.xmp"
     new_img = tmp_path / "abc_001.jpg"
@@ -732,10 +732,10 @@ def test_undo_renumber_with_sidecar(tmp_path):
 
 
 def test_undo_renumber_missing_file_raises(tmp_path):
-    """Fichier à annuler inexistant → RuntimeError."""
+    """Missing file to undo → RuntimeError."""
     orig = tmp_path / "abc_003.jpg"
     renamed = tmp_path / "abc_001.jpg"
-    # renamed n'existe pas
+    # renamed does not exist
     with pytest.raises(RuntimeError):
         undo_renumber([(orig, renamed)])
 
@@ -746,7 +746,7 @@ def test_undo_renumber_missing_file_raises(tmp_path):
 
 
 def test_execute_renumber_rollback_phase1_inner_oserror(tmp_path, monkeypatch):
-    """Couvre lignes 213-214 : rollback phase 1 (tmp→src) lève OSError, ignoré."""
+    """Covers lines 213-214: phase 1 rollback (tmp→src) raises OSError, ignored."""
     f1 = tmp_path / "abc_002.jpg"
     f2 = tmp_path / "abc_003.jpg"
     f1.write_text("two")
@@ -757,9 +757,9 @@ def test_execute_renumber_rollback_phase1_inner_oserror(tmp_path, monkeypatch):
 
     def mock_rename(self, target):
         call_count[0] += 1
-        # appel 1 : f1→tmp1 (succès)
-        # appel 2 : f2→tmp2 (échec → rollback phase 1)
-        # appel 3 : rollback tmp1→f1 (échec → lignes 213-214)
+        # call 1: f1→tmp1 (success)
+        # call 2: f2→tmp2 (failure → rollback phase 1)
+        # call 3: rollback tmp1→f1 (failure → lines 213-214)
         if call_count[0] in (2, 3):
             raise OSError("simulated")
         return orig(self, target)
@@ -770,7 +770,7 @@ def test_execute_renumber_rollback_phase1_inner_oserror(tmp_path, monkeypatch):
 
 
 def test_execute_renumber_rollback_phase2_done2_oserror(tmp_path, monkeypatch):
-    """Couvre lignes 224-227 : rollback done2 (dst→tmp) lève OSError, ignoré."""
+    """Covers lines 224-227: done2 rollback (dst→tmp) raises OSError, ignored."""
     f1 = tmp_path / "abc_002.jpg"
     f2 = tmp_path / "abc_003.jpg"
     f1.write_text("two")
@@ -781,10 +781,10 @@ def test_execute_renumber_rollback_phase2_done2_oserror(tmp_path, monkeypatch):
 
     def mock_rename(self, target):
         call_count[0] += 1
-        # appels 1,2 : phase 1 (succès)
-        # appel 3 : tmp1→dst1 (phase 2, succès → done2 a 1 entrée)
-        # appel 4 : tmp2→dst2 (phase 2, échec → rollback phase 2)
-        # appel 5 : rollback dst1→tmp1 (échec → lignes 224-227)
+        # calls 1,2: phase 1 (success)
+        # call 3: tmp1→dst1 (phase 2, success → done2 has 1 entry)
+        # call 4: tmp2→dst2 (phase 2, failure → rollback phase 2)
+        # call 5: rollback dst1→tmp1 (failure → lines 224-227)
         if call_count[0] in (4, 5):
             raise OSError("simulated")
         return orig(self, target)
@@ -795,7 +795,7 @@ def test_execute_renumber_rollback_phase2_done2_oserror(tmp_path, monkeypatch):
 
 
 def test_execute_renumber_rollback_phase2_tmp_oserror(tmp_path, monkeypatch):
-    """Couvre lignes 231-232 : rollback tmps→srcs lève OSError, ignoré."""
+    """Covers lines 231-232: tmps→srcs rollback raises OSError, ignored."""
     f1 = tmp_path / "abc_002.jpg"
     f2 = tmp_path / "abc_003.jpg"
     f1.write_text("two")
@@ -806,9 +806,9 @@ def test_execute_renumber_rollback_phase2_tmp_oserror(tmp_path, monkeypatch):
 
     def mock_rename(self, target):
         call_count[0] += 1
-        # appels 1,2 : phase 1 (succès)
-        # appel 3 : tmp1→dst1 (phase 2, échec → done2 vide, 1er rollback ignoré)
-        # appels 4,5 : rollback tmps→srcs (échec → lignes 231-232)
+        # calls 1,2: phase 1 (success)
+        # call 3: tmp1→dst1 (phase 2, failure → done2 empty, first rollback skipped)
+        # calls 4,5: rollback tmps→srcs (failure → lines 231-232)
         if call_count[0] >= 3:
             raise OSError("simulated")
         return orig(self, target)

@@ -90,6 +90,18 @@ msgstr "文件名 ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "无法同时显示多个文件。"
 
+#, python-brace-format
+msgid "Move {count} files to trash?"
+msgstr "将 {count} 个文件移至回收站？"
+
+#, python-brace-format
+msgid ""
+"Move to trash:\n"
+"{names}"
+msgstr ""
+"移至回收站：\n"
+"{names}"
+
 # ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
@@ -107,6 +119,10 @@ msgstr ""
 # ==AUTO== Automatically translated
 msgid "Confirm deletion"
 msgstr "确认删除"
+
+#, python-brace-format
+msgid "Could not move to trash: {name}"
+msgstr "无法移至回收站：{name}"
 
 # ==AUTO== Automatically translated
 msgid "Deletion error"
@@ -952,6 +968,13 @@ msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "「{ext}」不是有效扩展名（例如 .png、.heic）。"
 
 # ==AUTO== Automatically translated
+msgid "Move deleted files to trash"
+msgstr "将已删除文件移至回收站"
+
+msgid "Send files to the system trash instead of deleting them permanently"
+msgstr "将文件发送到系统回收站，而非永久删除"
+
+# ==AUTO== Automatically translated
 msgid "Recognised video extensions:"
 msgstr "识别的视频扩展名："
 
@@ -1007,6 +1030,9 @@ msgstr "视频"
 # ==AUTO== Automatically translated
 msgid "Thumbnails"
 msgstr "缩略图"
+
+msgid "Behaviour"
+msgstr "行为"
 
 # ==AUTO== Automatically translated
 msgid "Program settings"

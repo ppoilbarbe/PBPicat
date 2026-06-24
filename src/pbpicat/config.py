@@ -127,6 +127,7 @@ DEFAULTS = {
     "delete_empty_sidecars": True,
     "delete_list_max_files": 12,
     "confirm_deletions": True,
+    "use_trash": True,
     "exif_auto_rotate": True,
 }
 

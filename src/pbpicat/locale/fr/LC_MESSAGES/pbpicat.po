@@ -75,6 +75,18 @@ msgid "Cannot display multiple files simultaneously."
 msgstr "Impossible d'afficher plusieurs fichiers simultanément."
 
 #, python-brace-format
+msgid "Move {count} files to trash?"
+msgstr "Déplacer {count} fichiers vers la corbeille ?"
+
+#, python-brace-format
+msgid ""
+"Move to trash:\n"
+"{names}"
+msgstr ""
+"Déplacer vers la corbeille :\n"
+"{names}"
+
+#, python-brace-format
 msgid "Permanently delete {count} files?"
 msgstr "Supprimer définitivement {count} fichiers ?"
 
@@ -88,6 +100,10 @@ msgstr ""
 
 msgid "Confirm deletion"
 msgstr "Confirmer la suppression"
+
+#, python-brace-format
+msgid "Could not move to trash: {name}"
+msgstr "Impossible de déplacer vers la corbeille : {name}"
 
 msgid "Deletion error"
 msgstr "Erreur de suppression"
@@ -734,6 +750,13 @@ msgstr "Faire pivoter automatiquement les imagettes et le visualiseur selon le t
 msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "« {ext} » n'est pas une extension valide (ex. : .png, .heic)."
 
+# ==AUTO== Automatically translated
+msgid "Move deleted files to trash"
+msgstr "Déplacer les fichiers supprimés vers la corbeille"
+
+msgid "Send files to the system trash instead of deleting them permanently"
+msgstr "Envoyer les fichiers dans la corbeille système plutôt que de les supprimer définitivement"
+
 msgid "Recognised video extensions:"
 msgstr "Extensions vidéo reconnues :"
 
@@ -776,6 +799,9 @@ msgstr "Vidéo"
 
 msgid "Thumbnails"
 msgstr "Miniatures"
+
+msgid "Behaviour"
+msgstr "Comportement"
 
 msgid "Program settings"
 msgstr "Paramètres du programme"

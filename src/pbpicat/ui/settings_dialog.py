@@ -389,6 +389,27 @@ class _ImageTab(QWidget):
         config["exif_auto_rotate"] = self._exif_auto_rotate_cb.isChecked()
 
 
+class _BehaviourTab(QWidget):
+    def __init__(self, config: dict, parent=None):
+        super().__init__(parent)
+        self._config = config
+        self._setup_ui()
+
+    def _setup_ui(self) -> None:
+        root = QVBoxLayout(self)
+        root.setSpacing(8)
+
+        self._use_trash_cb = QCheckBox(_("Move deleted files to trash"))
+        self._use_trash_cb.setToolTip(_("Send files to the system trash instead of deleting them permanently"))
+        self._use_trash_cb.setChecked(self._config.get("use_trash", True))
+        root.addWidget(self._use_trash_cb)
+
+        root.addStretch()
+
+    def apply_to(self, config: dict) -> None:
+        config["use_trash"] = self._use_trash_cb.isChecked()
+
+
 class _VideoTab(QWidget):
     def __init__(self, config: dict, parent=None):
         super().__init__(parent)
@@ -547,12 +568,14 @@ class SettingsDialog(QDialog):
         self._image_tab = _ImageTab(self._config)
         self._thumb_tab = _ThumbnailTab(self._config)
         self._video_tab = _VideoTab(self._config)
+        self._behaviour_tab = _BehaviourTab(self._config)
 
         tabs.addTab(self._schema_tab, _("Rename schema"))
         tabs.addTab(self._sidecar_tab, _("Sidecar extensions"))
         tabs.addTab(self._image_tab, _("Images"))
         tabs.addTab(self._video_tab, _("Video"))
         tabs.addTab(self._thumb_tab, _("Thumbnails"))
+        tabs.addTab(self._behaviour_tab, _("Behaviour"))
 
         root.addWidget(tabs)
 
@@ -567,6 +590,7 @@ class SettingsDialog(QDialog):
         self._image_tab.apply_to(self._config)
         self._video_tab.apply_to(self._config)
         self._thumb_tab.apply_to(self._config)
+        self._behaviour_tab.apply_to(self._config)
         save_config(self._config)
         self.accept()
 

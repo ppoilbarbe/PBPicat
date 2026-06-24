@@ -5,10 +5,23 @@ import gettext
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 import pbpicat.i18n as i18n_mod
 from pbpicat.i18n import _GettextTranslator, _system_language, available_languages, setup
 
 _LANG_VARS = ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG")
+
+
+@pytest.fixture(autouse=True)
+def restore_builtin_gettext():
+    """Restore builtins._ after each test so i18n side-effects don't leak."""
+    saved = builtins.__dict__.get("_")
+    yield
+    if saved is None:
+        builtins.__dict__.pop("_", None)
+    else:
+        builtins.__dict__["_"] = saved
 
 
 def _clear_lang_env(monkeypatch):

@@ -7,6 +7,8 @@ dependencies:
   - python=3.12
   # GUI
   - pyside6
+  # Fonts (bundled in the PyInstaller binary via pbpicat.spec)
+  - fonts-conda-ecosystem   # meta-package: Ubuntu, DejaVu, Inconsolata, SourceCodePro
   # Image support (Pillow fallback + HEIC/HEIF)
   - pillow
   - pillow-heif

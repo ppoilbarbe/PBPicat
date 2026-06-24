@@ -8,6 +8,38 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- **`hooks/pyi_rth_fonts.py`** — PyInstaller runtime hook for portable
+  fontconfig on Linux.  At frozen-app startup (before Qt initialises) it writes
+  a minimal `fonts.conf` into `sys._MEIPASS` pointing to the bundled `fonts/`
+  directory and the system `/etc/fonts/fonts.conf`, sets `FONTCONFIG_FILE`, then
+  calls `FcFini()`/`FcInit()` via ctypes to force fontconfig to re-read the
+  variable before `QFontDatabase` is populated.  The hook is no-op on non-Linux
+  platforms and in non-frozen runs.
+- **Conda fonts bundled in `pbpicat.spec`** — the `$CONDA_PREFIX/fonts/`
+  directory is included as `fonts/` in the frozen bundle when it exists; the
+  runtime hook above uses this directory.  `hooks/pyi_rth_fonts.py` is
+  registered as a runtime hook in the spec.
+- **`use_trash` setting** (default `true`) — new *Behaviour* tab in *Settings →
+  Catalog configuration…* with a *Move deleted files to trash* checkbox; when
+  enabled, deletions are routed through `QFile.moveToTrash()` instead of
+  `Path.unlink()`.
+- **`_delete_rows_and_select(next_row)`** in `FileListWidget` — removes only the
+  rows corresponding to deleted files from the table without restarting the
+  thumbnail worker for remaining rows; replaces the previous full-refresh call
+  after deletion.
+- **`fonts-conda-ecosystem`** added to `environment.yml` (Ubuntu, DejaVu,
+  Inconsolata, SourceCodePro); these fonts are already bundled into the frozen
+  binary via `pbpicat.spec` but were missing from the environment declaration,
+  so a fresh `conda env create` would produce a bundle with no fonts.
+- **`_load_bundled_fonts(app)`** in `__main__.py`: registers all bundled `.ttf`
+  files into `QFontDatabase` and explicitly sets **Ubuntu** as the application
+  font.  The `libfontconfig.so` bundled by PyInstaller has its default config
+  path hardcoded to the build machine's conda prefix; on any other machine that
+  path is absent and fontconfig fails silently, leaving Qt with no valid system
+  font and an unpredictable default.  Forcing Ubuntu bypasses fontconfig for
+  font selection while the runtime hook (`pyi_rth_fonts.py`) still provides a
+  portable `fonts.conf` so rendering settings (anti-aliasing, hinting…) are
+  inherited from the system `/etc/fonts/fonts.conf`.
 - **`--dev-config-dir DIR` CLI flag** — overrides the XDG configuration directory at launch, enabling isolated test runs without touching the real config.
 - **`set_base_dir()`** in `config.py` — public function to redirect `_BASE_DIR`, `_CATALOG_CONF`, and `_GLOBAL_CONFIG_PATH` before `init_catalogs()` is called.
 - **`make run ARGS="..."`** — the `run` Makefile target now forwards `$(ARGS)` to the Python invocation so extra flags can be passed from the command line.
@@ -26,6 +58,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **`fix_po_files.py`** — now also strips pybabel location comments (`#: file.py:N`) to eliminate spurious line-number churn in `.po` diffs.
 - **Shortcuts window renamed** — formerly *Keyboard shortcuts*, now *Shortcuts*; made non-modal so it can stay open while working.
 - **Key names localised** — *Del* and *Esc* now display as *Suppr* and *Échap* on French keyboards via `QKeySequence.toString(NativeText)`; mouse button names (*left-click*, *right-click*) are translated into each UI language.
+- **Deletion confirmation dialog** — wording now adapts to the `use_trash` setting: *"Move to trash: …"* / *"Move N files to trash?"* when trash is enabled; existing *"Permanently delete"* wording otherwise.
+- **Empty parent directory cleanup skipped in trash mode** — when `use_trash` is enabled the post-deletion directory sweep is omitted; the OS trash mechanism handles the directory state.
 
 ## [1.10.1] - 2026-06-14
 

@@ -90,6 +90,18 @@ msgstr "Tên tệp ({n})"
 msgid "Cannot display multiple files simultaneously."
 msgstr "Không thể hiển thị nhiều tệp cùng lúc."
 
+#, python-brace-format
+msgid "Move {count} files to trash?"
+msgstr "Chuyển {count} tệp vào thùng rác?"
+
+#, python-brace-format
+msgid ""
+"Move to trash:\n"
+"{names}"
+msgstr ""
+"Chuyển vào thùng rác:\n"
+"{names}"
+
 # ==AUTO== Automatically translated
 #, python-brace-format
 msgid "Permanently delete {count} files?"
@@ -107,6 +119,10 @@ msgstr ""
 # ==AUTO== Automatically translated
 msgid "Confirm deletion"
 msgstr "Xác nhận xóa"
+
+#, python-brace-format
+msgid "Could not move to trash: {name}"
+msgstr "Không thể chuyển vào thùng rác: {name}"
 
 # ==AUTO== Automatically translated
 msgid "Deletion error"
@@ -952,6 +968,13 @@ msgid "'{ext}' is not a valid extension (e.g. .png, .heic)."
 msgstr "«{ext}» không phải là phần mở rộng hợp lệ (ví dụ .png, .heic)."
 
 # ==AUTO== Automatically translated
+msgid "Move deleted files to trash"
+msgstr "Chuyển tệp đã xóa vào thùng rác"
+
+msgid "Send files to the system trash instead of deleting them permanently"
+msgstr "Gửi tệp vào thùng rác hệ thống thay vì xóa vĩnh viễn"
+
+# ==AUTO== Automatically translated
 msgid "Recognised video extensions:"
 msgstr "Phần mở rộng video được nhận diện:"
 
@@ -1007,6 +1030,9 @@ msgstr "Video"
 # ==AUTO== Automatically translated
 msgid "Thumbnails"
 msgstr "Hình thu nhỏ"
+
+msgid "Behaviour"
+msgstr "Hành vi"
 
 # ==AUTO== Automatically translated
 msgid "Program settings"
