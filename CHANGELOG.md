@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Fixed
+
+- **Double-click on image opens viewer with spurious "Cannot display multiple files simultaneously" error** — Qt's `ExtendedSelection` mode emits `itemSelectionChanged` twice during a double-click (clear then re-select), causing `_on_selection_changed` to see 0 rows and wrongly trigger the multi-file message. Fixed by ignoring the transient empty-selection state (`len(rows) == 0`) in `_on_selection_changed`.
+- **File list selection jumps to row 0 after opening image viewer** — `focusInEvent` called `selectRow(0)` whenever focus returned via a non-mouse event and the selection appeared empty, which happened when the viewer window stole focus. Fixed by skipping the auto-select-first-row logic while the image viewer is visible.
+
 ### Added
 
 - **Missing SVG icons** (`auto-rotate`, `object-rotate-left`, `object-rotate-right`, `object-flip-vertical`, `reset-exif`, `folder-new`, `folder-open`) — buttons and actions with no SVG fallback file displayed no icon on systems without an icon theme (e.g. Linux bundle).

@@ -621,7 +621,9 @@ class FileListWidget(QTableWidget):
         if self._image_viewer is None or not self._image_viewer.isVisible():
             return
         rows = {idx.row() for idx in self.selectedIndexes()}
-        if len(rows) != 1:
+        if len(rows) == 0:
+            return  # transient empty selection during double-click clear+reselect cycle
+        if len(rows) > 1:
             self._image_viewer.show_message(_("Cannot display multiple files simultaneously."))
             return
         row = next(iter(rows))
@@ -666,6 +668,8 @@ class FileListWidget(QTableWidget):
     def focusInEvent(self, event) -> None:  # noqa: N802
         super().focusInEvent(event)
         if event.reason() == Qt.FocusReason.MouseFocusReason:
+            return
+        if self._image_viewer and self._image_viewer.isVisible():
             return
         if self._display_data and not self.selectedIndexes():
             self._auto_selecting = True
