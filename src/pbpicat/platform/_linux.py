@@ -8,8 +8,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QDesktopServices
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -34,7 +33,7 @@ def config_dir() -> Path:
 
 
 def open_default(path: Path) -> None:
-    QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+    subprocess.Popen(["xdg-open", str(path)])
 
 
 def open_with(path: Path, parent=None) -> None:

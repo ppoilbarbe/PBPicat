@@ -16,7 +16,7 @@ from PySide6.QtCore import (
     QUrl,
     Signal,
 )
-from PySide6.QtGui import QDesktopServices, QDrag, QFont, QImage, QPixmap
+from PySide6.QtGui import QDrag, QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDialog,
@@ -573,12 +573,12 @@ class FileListWidget(QTableWidget):
                 new_sc = path.parent / (path.stem + self._sidecar_new_extension)
                 self._sidecars_pending_edit.add(new_sc)
                 new_sc.touch()
-                QDesktopServices.openUrl(QUrl.fromLocalFile(str(new_sc)))
+                open_default(new_sc)
                 self.refresh_and_select(row)
         elif path.suffix.lower() in self._image_exts:
             self._show_image(path)
         elif path.suffix.lower() in self._video_exts:
-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+            open_default(path)
 
     def _show_image(self, path: Path) -> None:
         if self._image_viewer is None or not self._image_viewer.isVisible():
@@ -945,7 +945,7 @@ class FileListWidget(QTableWidget):
 
     def _open_text_sidecars(self, sidecars: list[Path]) -> None:
         for sc in sidecars:
-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(sc)))
+            open_default(sc)
 
     def closeEvent(self, event) -> None:  # noqa: N802
         self._refresh_debounce.stop()

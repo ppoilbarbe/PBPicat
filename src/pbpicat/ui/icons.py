@@ -13,15 +13,15 @@ ICON_SIZE = 22
 
 # Mapping: SVG name → FreeDesktop theme name (used when theme_name is not supplied)
 _THEME_MAP = {
-    "zoom_fit": "zoom-fit-best",
-    "zoom_original": "zoom-original",
-    "zoom_width": "zoom-fit-width",
-    "zoom_height": "zoom-fit-height",
-    "zoom_in": "zoom-in",
-    "zoom_out": "zoom-out",
+    "zoom-fit": "zoom-fit-best",
+    "zoom-original": "zoom-original",
+    "zoom-width": "zoom-fit-width",
+    "zoom-height": "zoom-fit-height",
+    "zoom-in": "zoom-in",
+    "zoom-out": "zoom-out",
     "open": "document-open",
-    "open_with": "applications-other",
-    "template": "view-list-details",
+    "open-with": "applications-other",
+    "rename-template": "view-list-details",
     "delete": "edit-delete",
 }
 

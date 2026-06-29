@@ -6,6 +6,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **Missing SVG icons** (`auto-rotate`, `object-rotate-left`, `object-rotate-right`, `object-flip-vertical`, `reset-exif`, `folder-new`, `folder-open`) — buttons and actions with no SVG fallback file displayed no icon on systems without an icon theme (e.g. Linux bundle).
+
+### Changed
+
+- **`_linux.py` — `open_default`** now uses `subprocess.Popen(["xdg-open", …])` instead of `QDesktopServices.openUrl()`, which bypassed the user's MIME association and always opened `xed` instead of the actual default application.
+- **SVG icons** — all files replaced with high-resolution (1024×1024) versions with a consistent blue rounded-square background; `pbpicat.svg` simplified (534 KB → 24 KB).
+- **SVG file names** normalised: hyphens only (no underscores), semantic names (`history`, `duplicate`, `rename-template`, `reset-exif`, `auto-rotate`, `open-with`, `zoom-fit`, `zoom-in`, `zoom-out`, `zoom-original`, `zoom-width`, `zoom-height`).
+- **`file_list_widget.py`** — direct `QDesktopServices.openUrl()` calls for sidecars and videos now go through `open_default()`.
+
+### Removed
+
+- Obsolete SVG files: `document-open-recent.svg`, `edit-copy.svg`, `template.svg`, `open_with.svg`, `zoom_fit.svg`, `zoom_in.svg`, `zoom_out.svg`, `zoom_original.svg`, `zoom_width.svg`, `zoom_height.svg`.
+
 ## [1.11.0] - 2026-06-24
 
 ### Added

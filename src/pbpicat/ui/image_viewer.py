@@ -110,10 +110,10 @@ class ImageViewer(QWidget):
         tb.setSpacing(2)
 
         specs = [
-            ("zoom_fit", "⊡", _("Fit window  0 / X"), self._act_fit_window),
-            ("zoom_original", "1:1", _("Actual size (1:1)  1 / Z"), self._act_1to1),
-            ("zoom_width", "↔", _("Fit width  W"), self._act_fit_width),
-            ("zoom_height", "↕", _("Fit height  H"), self._act_fit_height),
+            ("zoom-fit", "⊡", _("Fit window  0 / X"), self._act_fit_window),
+            ("zoom-original", "1:1", _("Actual size (1:1)  1 / Z"), self._act_1to1),
+            ("zoom-width", "↔", _("Fit width  W"), self._act_fit_width),
+            ("zoom-height", "↕", _("Fit height  H"), self._act_fit_height),
         ]
 
         self._zoom_buttons: list[QToolButton] = []
@@ -137,8 +137,8 @@ class ImageViewer(QWidget):
         tb.addWidget(sep)
 
         for icon_name, fallback, tip, slot in [
-            ("zoom_in", "＋", _("Zoom in  +"), self._act_zoom_in),
-            ("zoom_out", "－", _("Zoom out  −"), self._act_zoom_out),
+            ("zoom-in", "＋", _("Zoom in  +"), self._act_zoom_in),
+            ("zoom-out", "－", _("Zoom out  −"), self._act_zoom_out),
         ]:
             btn = QToolButton()
             btn.setIcon(get_icon(icon_name, text_fallback=fallback))
@@ -165,7 +165,7 @@ class ImageViewer(QWidget):
             tb.addWidget(btn)
 
         self._rotate_auto_btn = QToolButton()
-        self._rotate_auto_btn.setIcon(get_icon("media-playlist-repeat", text_fallback="EXIF"))
+        self._rotate_auto_btn.setIcon(get_icon("auto-rotate", text_fallback="EXIF"))
         self._rotate_auto_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
         self._rotate_auto_btn.setToolTip(_("Apply EXIF orientation"))
         self._rotate_auto_btn.clicked.connect(lambda: self.rotate_requested.emit("auto"))
@@ -173,7 +173,7 @@ class ImageViewer(QWidget):
         tb.addWidget(self._rotate_auto_btn)
 
         self._reset_exif_btn = QToolButton()
-        self._reset_exif_btn.setIcon(get_icon("edit-clear", "edit-clear", text_fallback="0°"))
+        self._reset_exif_btn.setIcon(get_icon("reset-exif", "edit-clear", text_fallback="0°"))
         self._reset_exif_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
         self._reset_exif_btn.setToolTip(_("Reset EXIF orientation"))
         self._reset_exif_btn.clicked.connect(lambda: self.rotate_requested.emit("reset_exif"))
@@ -187,8 +187,8 @@ class ImageViewer(QWidget):
 
         for icon_name, fallback, tip, callback in [
             ("open", "▶", _("Open") + "  Ctrl+O", lambda: self.open_requested.emit()),
-            ("open_with", "▶…", _("Open with") + "  Ctrl+Shift+O", lambda: self.open_with_requested.emit()),
-            ("template", "T", _("Template"), lambda: self.template_requested.emit()),
+            ("open-with", "▶…", _("Open with") + "  Ctrl+Shift+O", lambda: self.open_with_requested.emit()),
+            ("rename-template", "T", _("Template"), lambda: self.template_requested.emit()),
             ("delete", "✕", _("Delete") + "  Del", lambda: self.delete_requested.emit()),
         ]:
             btn = QToolButton()
