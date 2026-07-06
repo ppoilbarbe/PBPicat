@@ -32,6 +32,10 @@ msgid "Unsupported EXIF orientation value: {v}"
 msgstr "Valor de orientación EXIF no compatible: {v}"
 
 # ==AUTO== Automatically translated
+msgid "This file appears to be truncated (data is missing at the end), likely from an incomplete write by the camera. Lossless rotation is not possible without discarding the affected rows."
+msgstr "Este archivo parece estar truncado (faltan datos al final), probablemente por una escritura incompleta de la cámara. La rotación sin pérdida no es posible sin descartar las filas afectadas."
+
+# ==AUTO== Automatically translated
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -80,6 +84,11 @@ msgstr "Nombre de archivo"
 # ==AUTO== Automatically translated
 msgid "Sidecar"
 msgstr "Sidecar"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "File name ({sel}/{n})"
+msgstr "Nombre de archivo ({sel}/{n})"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -304,6 +313,10 @@ msgid "Delete selected file(s) and their sidecars"
 msgstr "Eliminar archivo(s) seleccionado(s) y sus archivos auxiliares"
 
 # ==AUTO== Automatically translated
+msgid "Force EXIF orientation to 0°"
+msgstr "Forzar orientación EXIF a 0°"
+
+# ==AUTO== Automatically translated
 msgid "Move focus to the directory tree"
 msgstr "Mover el foco al árbol de directorios"
 
@@ -409,8 +422,8 @@ msgid "Apply and remove the EXIF orientation tag"
 msgstr "Aplicar y eliminar la etiqueta de orientación EXIF"
 
 # ==AUTO== Automatically translated
-msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
-msgstr "Establecer la etiqueta de orientación EXIF en 1 (normal) sin rotar los píxeles"
+msgid "Set the EXIF orientation tag to 1 (0°, normal) without rotating pixels"
+msgstr "Establecer la etiqueta de orientación EXIF en 1 (0°, normal) sin rotar los píxeles"
 
 # ==AUTO== Automatically translated
 msgid "&File"
@@ -616,6 +629,11 @@ msgstr "{n} etiqueta(s) de orientación EXIF restablecida(s)."
 # ==AUTO== Automatically translated
 msgid "Rotation unavailable"
 msgstr "Rotación no disponible"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) could not be rotated."
+msgstr "No se pudieron rotar {n} archivo(s)."
 
 # ==AUTO== Automatically translated
 #, python-brace-format

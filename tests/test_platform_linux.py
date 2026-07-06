@@ -289,11 +289,12 @@ def test_apps_for_path_deduplicates(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_open_default_calls_qdesktopservices(tmp_path, monkeypatch):
+def test_open_default_calls_xdg_open(tmp_path, monkeypatch):
     calls = []
-    monkeypatch.setattr(_linux.QDesktopServices, "openUrl", staticmethod(lambda url: calls.append(url)))
-    _linux.open_default(tmp_path / "test.png")
-    assert len(calls) == 1
+    monkeypatch.setattr(_linux.subprocess, "Popen", lambda args: calls.append(args))
+    path = tmp_path / "test.png"
+    _linux.open_default(path)
+    assert calls == [["xdg-open", str(path)]]
 
 
 # ---------------------------------------------------------------------------

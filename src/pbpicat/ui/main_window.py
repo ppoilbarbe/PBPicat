@@ -130,6 +130,8 @@ class _ShortcutsDialog(QDialog):
                 row("F6", _("Rotate 90° CCW")),
                 row("F7", _("Rotate 180°")),
                 row("F8", _("Rotate 90° CW")),
+                row("F9", _("Apply EXIF orientation")),
+                row("F10", _("Force EXIF orientation to 0°")),
                 row(f"← / → ({file_list})", _("Move focus to the directory tree")),
                 row(f"→ ({tree_leaf})", _("Move focus to the file list")),
             ]
@@ -305,12 +307,14 @@ class MainWindow(QMainWindow):
         self._act_rotate_auto = QAction(_("Apply EXIF orientation"), self)
         self._act_rotate_auto.setIcon(get_icon("auto-rotate", text_fallback="EXIF"))
         self._act_rotate_auto.setStatusTip(_("Apply and remove the EXIF orientation tag"))
+        self._act_rotate_auto.setShortcut(QKeySequence(Qt.Key.Key_F9))
         self._act_rotate_auto.setEnabled(False)
         self._act_rotate_auto.triggered.connect(lambda: self._rotate_selected("auto"))
 
-        self._act_reset_exif = QAction(_("Reset EXIF orientation"), self)
+        self._act_reset_exif = QAction(_("Force EXIF orientation to 0°"), self)
         self._act_reset_exif.setIcon(get_icon("reset-exif", "edit-clear", text_fallback="0°"))
-        self._act_reset_exif.setStatusTip(_("Set the EXIF orientation tag to 1 (normal) without rotating pixels"))
+        self._act_reset_exif.setStatusTip(_("Set the EXIF orientation tag to 1 (0°, normal) without rotating pixels"))
+        self._act_reset_exif.setShortcut(QKeySequence(Qt.Key.Key_F10))
         self._act_reset_exif.setEnabled(False)
         self._act_reset_exif.triggered.connect(self._reset_exif_selected)
 
@@ -321,7 +325,7 @@ class MainWindow(QMainWindow):
         act = file_menu.addAction(_("&Quit"), self.close)
         act.setShortcut(QKeySequence.StandardKey.Quit)
         act.setStatusTip(_("Quit the application"))
-        act.setIcon(get_icon("application-exit", "application-exit"))
+        act.setIcon(get_icon("quit", "application-exit"))
 
         self._catalog_menu = mb.addMenu(_("&Catalog"))
         act = self._catalog_menu.addAction(_("&New catalog…"), self._new_catalog)
@@ -695,16 +699,25 @@ class MainWindow(QMainWindow):
         if not paths:
             return
         pairs = []
+        errors = []
         for path in paths:
             try:
                 orig_orient = get_exif_orientation(path)
                 undo_op = rotate_lossless(path, op)
                 pairs.append((path, undo_op, orig_orient))
             except RuntimeError as exc:
-                QMessageBox.warning(self, _("Rotation unavailable"), str(exc))
-                break
+                errors.append(f"{path.name}\n{exc}")
             except ValueError:
                 continue
+        if errors:
+            box = QMessageBox(
+                QMessageBox.Icon.Warning,
+                _("Rotation unavailable"),
+                _("{n} file(s) could not be rotated.").format(n=len(errors)),
+                parent=self,
+            )
+            box.setDetailedText("\n\n".join(errors))
+            box.exec()
         if pairs:
             self._undo_stack.append(("rotation", pairs))
             self._update_undo_btn()
@@ -831,6 +844,7 @@ class MainWindow(QMainWindow):
         if not self._undo_stack:
             return
         kind, plan = self._undo_stack[-1]
+        path = None
         try:
             if kind == "renumber":
                 undo_renumber(plan)
@@ -849,7 +863,8 @@ class MainWindow(QMainWindow):
             else:
                 undo_rename(plan)
         except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as exc:
-            QMessageBox.critical(self, _("Undo error"), str(exc))
+            message = f"{path.name}\n\n{exc}" if path is not None else str(exc)
+            QMessageBox.critical(self, _("Undo error"), message)
             self._status.showMessage(_("Error: undo failed."))
             return
         self._undo_stack.pop()

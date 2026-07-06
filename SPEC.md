@@ -41,8 +41,8 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Images | Rotate 90° CCW | F6 | Rotate selected image(s) 90° counter-clockwise (lossless) |
 | Images | Rotate 90° CW | F8 | Rotate selected image(s) 90° clockwise (lossless) |
 | Images | Rotate 180° | F7 | Rotate selected image(s) 180° (lossless) |
-| Images | Apply EXIF orientation | — | Apply and remove EXIF orientation tag (disabled if absent) |
-| Images | Reset EXIF orientation | — | Set EXIF Orientation tag to 1 (normal) without rotating pixels (disabled if absent) |
+| Images | Apply EXIF orientation | F9 | Apply and remove EXIF orientation tag (disabled if absent) |
+| Images | Force EXIF orientation to 0° | F10 | Set EXIF Orientation tag to 1 (normal) without rotating pixels (disabled if absent) |
 | View | Refresh | F5 | Refresh |
 | Settings | Catalog configuration… | Ctrl+, | Open catalog settings |
 | Settings | History… | — | Edit field and filter history |
@@ -51,7 +51,7 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 | Help | About | — | About PBPicat |
 
 Images menu actions are disabled when no file is selected; Template is disabled with multiple selection.
-Rotation actions are disabled when no image file is selected; Apply EXIF orientation and Reset EXIF orientation are additionally disabled when no selected image has an EXIF orientation tag.
+Rotation actions are disabled when no image file is selected; Apply EXIF orientation and Force EXIF orientation to 0° are additionally disabled when no selected image has an EXIF orientation tag.
 
 All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
@@ -131,7 +131,12 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 ### Zone 3 — Files (FilePanel)
 `QSplitter horizontal`:
 - **Left**: `DirTree` — `QTreeView` with `QFileSystemModel` (directories only)
-- **Right**: `FileListWidget` — QTableWidget 3 columns
+- **Right**: `FileListWidget` — QTableWidget 3 columns. Name column header shows the file count as `File name (n)`; while 2 or more rows are selected, it shows `File name (sel/n)` instead (`_update_name_header()`) — a single selected file isn't shown, since the count adds no information there.
+- **Thumbnail loading is viewport-lazy**: `_start_worker()` only dispatches `_ThumbnailWorker` for rows currently visible (plus one screenful of margin above/below), not the whole directory. `_thumb_loaded: set[Path]` tracks which files already have a thumbnail (reset on each `_populate_table()`). Scrolling (`verticalScrollBar().valueChanged`) and resizing (`resizeEvent`) re-trigger `_start_worker()` through a 400 ms debounce timer (`_visible_thumbs_debounce`), so newly-visible rows get their thumbnails loaded on demand. Keeps directory load/refresh fast regardless of file count (e.g. thousands of files in one folder).
+  - The 400 ms debounce specifically targets mouse-wheel/keyboard scrolling: each wheel notch fires `valueChanged`, and if consecutive notches are spaced further apart than the debounce interval, each pause triggers a load for that transient position. Scrolling a long distance with the wheel means passing through (and pausing within) many more such intermediate positions than a single scrollbar-drag jump, so the number of triggered batches — and thus perceived lag — scales with distance travelled, not with the destination row itself (jumping directly to any row via drag-and-release stays fast regardless of position, since it's a single settle point).
+  - While the scrollbar handle is actively being dragged (`isSliderDown()`), the debounce is a no-op — loading only happens once via `sliderReleased`, otherwise a slow/paused drag across a long list would trigger a load at every intermediate position along the way.
+  - Restarting the worker on scroll/resize uses `_cancel_worker_async()` (cancel flag + `deleteLater` on `finished`, no blocking `wait()`), not `_stop_worker()`: rows/paths stay valid since the table isn't rebuilt, so a stray `thumbnail_ready` from the just-cancelled thread is harmless, and the GUI thread never stalls waiting for a large in-flight JPEG decode — important since mouse-wheel scrolling naturally re-triggers the debounce many times over a long scroll session. `_stop_worker()` (blocking) is still used wherever `_populate_table()` follows (directory/filter/sort changes), since stale signals landing on rebuilt rows would show the wrong file's thumbnail.
+  - The pending batch (visible rows + margin not yet in `_thumb_loaded`) is split across up to 4 concurrent `_ThumbnailWorker` instances (`self._visible_workers`, capped by `os.cpu_count()`), instead of one worker decoding the whole batch sequentially — cuts wall-clock time for a freshly-scrolled-to batch roughly by the number of cores used. `self._worker` (singular) remains dedicated to `refresh_thumbnails_for_paths()`'s targeted subset reload; `_stop_worker()`/`_cancel_worker_async()` handle both.
 
 #### Keyboard navigation between panels
 | Location | Key | Effect |
@@ -170,12 +175,17 @@ Multi-selection (ExtendedSelection).
 Same actions available in the **Images** menu and in the **ImageViewer** toolbar (rotation buttons between zoom and action buttons).
 
 **Rotation actions** (`image_ops.py`):
-- JPEG lossless rotation: uses `pyjpegturbo` (turbojpeg module, optional dep). If absent, a dialog explains the requirement.
+- JPEG lossless rotation: shells out to `jpegtran` (libjpeg-turbo). If absent, a dialog explains the requirement.
+- Before invoking `jpegtran`, JPEG bytes are passed through `repair_jpeg_sos()`, which fixes a malformed SOS header (`Se=0` instead of the mandatory `63` for baseline JPEGs) seen in some camera firmware (e.g. certain Samsung front-camera modules); without this, `jpegtran` fails with "Invalid SOS parameters for sequential JPEG". Same repair is applied in `image_io.py` before handing JPEG bytes to Qt's decoder, to avoid the same warning and ensure `setAutoTransform` (EXIF auto-rotation) works. No-op (byte-identical) for well-formed files.
+- `qt.gui.imageio.jpeg` Qt logging category is silenced at startup (`__main__.py`): other malformed-JPEG warnings (e.g. "Corrupt JPEG data: N extraneous bytes before marker 0xd9", trailing garbage before EOI) have no safe automatic fix but no practical impact either — Qt/Pillow decode these files fine.
+- `image_io.py`'s `_make_reader()` raises `QImageReader.setAllocationLimit()` from Qt's default (256 MiB) to 1024 MiB (`_ALLOCATION_LIMIT_MIB`). The default is checked against the *undecoded* image's declared dimensions — a 50-100 MP phone photo decodes to 200-400 MB as RGB32, exceeding it — causing Qt to reject the read outright ("Rejecting image as it exceeds the current allocation limit") and forcing a much slower full-resolution Pillow fallback (`load_qimage()`/`load_pixmap()`'s `except` branch) just to display or thumbnail the file. Thumbnail generation (which always calls `setScaledSize()` before `read()`) is unaffected regardless of source size — Qt's check there applies to the *scaled* target, not the source — so this specifically matters for `load_pixmap()` (full-size image viewer).
+- If `jpegtran` fails for another reason (e.g. "Premature end of JPEG file" on a genuinely truncated file, such as some panorama shots missing trailing data), `_jpegtran_error_hints()` prepends a user-friendly explanation to the raw `jpegtran` message when a known pattern matches. `RuntimeError`/`QMessageBox` for both rotation and undo failures are prefixed with the file name so the user knows which file is at fault.
+- Batch rotation (`_rotate_images()`): a failure on one file does not stop the batch — processing continues for the remaining selected files. Errors are reported via a single `QMessageBox` with a short summary ("N file(s) could not be rotated.") and the full per-file list in `setDetailedText()` (collapsible, scrollable) — avoids an unusably tall dialog when rotating a large selection (e.g. thousands of files) where many fail for the same reason.
 - Other formats (PNG, TIFF, BMP, WebP): uses Pillow (`rotate`, `transpose`). Always lossless for these formats.
 - After JPEG rotation, the EXIF Orientation tag is stripped using `piexif` (required dep).
 - All rotations and EXIF resets are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op, orig_orient)])` or `("reset_exif", [(path, orig_orient)])`. Undo button label changes accordingly.
 - **Apply EXIF orientation**: reads the EXIF Orientation tag, applies the corresponding transform (rotation or flip), then strips the tag. Works for all 8 EXIF orientation values. Disabled in the UI when the image has no orientation tag.
-- **Reset EXIF orientation**: sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled in the UI when the image has no orientation tag.
+- **Force EXIF orientation to 0°**: sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled in the UI when the image has no orientation tag.
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`
@@ -187,7 +197,7 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 #### ImageViewer (`ui/image_viewer.py`)
 Non-modal window opened by double-clicking the preview column.
 Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | **0°** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
-The **EXIF** (Apply EXIF orientation) and **0°** (Reset EXIF orientation) buttons are disabled when the loaded image has no EXIF orientation tag.
+The **EXIF** (Apply EXIF orientation) and **0°** (Force EXIF orientation to 0°) buttons are disabled when the loaded image has no EXIF orientation tag.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
 | Key | Action |

@@ -1,3 +1,4 @@
+import os
 import re
 import unicodedata
 from collections.abc import Callable
@@ -140,6 +141,7 @@ class FileListWidget(QTableWidget):
         self._sort_by_date: bool = False
         self._sort_reverse: bool = False
         self._worker: _ThumbnailWorker | None = None
+        self._visible_workers: list[_ThumbnailWorker] = []
         self._image_viewer: ImageViewer | None = None
         self._get_schema_fields: Callable[[], list[str]] | None = None
         self._get_video_marker_pos: Callable[[], int] | None = None
@@ -150,10 +152,12 @@ class FileListWidget(QTableWidget):
         self._rotate_callback = None
         self._sidecars_pending_edit: set[Path] = set()
         self._dir_tree = None
+        self._thumb_loaded: set[Path] = set()
         self._apply_config(config)
         self._setup_table()
         self.cellDoubleClicked.connect(self._on_double_click)
         self.itemSelectionChanged.connect(self._on_selection_changed)
+        self.itemSelectionChanged.connect(self._update_name_header)
 
         self._watcher = QFileSystemWatcher(self)
         self._watcher.directoryChanged.connect(self._on_dir_changed_on_disk)
@@ -161,6 +165,17 @@ class FileListWidget(QTableWidget):
         self._refresh_debounce.setSingleShot(True)
         self._refresh_debounce.setInterval(400)
         self._refresh_debounce.timeout.connect(self._refresh_preserve_selection)
+
+        self._visible_thumbs_debounce = QTimer(self)
+        self._visible_thumbs_debounce.setSingleShot(True)
+        self._visible_thumbs_debounce.setInterval(400)
+        self._visible_thumbs_debounce.timeout.connect(self._on_visible_thumbs_debounce)
+        self.verticalScrollBar().valueChanged.connect(self._visible_thumbs_debounce.start)
+        self.verticalScrollBar().sliderReleased.connect(self._start_worker)
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        super().resizeEvent(event)
+        self._visible_thumbs_debounce.start()
 
     def set_dir_tree(self, dir_tree) -> None:
         self._dir_tree = dir_tree
@@ -304,6 +319,16 @@ class FileListWidget(QTableWidget):
         rows = {idx.row() for idx in self.selectedIndexes()}
         return [self._display_data[r][0] for r in sorted(rows) if r < len(self._display_data)]
 
+    def _update_name_header(self) -> None:
+        total = len(self._display_data)
+        selected = len({idx.row() for idx in self.selectedIndexes()})
+        label = (
+            _("File name ({sel}/{n})").format(sel=selected, n=total)
+            if selected >= 2
+            else _("File name ({n})").format(n=total)
+        )
+        self.setHorizontalHeaderItem(self._NAME_COL, QTableWidgetItem(label))
+
     def get_all_files(self) -> list[Path]:
         return [path for path, _ in self._display_data]
 
@@ -346,10 +371,7 @@ class FileListWidget(QTableWidget):
 
         self._display_data = new_display
         self.file_count_changed.emit(len(self._display_data))
-        self.setHorizontalHeaderItem(
-            self._NAME_COL,
-            QTableWidgetItem(_("File name ({n})").format(n=len(self._display_data))),
-        )
+        self._update_name_header()
 
         if self._display_data:
             row = min(next_row, len(self._display_data) - 1)
@@ -486,14 +508,12 @@ class FileListWidget(QTableWidget):
 
     def _populate_table(self) -> None:
         self._rebuilding = True
+        self._thumb_loaded = set()
         self._display_data = self._apply_filter()
         self.setRowCount(0)
         self.setRowCount(len(self._display_data))
         self.file_count_changed.emit(len(self._display_data))
-        self.setHorizontalHeaderItem(
-            self._NAME_COL,
-            QTableWidgetItem(_("File name ({n})").format(n=len(self._display_data))),
-        )
+        self._update_name_header()
 
         placeholder = QPixmap(self._thumb_w, self._thumb_h)
         placeholder.fill(Qt.lightGray)
@@ -526,28 +546,96 @@ class FileListWidget(QTableWidget):
             self.setItem(row, self._SIDECAR_COL, sc_item)
         self._rebuilding = False
 
+    def _visible_row_range(self) -> tuple[int, int]:
+        """Return (first, last) visible row indices, expanded by one screenful on each
+        side so scrolling by a page still finds thumbnails already loaded."""
+        n = len(self._display_data)
+        if n == 0:
+            return (0, -1)
+        top = self.rowAt(0)
+        if top < 0:
+            top = 0
+        bottom = self.rowAt(max(0, self.viewport().height() - 1))
+        if bottom < 0:
+            bottom = n - 1
+        margin = max(1, bottom - top + 1)
+        return (max(0, top - margin), min(n - 1, bottom + margin))
+
+    def _on_visible_thumbs_debounce(self) -> None:
+        """Debounced valueChanged handler. Dragging the scrollbar handle emits
+        valueChanged continuously along the whole drag path; loading thumbnails at
+        every intermediate position would defeat the point of lazy-loading. Skip
+        while the handle is actively held — sliderReleased triggers the load once
+        dragging stops. Wheel/keyboard scrolling doesn't hold the handle, so it
+        still loads via this debounce as usual."""
+        if self.verticalScrollBar().isSliderDown():
+            return
+        self._start_worker()
+
     def _start_worker(self) -> None:
+        """Load thumbnails for rows currently visible (plus a preload margin) that
+        haven't been loaded yet. Called after (re)populating the table and again
+        whenever scrolling or resizing reveals rows not yet requested."""
         if not self._display_data:
             return
-        paths = [p for p, _ in self._display_data]
-        self._worker = _ThumbnailWorker(
-            paths,
-            self._thumb_w,
-            self._thumb_h,
-            self._image_exts,
-            auto_rotate=self._exif_auto_rotate,
-            parent=self,
-        )
-        self._worker.thumbnail_ready.connect(self._on_thumbnail_ready)
-        self._worker.start()
+        first, last = self._visible_row_range()
+        if last < first:
+            return
+        pending = [
+            (row, self._display_data[row][0])
+            for row in range(first, last + 1)
+            if self._display_data[row][0] not in self._thumb_loaded
+            and self._display_data[row][0].suffix.lower() in self._image_exts
+        ]
+        if not pending:
+            return
+        self._cancel_worker_async()
+        n_workers = min(len(pending), max(1, min(4, os.cpu_count() or 1)))
+        chunk_size = (len(pending) + n_workers - 1) // n_workers
+        for i in range(0, len(pending), chunk_size):
+            chunk = pending[i : i + chunk_size]
+            rows = [row for row, _ in chunk]
+            paths = [path for _, path in chunk]
+            worker = _ThumbnailWorker(
+                paths,
+                self._thumb_w,
+                self._thumb_h,
+                self._image_exts,
+                rows=rows,
+                auto_rotate=self._exif_auto_rotate,
+                parent=self,
+            )
+            worker.thumbnail_ready.connect(self._on_thumbnail_ready)
+            self._visible_workers.append(worker)
+            worker.start()
 
     def _stop_worker(self) -> None:
         if self._worker and self._worker.isRunning():
             self._worker.cancel()
             self._worker.wait()
         self._worker = None
+        for worker in self._visible_workers:
+            if worker.isRunning():
+                worker.cancel()
+                worker.wait()
+        self._visible_workers = []
+
+    def _cancel_worker_async(self) -> None:
+        """Cancel any in-flight visible-thumbnails workers without blocking the GUI
+        thread waiting for their current in-flight decode to finish. Only safe when
+        the table itself isn't being rebuilt afterwards (rows/paths stay valid): a
+        thumbnail_ready signal still in flight from a cancelled thread simply lands
+        on a still-valid row. Used when restarting on scroll/resize, where blocking
+        on a large image decode would stall scrolling."""
+        for worker in self._visible_workers:
+            if worker.isRunning():
+                worker.cancel()
+                worker.finished.connect(worker.deleteLater)
+        self._visible_workers = []
 
     def _on_thumbnail_ready(self, row: int, image: QImage) -> None:
+        if row < len(self._display_data):
+            self._thumb_loaded.add(self._display_data[row][0])
         widget = self.cellWidget(row, self._THUMB_COL)
         if not isinstance(widget, QLabel):
             return

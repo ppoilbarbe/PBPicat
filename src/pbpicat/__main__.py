@@ -3,6 +3,7 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
+from PySide6.QtCore import QLoggingCategory
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
@@ -88,6 +89,11 @@ def main() -> None:
     args = _parse_args()
     if args.dev_config_dir:
         set_base_dir(args.dev_config_dir)
+
+    # Some camera firmware produces JPEGs with trailing garbage bytes before the
+    # EOI marker; Qt's libjpeg decodes them fine but logs a harmless warning for
+    # every such file. Silence it — there is nothing actionable for the user.
+    QLoggingCategory.setFilterRules("qt.gui.imageio.jpeg=false")
 
     app = QApplication([sys.argv[0]] + args.qt_args)
     _load_bundled_fonts(app)

@@ -773,9 +773,9 @@ def test_on_double_click_video(qtbot, base_config, tmp_path):
     w = FileListWidget(config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    with patch("pbpicat.ui.file_list_widget.QDesktopServices") as mock_svc:
+    with patch("pbpicat.ui.file_list_widget.open_default") as mock_open:
         w._on_double_click(0, w._NAME_COL)
-        mock_svc.openUrl.assert_called_once()
+        mock_open.assert_called_once()
 
 
 def test_on_double_click_sidecar_with_sidecars(qtbot, base_config, tmp_path):
@@ -784,9 +784,9 @@ def test_on_double_click_sidecar_with_sidecars(qtbot, base_config, tmp_path):
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    with patch("pbpicat.ui.file_list_widget.QDesktopServices") as mock_svc:
+    with patch("pbpicat.ui.file_list_widget.open_default") as mock_open:
         w._on_double_click(0, w._SIDECAR_COL)
-        mock_svc.openUrl.assert_called_once()
+        mock_open.assert_called_once()
 
 
 def test_on_double_click_sidecar_create_new(qtbot, base_config, tmp_path):
@@ -794,9 +794,9 @@ def test_on_double_click_sidecar_create_new(qtbot, base_config, tmp_path):
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    with patch("pbpicat.ui.file_list_widget.QDesktopServices") as mock_svc:
+    with patch("pbpicat.ui.file_list_widget.open_default") as mock_open:
         w._on_double_click(0, w._SIDECAR_COL)
-        mock_svc.openUrl.assert_called_once()
+        mock_open.assert_called_once()
 
 
 def test_on_double_click_out_of_range(widget):
@@ -1153,7 +1153,7 @@ def test_load_directory_does_not_trigger_viewer(qtbot, base_config, tmp_path):
 
 
 def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
-    """focusInEvent auto-select (Tab focus) must not update the image viewer."""
+    """focusInEvent must not auto-select (or touch the viewer) while the image viewer is visible."""
     from PySide6.QtCore import QEvent, Qt
     from PySide6.QtGui import QFocusEvent
 
@@ -1170,8 +1170,8 @@ def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
     event = QFocusEvent(QEvent.Type.FocusIn, Qt.FocusReason.TabFocusReason)
     w.focusInEvent(event)
 
-    assert len(w.selectedIndexes()) > 0  # auto-select did happen
-    viewer.load_image.assert_not_called()  # but viewer was not updated
+    assert len(w.selectedIndexes()) == 0  # auto-select skipped while viewer is visible
+    viewer.load_image.assert_not_called()
     viewer.show_message.assert_not_called()
 
 

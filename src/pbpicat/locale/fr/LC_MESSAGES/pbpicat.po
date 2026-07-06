@@ -28,6 +28,9 @@ msgstr "Aucun tag d'orientation EXIF à appliquer."
 msgid "Unsupported EXIF orientation value: {v}"
 msgstr "Valeur d'orientation EXIF non supportée : {v}"
 
+msgid "This file appears to be truncated (data is missing at the end), likely from an incomplete write by the camera. Lossless rotation is not possible without discarding the affected rows."
+msgstr "Ce fichier semble tronqué (des données manquent à la fin), probablement à cause d'une écriture incomplète par l'appareil photo. La rotation sans perte est impossible sans supprimer les lignes concernées."
+
 msgid ""
 "jpegtran is not available.\n"
 "JPEG lossless rotation requires jpegtran.\n"
@@ -66,6 +69,10 @@ msgstr "Nom du fichier"
 
 msgid "Sidecar"
 msgstr "Sidecar"
+
+#, python-brace-format
+msgid "File name ({sel}/{n})"
+msgstr "Nom du fichier ({sel}/{n})"
 
 #, python-brace-format
 msgid "File name ({n})"
@@ -245,6 +252,9 @@ msgstr "Ouvrir les paramètres du programme"
 msgid "Delete selected file(s) and their sidecars"
 msgstr "Supprimer le(s) fichier(s) sélectionné(s) et leurs fichiers annexes"
 
+msgid "Force EXIF orientation to 0°"
+msgstr "Forcer l'orientation EXIF à 0°"
+
 msgid "Move focus to the directory tree"
 msgstr "Déplacer le focus vers l'arborescence de dossiers"
 
@@ -325,8 +335,8 @@ msgstr "Pivoter la/les image(s) sélectionnée(s) de 180°"
 msgid "Apply and remove the EXIF orientation tag"
 msgstr "Appliquer et supprimer le tag d'orientation EXIF"
 
-msgid "Set the EXIF orientation tag to 1 (normal) without rotating pixels"
-msgstr "Mettre le tag d'orientation EXIF à 1 (normal) sans faire pivoter les pixels"
+msgid "Set the EXIF orientation tag to 1 (0°, normal) without rotating pixels"
+msgstr "Mettre le tag d'orientation EXIF à 1 (0°, normal) sans faire pivoter les pixels"
 
 msgid "&File"
 msgstr "&Fichier"
@@ -481,6 +491,10 @@ msgstr "{n} tag(s) d'orientation EXIF réinitialisé(s)."
 
 msgid "Rotation unavailable"
 msgstr "Rotation indisponible"
+
+#, python-brace-format
+msgid "{n} file(s) could not be rotated."
+msgstr "{n} fichier(s) n'ont pas pu être pivotés."
 
 #, python-brace-format
 msgid "{n} file(s) rotated."

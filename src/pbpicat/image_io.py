@@ -2,8 +2,10 @@
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QBuffer, Qt
 from PySide6.QtGui import QImage, QImageReader, QPixmap
+
+from pbpicat.image_ops import is_jpeg, repair_jpeg_sos
 
 
 def _pillow_to_qimage(pil_img) -> QImage:
@@ -15,9 +17,44 @@ def _pillow_to_qimage(pil_img) -> QImage:
     return img.copy()
 
 
+# Qt's default (256 MiB) is sized against the *undecoded* image dimensions, before
+# any setScaledSize() downscaling is applied. Large but legitimate photos (high-MP
+# phone cameras, panoramas) can exceed it, causing QImageReader to reject the image
+# outright ("Rejecting image as it exceeds the current allocation limit") and
+# forcing a much slower, full-resolution Pillow fallback just to produce a small
+# thumbnail. Raise it generously while still guarding against corrupt files
+# advertising absurd dimensions.
+_ALLOCATION_LIMIT_MIB = 1024
+
+
+def _make_reader(path: Path) -> tuple[QImageReader, QBuffer | None]:
+    """Build a QImageReader for path, repairing known-malformed JPEG headers first.
+
+    Some camera firmware writes an invalid SOS marker that Qt merely warns
+    about ("Invalid SOS parameters for sequential JPEG"); repairing it up
+    front avoids the warning and the decode issues it can cause.
+    """
+    if is_jpeg(path):
+        try:
+            data = repair_jpeg_sos(path.read_bytes())
+        except OSError:
+            reader = QImageReader(str(path))
+            reader.setAllocationLimit(_ALLOCATION_LIMIT_MIB)
+            return reader, None
+        buf = QBuffer()
+        buf.setData(data)
+        buf.open(QBuffer.OpenModeFlag.ReadOnly)
+        reader = QImageReader(buf, b"jpg")
+        reader.setAllocationLimit(_ALLOCATION_LIMIT_MIB)
+        return reader, buf
+    reader = QImageReader(str(path))
+    reader.setAllocationLimit(_ALLOCATION_LIMIT_MIB)
+    return reader, None
+
+
 def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = True) -> QImage:
     """Load an image as QImage, with optional scaling. Thread-safe."""
-    reader = QImageReader(str(path))
+    reader, _buf = _make_reader(path)
     reader.setAutoTransform(auto_rotate)
     if max_w > 0 and max_h > 0:
         orig = reader.size()
@@ -43,16 +80,11 @@ def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = 
 
 def load_pixmap(path: Path, auto_rotate: bool = True) -> QPixmap:
     """Load an image as QPixmap. Must be called from the main thread."""
-    if auto_rotate:
-        pix = QPixmap(str(path))
-        if not pix.isNull():
-            return pix
-    else:
-        reader = QImageReader(str(path))
-        reader.setAutoTransform(False)
-        image = reader.read()
-        if not image.isNull():
-            return QPixmap.fromImage(image)
+    reader, _buf = _make_reader(path)
+    reader.setAutoTransform(auto_rotate)
+    image = reader.read()
+    if not image.isNull():
+        return QPixmap.fromImage(image)
 
     try:
         from PIL import Image, ImageOps

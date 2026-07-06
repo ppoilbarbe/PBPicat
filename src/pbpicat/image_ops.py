@@ -1,6 +1,7 @@
 """Lossless image rotation. jpegtran (libjpeg-turbo) required for JPEG files."""
 
 import shutil
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -44,6 +45,46 @@ _OP_INVERSE: dict[int | str, int | str] = {
 
 def is_jpeg(path: Path) -> bool:
     return path.suffix.lower() in _JPEG_EXTS
+
+
+def repair_jpeg_sos(data: bytes) -> bytes:
+    """Fix a malformed SOS header found in some camera firmware (e.g. certain
+    Samsung front-camera modules): baseline (non-progressive) JPEGs must have
+    Se=63 in the SOS segment, but these encoders write Se=0. Strict decoders
+    (jpegtran/libjpeg-turbo) reject this with "Invalid SOS parameters for
+    sequential JPEG"; lenient decoders (Qt, Pillow) just warn and decode
+    anyway. Patching the header byte is lossless: no entropy-coded data is
+    touched. Returns the input unchanged if no such defect is found.
+    """
+    if data[:2] != b"\xff\xd8":
+        return data
+    baseline = False
+    i = 2
+    n = len(data)
+    while i + 4 <= n:
+        if data[i] != 0xFF:
+            i += 1
+            continue
+        marker = data[i + 1]
+        if marker in (0xD8, 0xD9, 0x01) or 0xD0 <= marker <= 0xD7:
+            i += 2
+            continue
+        length = struct.unpack(">H", data[i + 2 : i + 4])[0]
+        if marker in (0xC0, 0xC1):
+            baseline = True
+        elif marker in (0xC2, 0xC3):
+            baseline = False
+        elif marker == 0xDA:
+            if baseline:
+                ns = data[i + 4]
+                se_offset = i + 6 + 2 * ns
+                if se_offset < n and data[se_offset] == 0 and data[se_offset - 1] == 0:
+                    patched = bytearray(data)
+                    patched[se_offset] = 0x3F
+                    return bytes(patched)
+            return data
+        i += 2 + length
+    return data
 
 
 def get_exif_orientation(path: Path) -> int | None:
@@ -101,6 +142,20 @@ def _apply_op(path: Path, op: int | str, strip_exif_orientation: bool = False) -
 # ---------------------------------------------------------------------------
 
 
+def _jpegtran_error_hints() -> dict[str, str]:
+    """Substrings of jpegtran's stderr mapped to a user-friendly explanation, shown
+    above the raw technical message. Files hitting these are genuinely defective
+    (missing or malformed data) rather than affected by a fixable quirk.
+    """
+    return {
+        "Premature end of JPEG file": _(
+            "This file appears to be truncated (data is missing at the end), "
+            "likely from an incomplete write by the camera. Lossless rotation "
+            "is not possible without discarding the affected rows."
+        ),
+    }
+
+
 def _find_jpegtran() -> str | None:
     """Locate jpegtran, checking the PyInstaller bundle directory first."""
     if hasattr(sys, "_MEIPASS"):
@@ -121,14 +176,16 @@ def _jpeg_apply(path: Path, op: int | str, strip_exif_orientation: bool) -> None
             )
         )
 
-    data = path.read_bytes()
+    data = repair_jpeg_sos(path.read_bytes())
     proc = subprocess.run(
         [exe, "-copy", "all", "-trim"] + _OP_TO_JPEGTRAN[op],
         input=data,
         capture_output=True,
     )
     if proc.returncode != 0:
-        raise RuntimeError(proc.stderr.decode(errors="replace").strip())
+        detail = proc.stderr.decode(errors="replace").strip()
+        hint = next((msg for key, msg in _jpegtran_error_hints().items() if key in detail), None)
+        raise RuntimeError(f"{hint}\n\n({detail})" if hint else detail)
 
     path.write_bytes(proc.stdout)
     if strip_exif_orientation:

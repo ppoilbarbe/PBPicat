@@ -839,10 +839,10 @@ def test_rotate_images_runtime_error(window, tmp_path):
     Image.new("RGB", (160, 96)).save(str(p), format="JPEG")
     with (
         patch("pbpicat.image_ops.rotate_lossless", side_effect=RuntimeError("jpegtran is not available.")),
-        patch.object(QMessageBox, "warning", return_value=None) as mock_warn,
+        patch.object(QMessageBox, "exec", return_value=None) as mock_exec,
     ):
         window._rotate_images([p], 90)
-    mock_warn.assert_called_once()
+    mock_exec.assert_called_once()
     assert len(window._undo_stack) == 0
 
 
