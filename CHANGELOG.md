@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-07-07
+
 ### Added
 
 - **Sphinx/ReadTheDocs documentation** — `docs/` (user guide, API reference, changelog generated from `CHANGELOG.md` at build time, app icon reused as logo/favicon) and a `CODING.md` developer guide covering versioning, changelog, and release conventions. Wired into `make docs`/`make docs-live`, `.readthedocs.yaml`, and a CI job that builds the docs on every push.
