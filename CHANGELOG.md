@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **Sphinx/ReadTheDocs documentation** — `docs/` (user guide, API reference, changelog generated from `CHANGELOG.md` at build time, app icon reused as logo/favicon) and a `CODING.md` developer guide covering versioning, changelog, and release conventions. Wired into `make docs`/`make docs-live`, `.readthedocs.yaml`, and a CI job that builds the docs on every push.
+
 ## [1.12.0] - 2026-07-06
 
 ### Fixed
@@ -245,7 +249,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - **Keyboard shortcuts for main window menus** — `Ctrl+Q` (Quit), `Ctrl+N` (New catalog), `F5` (Refresh), `F1` (Keyboard shortcuts dialog).
 - **Version in About dialog** — the application version number is now displayed in *Help → About*.
-- **Image viewer toolbar and shortcuts aligned with PBPrompt** — toolbar order: Fit | 1:1 | Width | Height | + | −; bare-key shortcuts: `0`=Fit, `1`=1:1, `W`=Width, `H`=Height, `+`/`−`=Zoom in/out.
+- **Image viewer toolbar and shortcuts aligned with PBPrompt** — toolbar order: Fit | 1:1 | Width | Height | + | −; bare-key shortcuts: `0` = Fit, `1` = 1:1, `W` = Width, `H` = Height, `+`/`−` = Zoom in/out.
 - **SVG icons for image viewer** — zoom toolbar buttons now use the same SVG icons as PBPrompt (FreeDesktop theme → bundled SVG → text fallback).
 
 ### Changed

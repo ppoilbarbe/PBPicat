@@ -5,6 +5,7 @@ else
 CONDA_RUN  := conda run -n $(CONDA_ENV) --no-capture-output
 endif
 SRC        := src
+DOCS       := docs
 LOCALE_DIR := src/pbpicat/locale
 POT_FILE   := $(LOCALE_DIR)/pbpicat.pot
 PO_LOCALES := en fr de es it ru vi zh_CN
@@ -23,7 +24,7 @@ C  := \033[36m
 
 .DEFAULT_GOAL := help
 .PHONY: all help venv venv-update install run test coverage lint format hooks \
-        translate compile-mo force-translate new-lang dist srcdist clean
+        translate compile-mo force-translate new-lang docs docs-live dist srcdist clean
 
 all: translate ## Build all generated artifacts (strings → .mo)
 
@@ -71,6 +72,13 @@ format: ## Auto-format source code
 
 hooks: ## Run all pre-commit hooks on all files
 	$(CONDA_RUN) pre-commit run --all-files
+
+docs: ## Build HTML documentation
+	$(CONDA_RUN) sphinx-build -b html $(DOCS) $(DOCS)/_build/html
+	@printf "$(G)Open:$(R) $(DOCS)/_build/html/index.html\n"
+
+docs-live: ## Build docs and watch for changes (hot reload)
+	$(CONDA_RUN) sphinx-autobuild $(DOCS) $(DOCS)/_build/html
 
 # ── i18n ──────────────────────────────────────────────────────────────────────
 
@@ -151,7 +159,7 @@ bump-set: ## Force a specific version (usage: make bump-set VERSION=x.y.z)
 	@$(CONDA_RUN) python3 tools/bump_version.py set $(VERSION)
 
 clean: ## Remove all build/cache artifacts
-	rm -rf build dist *.egg-info .pytest_cache .coverage htmlcov
+	rm -rf build dist *.egg-info .pytest_cache .coverage htmlcov $(DOCS)/_build
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -name "*.pyc" -delete
 	rm -f $(POT_FILE) $(TRANSLATE_STAMP)

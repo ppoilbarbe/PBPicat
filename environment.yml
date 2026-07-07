@@ -27,6 +27,10 @@ dependencies:
   - pyinstaller
   # i18n tools
   - babel
+  # Documentation (Sphinx, readthedocs)
+  - sphinx
+  - sphinx-rtd-theme
+  - sphinx-autobuild
   # Build tooling (make needed on Windows runners)
   - make
   # Dev install (editable — lancez ensuite : make install)

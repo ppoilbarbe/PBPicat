@@ -79,6 +79,11 @@ src/pbpicat/locale/pbpicat.pot
 *.mo
 .translate.stamp
 
+# Documentation Sphinx générée
+docs/_build/
+docs/changelog.rst
+docs/_static/pbpicat.svg
+
 # Divers
 *.log
 *.bak

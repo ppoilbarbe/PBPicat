@@ -1,5 +1,7 @@
 """Image loading helpers with Pillow fallback for formats Qt cannot handle."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from PySide6.QtCore import QBuffer, Qt
