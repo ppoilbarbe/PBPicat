@@ -4,6 +4,10 @@ Graphical tool for renaming image and video files along with their
 sidecar files according to a structured naming schema. Built with
 Python 3.12 and PySide6.
 
+## Documentation
+
+📖 Full documentation is available on [Read the Docs](https://pbpicat.readthedocs.io).
+
 ## Download
 
 Pre-built executables for Linux, macOS and Windows are available on the

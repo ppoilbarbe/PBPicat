@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **README link to the documentation** — `README.md` now links to the [Read the Docs site](https://pbpicat.readthedocs.io).
+
 ## [1.13.0] - 2026-07-07
 
 ### Added
