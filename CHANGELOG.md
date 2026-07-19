@@ -13,6 +13,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Fixed
 
 - `docs/conf.py`: the `## [Unreleased]` section of `CHANGELOG.md` was dropped by the RST changelog generator except for its orphaned `### Added`/`### Changed`/... subheadings, which were emitted without content and at an incorrect nesting level. `[Unreleased]` is now recognised like a dated release and included only when it has actual content.
+- **Application froze (hard hang, required killing the process) after renaming a couple of files in a row with the image viewer open** — each rename made `refresh_and_select()` reload the full-size image synchronously on the GUI thread (`ImageViewer.load_image` → `load_pixmap`) while `_start_worker()` concurrently spawned `_ThumbnailWorker` background threads decoding thumbnails (`load_qimage`) for the same refreshed rows. Qt's `QImageReader`/image-format plugins are not safe to invoke concurrently from multiple threads, and decoding from the GUI thread at the same time as a worker thread deadlocked inside `QImageReader.read()`. Confirmed via a repro script that reliably hung the process, with `faulthandler` stack dumps (triggered by `SIGABRT`) pinpointing both the GUI thread and worker threads blocked in `QImageReader.read()` simultaneously. `image_io.py`'s `load_qimage()` and `load_pixmap()` now serialize all Qt decodes behind a shared `threading.Lock`.
+- `FileListWidget.refresh_and_select()` did not stop the pending `_refresh_debounce` timer before refreshing, unlike its sibling refresh methods, allowing a directory-watcher-triggered refresh to fire redundantly right after a rename's explicit refresh.
 
 ## [1.13.0] - 2026-07-07
 

@@ -2,12 +2,21 @@
 
 from __future__ import annotations
 
+import threading
 from pathlib import Path
 
 from PySide6.QtCore import QBuffer, Qt
 from PySide6.QtGui import QImage, QImageReader, QPixmap
 
 from pbpicat.image_ops import is_jpeg, repair_jpeg_sos
+
+# Qt's image format plugins (qjpeg, etc.) are not safe to invoke concurrently
+# from multiple threads: the thumbnail worker threads (load_qimage) and the
+# GUI thread (load_pixmap, used by the image viewer) can deadlock inside
+# QImageReader.read() if they decode at the same time. Serialize all Qt
+# decodes behind one lock; Pillow's fallback path is unaffected since it
+# never runs concurrently with a Qt decode of the same call.
+_qimage_reader_lock = threading.Lock()
 
 
 def _pillow_to_qimage(pil_img) -> QImage:
@@ -56,13 +65,14 @@ def _make_reader(path: Path) -> tuple[QImageReader, QBuffer | None]:
 
 def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = True) -> QImage:
     """Load an image as QImage, with optional scaling. Thread-safe."""
-    reader, _buf = _make_reader(path)
-    reader.setAutoTransform(auto_rotate)
-    if max_w > 0 and max_h > 0:
-        orig = reader.size()
-        if orig.isValid():
-            reader.setScaledSize(orig.scaled(max_w, max_h, Qt.KeepAspectRatio))
-    image = reader.read()
+    with _qimage_reader_lock:
+        reader, _buf = _make_reader(path)
+        reader.setAutoTransform(auto_rotate)
+        if max_w > 0 and max_h > 0:
+            orig = reader.size()
+            if orig.isValid():
+                reader.setScaledSize(orig.scaled(max_w, max_h, Qt.KeepAspectRatio))
+        image = reader.read()
     if not image.isNull():
         return image
 
@@ -82,9 +92,10 @@ def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = 
 
 def load_pixmap(path: Path, auto_rotate: bool = True) -> QPixmap:
     """Load an image as QPixmap. Must be called from the main thread."""
-    reader, _buf = _make_reader(path)
-    reader.setAutoTransform(auto_rotate)
-    image = reader.read()
+    with _qimage_reader_lock:
+        reader, _buf = _make_reader(path)
+        reader.setAutoTransform(auto_rotate)
+        image = reader.read()
     if not image.isNull():
         return QPixmap.fromImage(image)
 

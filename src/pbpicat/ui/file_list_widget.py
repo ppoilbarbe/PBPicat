@@ -347,6 +347,7 @@ class FileListWidget(QTableWidget):
 
     def refresh_and_select(self, row: int) -> None:
         """Refresh the table then select the given row (clamped to valid range)."""
+        self._refresh_debounce.stop()
         self.refresh()
         if self._display_data:
             row = min(row, len(self._display_data) - 1)
