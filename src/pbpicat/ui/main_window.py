@@ -127,6 +127,7 @@ class _ShortcutsDialog(QDialog):
                 row(key(Qt.Modifier.CTRL | Qt.Key.Key_Comma), _("Open catalog settings")),
                 row(key(Qt.Modifier.CTRL | Qt.Modifier.ALT | Qt.Key.Key_Comma), _("Open program settings")),
                 row(key_del, _("Delete selected file(s) and their sidecars")),
+                row("F2", _("Rename selected files according to the schema")),
                 row("F6", _("Rotate 90° CCW")),
                 row("F7", _("Rotate 180°")),
                 row("F8", _("Rotate 90° CW")),
@@ -531,7 +532,8 @@ class MainWindow(QMainWindow):
         layout.addStretch()
 
         self._rename_btn = QPushButton(_("Rename selection"))
-        self._rename_btn.setToolTip(_("Rename selected files according to the schema"))
+        self._rename_btn.setToolTip(_("Rename selected files according to the schema (F2)"))
+        self._rename_btn.setShortcut(QKeySequence(Qt.Key.Key_F2))
         self._rename_btn.clicked.connect(self._rename_selected)
         self._rename_btn.setEnabled(False)
         layout.addWidget(self._rename_btn)

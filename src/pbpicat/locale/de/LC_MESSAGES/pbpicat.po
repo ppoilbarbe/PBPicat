@@ -313,6 +313,10 @@ msgid "Delete selected file(s) and their sidecars"
 msgstr "Ausgewählte Datei(en) und ihre Sidecars löschen"
 
 # ==AUTO== Automatically translated
+msgid "Rename selected files according to the schema"
+msgstr "Ausgewaehlte Dateien gemaess dem Schema umbenennen"
+
+# ==AUTO== Automatically translated
 msgid "Force EXIF orientation to 0°"
 msgstr "EXIF-Ausrichtung auf 0° erzwingen"
 
@@ -614,8 +618,8 @@ msgid "Rename selection"
 msgstr "Auswahl umbenennen"
 
 # ==AUTO== Automatically translated
-msgid "Rename selected files according to the schema"
-msgstr "Ausgewaehlte Dateien gemaess dem Schema umbenennen"
+msgid "Rename selected files according to the schema (F2)"
+msgstr "Ausgewählte Dateien gemäß dem Schema umbenennen (F2)"
 
 # ==AUTO== Automatically translated
 msgid "Choose destination directory"

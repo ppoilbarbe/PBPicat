@@ -248,6 +248,9 @@ msgstr "Open program settings"
 msgid "Delete selected file(s) and their sidecars"
 msgstr "Delete selected file(s) and their sidecars"
 
+msgid "Rename selected files according to the schema"
+msgstr "Rename selected files according to the schema"
+
 msgid "Force EXIF orientation to 0°"
 msgstr "Force EXIF orientation to 0°"
 
@@ -474,8 +477,8 @@ msgstr "Show orphan sidecar files (no matching image or video)"
 msgid "Rename selection"
 msgstr "Rename selection"
 
-msgid "Rename selected files according to the schema"
-msgstr "Rename selected files according to the schema"
+msgid "Rename selected files according to the schema (F2)"
+msgstr "Rename selected files according to the schema (F2)"
 
 msgid "Choose destination directory"
 msgstr "Choose destination directory"

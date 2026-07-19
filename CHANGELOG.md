@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **`F2` shortcut for the "Rename selection" button** — clicking the button moved keyboard focus away from the file list, preventing further arrow-key navigation until it regained focus; a shortcut triggers the action without stealing focus. Also added to the shortcuts window (F1) and to the button's tooltip.
+
+### Fixed
+
+- **Arrow-key navigation jumped to the first row after renaming a file (not the first in the list) with the `F2` shortcut** — renaming triggers a disk change that `QFileSystemWatcher` picks up shortly after `refresh_and_select()`'s own refresh already ran, restarting the 400 ms debounce and firing a second, redundant `_refresh_preserve_selection()`. That method (and `refresh_and_select_paths()`) restored the previous *selection* after the table rebuild but never restored the *current index*, which the rebuild invalidates — so the renamed-to row stayed visibly selected while `currentIndex()` was `-1`, and the next arrow-key press navigated as if starting from row 0. Both methods now delegate to a new shared `_select_paths_and_set_current()` helper, which also calls `selectionModel().setCurrentIndex()` for the first restored row — centralizing the fix instead of duplicating it in both call sites.
+
 ## [1.14.0] - 2026-07-19
 
 ### Added

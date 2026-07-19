@@ -340,6 +340,18 @@ def test_refresh_and_select_beyond_end(populated_widget):
     assert w.selectedIndexes()
 
 
+def test_refresh_and_select_focuses_widget(populated_widget, monkeypatch):
+    """The F2 rename shortcut doesn't move focus to the file list beforehand
+    (unlike a click, which used to steal it away); refresh_and_select() must
+    grab focus itself so arrow-key navigation works from the new row."""
+    w, d = populated_widget
+    calls = []
+    monkeypatch.setattr(type(w), "setFocus", lambda self, *a: calls.append(1))
+    w.refresh_and_select(1)
+    assert calls
+    assert w.currentRow() == 1
+
+
 def test_reconfigure(qtbot, catalog_env, tmp_path):
     config = dict(DEFAULTS)
     config["confirm_deletions"] = False
@@ -1093,6 +1105,7 @@ def test_refresh_and_select_paths_selects_multiple(qtbot, base_config, tmp_path)
 
     selected = set(w.get_selected_files())
     assert selected == paths
+    assert w.currentRow() == 0  # not just visually selected — current index must follow too
 
 
 def test_refresh_and_select_paths_stops_debounce(qtbot, base_config, tmp_path):
@@ -1129,6 +1142,28 @@ def test_refresh_preserve_selection_multi(qtbot, base_config, tmp_path):
 
     selected = set(w.get_selected_files())
     assert selected == {tmp_path / "a.png", tmp_path / "c.png"}
+    assert w.currentRow() == 0  # not just visually selected — current index must follow too
+
+
+def test_refresh_preserve_selection_sets_current_row(qtbot, base_config, tmp_path):
+    """Regression: a file-system-watcher-triggered refresh mid-way through a rename
+    left currentIndex() invalid (-1) even though the row was visibly re-selected,
+    which made the next arrow-key press jump to row 0 instead of continuing from
+    the selected row (reported bug: F2-triggered rename, then arrow key)."""
+    _img(tmp_path / "a.png")
+    _img(tmp_path / "b.png")
+    _img(tmp_path / "c.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+
+    w.selectRow(2)
+    assert w.currentRow() == 2
+
+    w._refresh_preserve_selection()
+
+    assert w.currentRow() == 2
+    assert set(w.get_selected_files()) == {tmp_path / "c.png"}
 
 
 # ---------------------------------------------------------------------------

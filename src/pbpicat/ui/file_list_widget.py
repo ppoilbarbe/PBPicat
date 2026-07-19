@@ -253,6 +253,32 @@ class FileListWidget(QTableWidget):
     def _on_dir_changed_on_disk(self) -> None:
         self._refresh_debounce.start()
 
+    def _select_paths_and_set_current(self, paths: set[Path]) -> None:
+        """Select every row whose path is in `paths`; set the current index and
+        scroll to the first match.
+
+        Centralizes the selection-restore logic used after a table rebuild
+        (refresh()/_populate_table() invalidate both the selection and the
+        current index): selectionModel().select() alone only adds to the
+        *selection*, it doesn't move the *current index* — without also calling
+        setCurrentIndex(), currentIndex() stays invalid even though a row looks
+        selected, and the next arrow-key press navigates as if starting from row 0.
+        """
+        sm = self.selectionModel()
+        sm.clearSelection()
+        first_row = None
+        for row, (path, _) in enumerate(self._display_data):
+            if path in paths:
+                sm.select(
+                    self.model().index(row, 0),
+                    QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
+                )
+                if first_row is None:
+                    first_row = row
+        if first_row is not None:
+            sm.setCurrentIndex(self.model().index(first_row, 0), QItemSelectionModel.SelectionFlag.NoUpdate)
+            self.scrollTo(self.model().index(first_row, 0))
+
     def _refresh_preserve_selection(self) -> None:
         rows = {idx.row() for idx in self.selectedIndexes()}
         selected_paths = {self._display_data[r][0] for r in rows if r < len(self._display_data)}
@@ -262,19 +288,7 @@ class FileListWidget(QTableWidget):
         finally:
             self._auto_selecting = False
         if selected_paths and self._display_data:
-            sm = self.selectionModel()
-            sm.clearSelection()
-            first_row = None
-            for row, (path, _) in enumerate(self._display_data):
-                if path in selected_paths:
-                    sm.select(
-                        self.model().index(row, 0),
-                        QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
-                    )
-                    if first_row is None:
-                        first_row = row
-            if first_row is not None:
-                self.scrollTo(self.model().index(first_row, 0))
+            self._select_paths_and_set_current(selected_paths)
 
     def refresh(self) -> None:
         if self._current_dir is None:
@@ -353,6 +367,12 @@ class FileListWidget(QTableWidget):
             row = min(row, len(self._display_data) - 1)
             self.selectRow(row)
             self.scrollTo(self.model().index(row, 0))
+            # Renaming via the "Rename selection" button's F2 shortcut doesn't move
+            # keyboard focus to the file list (unlike a click, which used to steal it
+            # away from wherever focus was). Explicitly focus it here so arrow-key
+            # navigation immediately continues from the newly selected row instead of
+            # going to whichever other widget last held focus.
+            self.setFocus()
 
     def _delete_rows_and_select(self, next_row: int) -> None:
         """Remove deleted files from the table without regenerating thumbnails for remaining rows."""
@@ -383,19 +403,7 @@ class FileListWidget(QTableWidget):
         """Refresh the table then select all rows whose path is in paths."""
         self._refresh_debounce.stop()
         self.refresh()
-        sm = self.selectionModel()
-        sm.clearSelection()
-        first_row = None
-        for row, (path, _) in enumerate(self._display_data):
-            if path in paths:
-                sm.select(
-                    self.model().index(row, 0),
-                    QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
-                )
-                if first_row is None:
-                    first_row = row
-        if first_row is not None:
-            self.scrollTo(self.model().index(first_row, 0))
+        self._select_paths_and_set_current(paths)
 
     def refresh_thumbnails_for_paths(self, paths: set[Path]) -> None:
         """Reload thumbnails only for the given paths without rebuilding the table."""
