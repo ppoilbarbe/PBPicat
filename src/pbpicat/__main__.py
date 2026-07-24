@@ -5,11 +5,11 @@ from pathlib import Path
 
 from PySide6.QtCore import QLoggingCategory
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from pbpicat import i18n
 from pbpicat.argparse_qt import add_qt_arguments
-from pbpicat.config import init_catalogs, set_base_dir
+from pbpicat.config import init_catalogs, list_catalogs, set_base_dir, set_current_catalog
 from pbpicat.ui.main_window import MainWindow
 
 try:
@@ -40,6 +40,12 @@ def _parse_args() -> argparse.Namespace:
         metavar="DIR",
         type=Path,
         help="Use DIR as the configuration directory instead of the default XDG location.",
+    )
+    parser.add_argument(
+        "catalog",
+        nargs="?",
+        default=None,
+        help="Name of a catalog to load at startup (not a path). Ignored with an error if no such catalog exists.",
     )
     add_qt_arguments(parser)
     return parser.parse_args()
@@ -106,6 +112,18 @@ def main() -> None:
 
     init_catalogs()
     i18n.setup(app)
+
+    if args.catalog is not None:
+        if args.catalog in list_catalogs(include_hidden=True):
+            set_current_catalog(args.catalog)
+        else:
+            QMessageBox.warning(
+                None,
+                _("Catalog not found"),
+                _('No catalog named "{name}" was found; using the last opened catalog instead.').format(
+                    name=args.catalog
+                ),
+            )
 
     window = MainWindow()
     window.show()

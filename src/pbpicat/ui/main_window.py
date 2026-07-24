@@ -945,12 +945,16 @@ class MainWindow(QMainWindow):
                 _("Catalog name may only contain letters, digits, hyphens, or underscores."),
             )
             return
-        if name in list_catalogs():
-            QMessageBox.warning(
+        if name in list_catalogs(include_hidden=True):
+            reply = QMessageBox.question(
                 self,
                 _("Already exists"),
-                _('A catalog named "{name}" already exists.').format(name=name),
+                _('A catalog named "{name}" already exists. Open it instead?').format(name=name),
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Cancel,
             )
+            if reply == QMessageBox.Yes:
+                self._switch_to_catalog(name)
             return
         global_cfg = load_global_config()
         initial = {"sidecar_extensions": global_cfg["default_sidecar_extensions"]}
@@ -1004,12 +1008,16 @@ class MainWindow(QMainWindow):
                 _("Catalog name may only contain letters, digits, hyphens, or underscores."),
             )
             return
-        if name in list_catalogs():
-            QMessageBox.warning(
+        if name in list_catalogs(include_hidden=True):
+            reply = QMessageBox.question(
                 self,
                 _("Already exists"),
-                _('A catalog named "{name}" already exists.').format(name=name),
+                _('A catalog named "{name}" already exists. Open it instead?').format(name=name),
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Cancel,
             )
+            if reply == QMessageBox.Yes:
+                self._switch_to_catalog(name)
             return
         duplicate_catalog(source, name)
         self._status.showMessage(_('Catalog "{source}" duplicated as "{name}".').format(source=source, name=name))

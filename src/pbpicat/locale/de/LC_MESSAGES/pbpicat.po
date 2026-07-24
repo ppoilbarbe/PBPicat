@@ -19,6 +19,15 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 # ==AUTO== Automatically translated
+msgid "Catalog not found"
+msgstr "Katalog nicht gefunden"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "No catalog named \"{name}\" was found; using the last opened catalog instead."
+msgstr "Kein Katalog namens \"{name}\" gefunden; der zuletzt geöffnete Katalog wird verwendet."
+
+# ==AUTO== Automatically translated
 msgid "language_name"
 msgstr "Deutsch"
 
@@ -167,6 +176,22 @@ msgstr "▲ Nach oben"
 # ==AUTO== Automatically translated
 msgid "▼ Move down"
 msgstr "▼ Nach unten"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↓"
+msgstr "Sortieren ↓"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in ascending order"
+msgstr "Liste aufsteigend sortieren"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↑"
+msgstr "Sortieren ↑"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in descending order"
+msgstr "Liste absteigend sortieren"
 
 # ==AUTO== Automatically translated
 msgid "Delete"
@@ -781,8 +806,8 @@ msgstr "Bereits vorhanden"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
-msgid "A catalog named \"{name}\" already exists."
-msgstr "Ein Katalog mit dem Namen \"{name}\" existiert bereits."
+msgid "A catalog named \"{name}\" already exists. Open it instead?"
+msgstr "Ein Katalog namens \"{name}\" existiert bereits. Stattdessen öffnen?"
 
 # ==AUTO== Automatically translated
 msgid "No catalogs"

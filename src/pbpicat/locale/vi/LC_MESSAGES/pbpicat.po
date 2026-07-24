@@ -19,6 +19,15 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 # ==AUTO== Automatically translated
+msgid "Catalog not found"
+msgstr "Không tìm thấy danh mục"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "No catalog named \"{name}\" was found; using the last opened catalog instead."
+msgstr "Không tìm thấy danh mục nào có tên \"{name}\"; sẽ dùng danh mục đã mở gần nhất."
+
+# ==AUTO== Automatically translated
 msgid "language_name"
 msgstr "Tiếng Việt"
 
@@ -167,6 +176,22 @@ msgstr "▲ Di chuyển lên"
 # ==AUTO== Automatically translated
 msgid "▼ Move down"
 msgstr "▼ Di chuyển xuống"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↓"
+msgstr "Sắp xếp ↓"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in ascending order"
+msgstr "Sắp xếp danh sách theo thứ tự tăng dần"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↑"
+msgstr "Sắp xếp ↑"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in descending order"
+msgstr "Sắp xếp danh sách theo thứ tự giảm dần"
 
 # ==AUTO== Automatically translated
 msgid "Delete"
@@ -781,8 +806,8 @@ msgstr "Đã tồn tại"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
-msgid "A catalog named \"{name}\" already exists."
-msgstr "Danh mục có tên «{name}» đã tồn tại."
+msgid "A catalog named \"{name}\" already exists. Open it instead?"
+msgstr "Danh mục có tên \"{name}\" đã tồn tại. Mở danh mục đó thay vì tạo mới?"
 
 # ==AUTO== Automatically translated
 msgid "No catalogs"

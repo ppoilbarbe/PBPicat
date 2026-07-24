@@ -26,6 +26,8 @@ The active catalog's files (`settings.json`, `history.json`, `ui.conf`) are stor
 - `catalog.conf` missing or pointing to a nonexistent directory → first available catalog is used.
 - New catalogs start with default settings and empty history.
 - Valid catalog names: letters, digits, hyphens, underscores only.
+- Catalogs whose name starts with `.` or `-` are **hidden**: `list_catalogs()` excludes them by default (`include_hidden=True` to include them). Hidden from the Catalog menu and the delete-catalog list, but still counted when checking whether a name is already taken (see below).
+- Switching to a hidden catalog (`set_current_catalog()`) updates the in-memory current catalog but does **not** overwrite `catalog.conf` — so on the next startup the app resumes the last non-hidden catalog, never a hidden one.
 
 **Menus and keyboard shortcuts:**
 | Menu | Item | Shortcut | Status tip |
@@ -56,9 +58,10 @@ Rotation actions are disabled when no image file is selected; Apply EXIF orienta
 All actions set `setStatusTip()` so the status bar shows the description when hovering.
 
 **Catalog menu behaviour:**
-- **New catalog…** — prompts for a name, creates the directory, switches to it.
-- **Delete catalog…** — picks any existing catalog (blocked only when one catalog remains); if it is current, switches to the next available catalog first.
-- Separator + dynamic list of all catalogs (checkmark on the active one) for one-click switching.
+- **New catalog…** — prompts for a name, creates the directory, switches to it. If the name already exists (including hidden catalogs), asks whether to open it instead of erroring out; choosing "Open" switches to it, otherwise the action is cancelled.
+- **Delete catalog…** — picks any existing visible catalog (blocked only when one visible catalog remains); if it is current, switches to the next available catalog first.
+- **Duplicate catalog…** — same already-exists/open-instead behaviour as New catalog.
+- Separator + dynamic list of visible catalogs (checkmark on the active one) for one-click switching.
 
 **Window title:** Shows `[catalog_name]` after the app title when not on `"default"`.
 
@@ -248,7 +251,8 @@ Menu **Settings → Program settings…** (Ctrl+Alt+,) — tabs:
 ### HistoryDialog (`ui/history_dialog.py`)
 Menu **Settings → Histories…**
 - QTabWidget: one tab per field
-- Per tab: QListWidget with internal drag-and-drop + Move Up / Move Down / Delete / Clear All buttons
+- Per tab: QListWidget with internal drag-and-drop + Move Up / Move Down / Sort ↓ (ascending) / Sort ↑ (descending) / Delete / Clear All buttons. Sort buttons enabled only with ≥2 items; arrows denote the visual direction of the resulting list, not conceptual sort direction.
+- Sort comparison: `_sort_fold()` folds each string (OE-ligature → "oe"/"OE" via explicit translation table, then NFKD + strip combining marks for diacritics, then `casefold()`) before comparing with a `QCollator(QLocale(i18n.current_language()))` — locale-aware, case- and diacritic-insensitive (`O=o=Ô=Ǫ`, `Œ=OE=œ`). Empty-string entries are always placed last, in both ascending and descending order.
 - OK → `save_all_history()` then `schema_frame.rebuild(config)` to reload combos
 
 ## Persistence
@@ -265,6 +269,7 @@ Menu **Settings → Histories…**
 `config.py` handles one-shot migration from legacy QSettings if `history.json` is absent.
 `init_catalogs()` handles one-shot migration from pre-catalog flat layout (files directly in base dir → `default/`).
 `--dev-config-dir DIR` CLI flag overrides `_BASE_DIR` before `init_catalogs()` via `set_base_dir()`.
+Optional positional CLI arg `catalog` (name, not path; may be hidden — for a leading `-`, pass it after `--`, e.g. `pbpicat -- -secret`): after `init_catalogs()` + `i18n.setup()`, if it names an existing catalog (`list_catalogs(include_hidden=True)`), switches to it via `set_current_catalog()`; otherwise shows a `QMessageBox` warning and falls back to the normal startup catalog (unchanged behaviour).
 
 ## Internationalisation
 `src/pbpicat/i18n.py` — call `i18n.setup(app)` once before creating any window.
@@ -295,7 +300,7 @@ PBPicat/
 ├── pyproject.toml
 ├── SPEC.md
 └── src/pbpicat/
-    ├── __main__.py        # CLI arg parsing (--dev-config-dir + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app) before creating MainWindow
+    ├── __main__.py        # CLI arg parsing (--dev-config-dir, optional positional catalog name, + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app), optionally switches catalog, before creating MainWindow
     ├── argparse_qt.py     # add_qt_arguments(parser): Qt flags as --double-dash options, collected in args.qt_args
     ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf, app_qsettings() → app.conf
     ├── i18n.py            # gettext bootstrap

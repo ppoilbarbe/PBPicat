@@ -18,6 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "Catalog not found"
+msgstr "Catalogue introuvable"
+
+#, python-brace-format
+msgid "No catalog named \"{name}\" was found; using the last opened catalog instead."
+msgstr "Aucun catalogue nommé « {name} » n'a été trouvé ; utilisation du dernier catalogue ouvert."
+
 msgid "language_name"
 msgstr "Français"
 
@@ -139,6 +146,18 @@ msgstr "▲ Monter"
 
 msgid "▼ Move down"
 msgstr "▼ Descendre"
+
+msgid "Sort ↓"
+msgstr "Trier ↓"
+
+msgid "Sort the list in ascending order"
+msgstr "Trier la liste par ordre croissant"
+
+msgid "Sort ↑"
+msgstr "Trier ↑"
+
+msgid "Sort the list in descending order"
+msgstr "Trier la liste par ordre décroissant"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -607,8 +626,8 @@ msgid "Already exists"
 msgstr "Déjà existant"
 
 #, python-brace-format
-msgid "A catalog named \"{name}\" already exists."
-msgstr "Un catalogue nommé « {name} » existe déjà."
+msgid "A catalog named \"{name}\" already exists. Open it instead?"
+msgstr "Un catalogue nommé « {name} » existe déjà. L'ouvrir à la place ?"
 
 msgid "No catalogs"
 msgstr "Aucun catalogue"

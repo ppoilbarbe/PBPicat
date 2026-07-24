@@ -19,6 +19,15 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 # ==AUTO== Automatically translated
+msgid "Catalog not found"
+msgstr "未找到目录"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "No catalog named \"{name}\" was found; using the last opened catalog instead."
+msgstr "未找到名为“{name}”的目录；将使用上次打开的目录。"
+
+# ==AUTO== Automatically translated
 msgid "language_name"
 msgstr "简体中文"
 
@@ -167,6 +176,22 @@ msgstr "▲ 上移"
 # ==AUTO== Automatically translated
 msgid "▼ Move down"
 msgstr "▼ 下移"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↓"
+msgstr "排序 ↓"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in ascending order"
+msgstr "按升序排序列表"
+
+# ==AUTO== Automatically translated
+msgid "Sort ↑"
+msgstr "排序 ↑"
+
+# ==AUTO== Automatically translated
+msgid "Sort the list in descending order"
+msgstr "按降序排序列表"
 
 # ==AUTO== Automatically translated
 msgid "Delete"
@@ -781,8 +806,8 @@ msgstr "已存在"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
-msgid "A catalog named \"{name}\" already exists."
-msgstr "名为「{name}」的目录已存在。"
+msgid "A catalog named \"{name}\" already exists. Open it instead?"
+msgstr "名为“{name}”的目录已存在。要改为打开它吗？"
 
 # ==AUTO== Automatically translated
 msgid "No catalogs"

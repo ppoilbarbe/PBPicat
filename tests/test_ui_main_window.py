@@ -324,10 +324,24 @@ def test_new_catalog_invalid_name(window, monkeypatch):
         window._new_catalog()
 
 
-def test_new_catalog_already_exists(window, monkeypatch, catalog_env):
+def test_new_catalog_already_exists_cancel(window, monkeypatch, catalog_env):
     monkeypatch.setattr(QInputDialog, "getText", staticmethod(lambda *a, **kw: ("default", True)))
-    with patch.object(QMessageBox, "warning", return_value=None):
+    with (
+        patch.object(QMessageBox, "question", return_value=QMessageBox.Cancel),
+        patch.object(window, "_switch_to_catalog") as mock_switch,
+    ):
         window._new_catalog()
+    mock_switch.assert_not_called()
+
+
+def test_new_catalog_already_exists_open(window, monkeypatch, catalog_env):
+    monkeypatch.setattr(QInputDialog, "getText", staticmethod(lambda *a, **kw: ("default", True)))
+    with (
+        patch.object(QMessageBox, "question", return_value=QMessageBox.Yes),
+        patch.object(window, "_switch_to_catalog") as mock_switch,
+    ):
+        window._new_catalog()
+    mock_switch.assert_called_once_with("default")
 
 
 def test_new_catalog_success(window, monkeypatch, catalog_env):
@@ -379,10 +393,24 @@ def test_duplicate_catalog_invalid_name(window, monkeypatch):
         window._duplicate_catalog_action()
 
 
-def test_duplicate_catalog_already_exists(window, monkeypatch, catalog_env):
+def test_duplicate_catalog_already_exists_cancel(window, monkeypatch, catalog_env):
     monkeypatch.setattr(QInputDialog, "getText", staticmethod(lambda *a, **kw: ("default", True)))
-    with patch.object(QMessageBox, "warning", return_value=None):
+    with (
+        patch.object(QMessageBox, "question", return_value=QMessageBox.Cancel),
+        patch.object(window, "_switch_to_catalog") as mock_switch,
+    ):
         window._duplicate_catalog_action()
+    mock_switch.assert_not_called()
+
+
+def test_duplicate_catalog_already_exists_open(window, monkeypatch, catalog_env):
+    monkeypatch.setattr(QInputDialog, "getText", staticmethod(lambda *a, **kw: ("default", True)))
+    with (
+        patch.object(QMessageBox, "question", return_value=QMessageBox.Yes),
+        patch.object(window, "_switch_to_catalog") as mock_switch,
+    ):
+        window._duplicate_catalog_action()
+    mock_switch.assert_called_once_with("default")
 
 
 def test_duplicate_catalog_success(window, monkeypatch, catalog_env):

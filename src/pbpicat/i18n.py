@@ -56,13 +56,18 @@ def available_languages() -> list[tuple[str, str]]:
     return result
 
 
-def setup(app: QApplication) -> None:
-    """Install translations for app. Safe to call multiple times."""
+def current_language() -> str:
+    """Return the language code currently in effect (same resolution as setup())."""
     from pbpicat.config import load_global_config
 
     config = load_global_config()
     override = config.get("language", "")
-    lang = override if override else _system_language()
+    return override if override else _system_language()
+
+
+def setup(app: QApplication) -> None:
+    """Install translations for app. Safe to call multiple times."""
+    lang = current_language()
 
     try:
         t: gettext.NullTranslations = gettext.translation(_DOMAIN, localedir=str(_LOCALE_DIR), languages=[lang])

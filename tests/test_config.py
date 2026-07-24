@@ -284,6 +284,18 @@ def test_set_current_catalog(patched_paths, monkeypatch):
     monkeypatch.setattr(cfg, "_current_catalog", "default")  # restore
 
 
+def test_set_current_catalog_hidden_not_persisted(patched_paths, monkeypatch):
+    (patched_paths.parent / "work").mkdir()
+    (patched_paths.parent / "-secret").mkdir()
+    cfg.set_current_catalog("work")
+    assert (patched_paths.parent / "catalog.conf").read_text() == "work"
+    cfg.set_current_catalog("-secret")
+    assert cfg.current_catalog() == "-secret"
+    # catalog.conf still points at the last non-hidden catalog
+    assert (patched_paths.parent / "catalog.conf").read_text() == "work"
+    monkeypatch.setattr(cfg, "_current_catalog", "default")  # restore
+
+
 def test_load_current_catalog_name_missing_file(patched_paths):
     assert cfg.load_current_catalog_name() == "default"
 
@@ -312,6 +324,20 @@ def test_list_catalogs(patched_paths):
 def test_list_catalogs_base_missing(tmp_path, monkeypatch):
     monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path / "nonexistent")
     assert cfg.list_catalogs() == ["default"]
+
+
+def test_list_catalogs_hidden(patched_paths):
+    (patched_paths.parent / "alpha").mkdir()
+    (patched_paths.parent / ".hidden").mkdir()
+    (patched_paths.parent / "-hidden").mkdir()
+    visible = cfg.list_catalogs()
+    assert "alpha" in visible
+    assert ".hidden" not in visible
+    assert "-hidden" not in visible
+    everyone = cfg.list_catalogs(include_hidden=True)
+    assert "alpha" in everyone
+    assert ".hidden" in everyone
+    assert "-hidden" in everyone
 
 
 def test_set_base_dir(tmp_path, monkeypatch):

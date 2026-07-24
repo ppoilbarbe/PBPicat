@@ -180,17 +180,28 @@ def load_current_catalog_name() -> str:
     return catalogs[0] if catalogs else "default"
 
 
+def _is_hidden_catalog(name: str) -> bool:
+    return name.startswith((".", "-"))
+
+
 def set_current_catalog(name: str) -> None:
+    """Switch the in-memory current catalog. Hidden catalogs are not persisted to
+    catalog.conf, so the next startup falls back to the last non-hidden catalog."""
     global _current_catalog
     _current_catalog = name
     _BASE_DIR.mkdir(parents=True, exist_ok=True)
-    _CATALOG_CONF.write_text(name, encoding="utf-8")
+    if not _is_hidden_catalog(name):
+        _CATALOG_CONF.write_text(name, encoding="utf-8")
 
 
-def list_catalogs() -> list[str]:
+def list_catalogs(*, include_hidden: bool = False) -> list[str]:
+    """List catalog names. Names starting with "." or "-" are hidden by default."""
     if not _BASE_DIR.exists():
         return ["default"]
-    return sorted(p.name for p in _BASE_DIR.iterdir() if p.is_dir())
+    names = (p.name for p in _BASE_DIR.iterdir() if p.is_dir())
+    if not include_hidden:
+        names = (n for n in names if not _is_hidden_catalog(n))
+    return sorted(names)
 
 
 def create_catalog(name: str, initial_config: dict | None = None) -> None:
@@ -233,7 +244,7 @@ def init_catalogs() -> None:
                 src.rename(dst)
             else:
                 src.unlink()
-    if not list_catalogs():
+    if not list_catalogs(include_hidden=True):
         default_dir.mkdir(exist_ok=True)
     _current_catalog = load_current_catalog_name()
 

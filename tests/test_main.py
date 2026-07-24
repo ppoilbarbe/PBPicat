@@ -87,6 +87,75 @@ def test_main_dev_config_dir(tmp_path, catalog_env, monkeypatch):
     assert captured["path"] == custom_dir
 
 
+def test_main_catalog_arg_existing(catalog_env, monkeypatch):
+    """Positional catalog arg switches to it when the catalog exists."""
+    (catalog_env.parent / "work").mkdir()
+    monkeypatch.setattr("sys.argv", ["pbpicat", "work"])
+    mock_app = MagicMock()
+    mock_app.exec.return_value = 0
+
+    with (
+        patch("pbpicat.__main__.QApplication", return_value=mock_app),
+        patch("pbpicat.__main__.MainWindow"),
+        patch("pbpicat.__main__.init_catalogs"),
+        patch("pbpicat.__main__.i18n"),
+        patch("pbpicat.__main__.set_current_catalog") as mock_set,
+        patch("pbpicat.__main__.QMessageBox") as mock_box,
+        patch("sys.exit"),
+    ):
+        from pbpicat.__main__ import main
+
+        main()
+
+    mock_set.assert_called_once_with("work")
+    mock_box.warning.assert_not_called()
+
+
+def test_main_catalog_arg_hidden(catalog_env, monkeypatch):
+    """A hidden catalog name (starting with '.') is accepted."""
+    (catalog_env.parent / ".secret").mkdir()
+    monkeypatch.setattr("sys.argv", ["pbpicat", ".secret"])
+    mock_app = MagicMock()
+    mock_app.exec.return_value = 0
+
+    with (
+        patch("pbpicat.__main__.QApplication", return_value=mock_app),
+        patch("pbpicat.__main__.MainWindow"),
+        patch("pbpicat.__main__.init_catalogs"),
+        patch("pbpicat.__main__.i18n"),
+        patch("pbpicat.__main__.set_current_catalog") as mock_set,
+        patch("sys.exit"),
+    ):
+        from pbpicat.__main__ import main
+
+        main()
+
+    mock_set.assert_called_once_with(".secret")
+
+
+def test_main_catalog_arg_missing(catalog_env, monkeypatch):
+    """An unknown catalog name shows an error and falls back to the current behaviour."""
+    monkeypatch.setattr("sys.argv", ["pbpicat", "nonexistent"])
+    mock_app = MagicMock()
+    mock_app.exec.return_value = 0
+
+    with (
+        patch("pbpicat.__main__.QApplication", return_value=mock_app),
+        patch("pbpicat.__main__.MainWindow"),
+        patch("pbpicat.__main__.init_catalogs"),
+        patch("pbpicat.__main__.i18n"),
+        patch("pbpicat.__main__.set_current_catalog") as mock_set,
+        patch("pbpicat.__main__.QMessageBox") as mock_box,
+        patch("sys.exit"),
+    ):
+        from pbpicat.__main__ import main
+
+        main()
+
+    mock_set.assert_not_called()
+    mock_box.warning.assert_called_once()
+
+
 def test_main_passes_qt_args_to_qapplication(catalog_env, monkeypatch):
     """Qt options reach QApplication as single-dash flags."""
     monkeypatch.setattr("sys.argv", ["pbpicat", "--style", "fusion"])

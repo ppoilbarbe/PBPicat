@@ -6,9 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-07-24
+
 ### Added
 
 - **`F2` shortcut for the "Rename selection" button** — clicking the button moved keyboard focus away from the file list, preventing further arrow-key navigation until it regained focus; a shortcut triggers the action without stealing focus. Also added to the shortcuts window (F1) and to the button's tooltip.
+- **Hidden catalogs** — catalogs whose name starts with `.` or `-` are now excluded from the Catalog menu and the "Delete catalog…" list. `list_catalogs()` gained an `include_hidden` keyword argument (default `False`) to opt into seeing them. Switching to a hidden catalog no longer overwrites `catalog.conf`, so restarting the app always resumes the last non-hidden catalog rather than a hidden one.
+- **Optional positional CLI argument to load a specific catalog at startup** — `pbpicat <name>` (may be a hidden catalog; a name starting with `-` must be passed after `--`, e.g. `pbpicat -- -secret`). If no catalog with that name exists, a warning dialog is shown and startup falls back to the normal behaviour (last opened catalog).
+- **"Sort ↓" / "Sort ↑" buttons in the history edit windows** (`Settings → Histories…`) alongside the existing Move up/down — sort ascending/descending, locale-aware (`QCollator` using the interface's display language) and insensitive to case and diacritics (`O=o=Ô=Ǫ`, `Œ=OE=œ`). Disabled when fewer than 2 items are in the list. Empty-string entries always sort to the end, regardless of direction.
+
+### Changed
+
+- **"New catalog…" / "Duplicate catalog…" — name already taken** — previously just showed a blocking "Already exists" error and cancelled. Now asks whether to open the existing catalog instead (checked against *all* catalogs, including hidden ones); choosing "Open" switches to it, otherwise the action is cancelled as before.
 
 ### Fixed
 

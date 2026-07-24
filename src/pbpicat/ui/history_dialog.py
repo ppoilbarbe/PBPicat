@@ -1,4 +1,7 @@
-from PySide6.QtCore import Qt
+import functools
+import unicodedata
+
+from PySide6.QtCore import QCollator, QLocale, Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDialog,
@@ -15,6 +18,17 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import app_qsettings, load_all_history, save_all_history
+from pbpicat.i18n import current_language
+
+_LIGATURES = str.maketrans({"Œ": "OE", "œ": "oe"})
+
+
+def _sort_fold(text: str) -> str:
+    """Fold text for locale-, case- and diacritic-insensitive comparison (O=o=Ô=Ǫ, Œ=OE=œ)."""
+    text = text.translate(_LIGATURES)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(c for c in text if unicodedata.category(c) != "Mn")
+    return text.casefold()
 
 
 class _FieldHistoryWidget(QWidget):
@@ -56,6 +70,18 @@ class _FieldHistoryWidget(QWidget):
 
         btn_layout.addSpacing(12)
 
+        self._sort_asc_btn = QPushButton(_("Sort ↓"))
+        self._sort_asc_btn.setToolTip(_("Sort the list in ascending order"))
+        self._sort_asc_btn.clicked.connect(self._sort_ascending)
+        btn_layout.addWidget(self._sort_asc_btn)
+
+        self._sort_desc_btn = QPushButton(_("Sort ↑"))
+        self._sort_desc_btn.setToolTip(_("Sort the list in descending order"))
+        self._sort_desc_btn.clicked.connect(self._sort_descending)
+        btn_layout.addWidget(self._sort_desc_btn)
+
+        btn_layout.addSpacing(12)
+
         self._del_btn = QPushButton(_("Delete"))
         self._del_btn.clicked.connect(self._delete_selected)
         btn_layout.addWidget(self._del_btn)
@@ -90,6 +116,29 @@ class _FieldHistoryWidget(QWidget):
         self._list.insertItem(row + 1, item)
         self._list.setCurrentRow(row + 1)
 
+    def _sort_ascending(self) -> None:
+        self._sort(reverse=False)
+
+    def _sort_descending(self) -> None:
+        self._sort(reverse=True)
+
+    def _sort(self, *, reverse: bool) -> None:
+        if self._list.count() < 2:
+            return
+        collator = QCollator(QLocale(current_language()))
+        collator.setCaseSensitivity(Qt.CaseInsensitive)
+        items = self.get_items()
+        non_empty = [s for s in items if s]
+        empty = [s for s in items if not s]
+        non_empty.sort(
+            key=functools.cmp_to_key(lambda a, b: collator.compare(_sort_fold(a), _sort_fold(b))),
+            reverse=reverse,
+        )
+        self._list.clear()
+        for text in non_empty + empty:
+            self._list.addItem(QListWidgetItem(text))
+        self._update_buttons(self._list.currentRow())
+
     def _delete_selected(self) -> None:
         row = self._list.currentRow()
         if row >= 0:
@@ -112,6 +161,9 @@ class _FieldHistoryWidget(QWidget):
         self._up_btn.setEnabled(has_sel and row > 0)
         self._down_btn.setEnabled(has_sel and row < self._list.count() - 1)
         self._del_btn.setEnabled(has_sel)
+        can_sort = self._list.count() >= 2
+        self._sort_asc_btn.setEnabled(can_sort)
+        self._sort_desc_btn.setEnabled(can_sort)
 
     # ------------------------------------------------------------------
     # Data access
