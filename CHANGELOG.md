@@ -6,6 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **File list: image resolution and human-readable file size shown under the file name** — e.g. `1920×1080  ·  32.5 KB`. File size appears as soon as a directory loads; resolution is read from the image header only (no full decode) and piggybacks on the existing lazy thumbnail worker, so it stays cheap even for large directories. Both are refreshed after a rotation, so a 90°/270° rotation's width/height swap and the file's new size are reflected immediately.
+- **File list: the first image of a directory is now auto-selected when switching directories** (if the directory contains one) — an already-open image viewer follows the new selection and displays it.
+
+### Fixed
+
+- **Rotating an image (90°/180°/270°, "Apply EXIF orientation", or "Force EXIF orientation to 0°") did not update an already-open image viewer showing that image** — whether triggered from the viewer's own toolbar or from the main window (menu, context menu, or shortcut), the viewer kept displaying the stale, unrotated pixels; only the file list's thumbnail was refreshed. `refresh_thumbnails_for_paths()` (called after every rotation/EXIF-reset, including undo) now also reloads the viewer's image when it is showing one of the affected files.
+
 ## [1.15.0] - 2026-07-24
 
 ### Added

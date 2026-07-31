@@ -276,6 +276,7 @@ class MainWindow(QMainWindow):
         self._setup_rotation_actions()
         self._setup_ui()
         self._setup_menu()
+        self._file_panel.dir_tree.select_path(load_last_source_dir())
         self._update_title()
         geom = app_qsettings().value("main_window/geometry")
         if geom:
@@ -445,7 +446,6 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.orphan_sidecar_count_changed.connect(self._on_orphan_count_changed)
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
-        self._file_panel.dir_tree.select_path(load_last_source_dir())
 
     def _build_dest_zone(self) -> QHBoxLayout:
         layout = QHBoxLayout()

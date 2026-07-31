@@ -257,6 +257,10 @@ class ImageViewer(QWidget):
             self._reset_exif_btn.setEnabled(has_exif)
         self._apply_zoom(center=True)
 
+    @property
+    def current_path(self) -> Path | None:
+        return self._current_path
+
     def set_auto_rotate(self, value: bool) -> None:
         if self._auto_rotate == value:
             return

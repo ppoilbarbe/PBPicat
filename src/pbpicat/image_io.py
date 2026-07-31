@@ -5,7 +5,7 @@ from __future__ import annotations
 import threading
 from pathlib import Path
 
-from PySide6.QtCore import QBuffer, Qt
+from PySide6.QtCore import QBuffer, QSize, Qt
 from PySide6.QtGui import QImage, QImageReader, QPixmap
 
 from pbpicat.image_ops import is_jpeg, repair_jpeg_sos
@@ -88,6 +88,20 @@ def load_qimage(path: Path, max_w: int = 0, max_h: int = 0, auto_rotate: bool = 
         return _pillow_to_qimage(pil_img)
     except Exception:  # noqa: BLE001
         return QImage()
+
+
+def image_size(path: Path, auto_rotate: bool = True) -> QSize | None:
+    """Return the image's pixel dimensions, read from the header only (no full decode).
+
+    Reflects the EXIF-rotated dimensions when auto_rotate is set, matching what
+    load_qimage()/load_pixmap() display — so width/height stay correct across
+    lossless rotations (which swap them for 90°/270°) without needing a full decode.
+    """
+    with _qimage_reader_lock:
+        reader, _buf = _make_reader(path)
+        reader.setAutoTransform(auto_rotate)
+        size = reader.size()
+    return size if size.isValid() else None
 
 
 def load_pixmap(path: Path, auto_rotate: bool = True) -> QPixmap:

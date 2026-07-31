@@ -167,6 +167,7 @@ Multi-selection (ExtendedSelection).
 **Auto-selection after action:**
 - After renaming: selects the file that immediately followed the last renamed file in the new list (or the last file if nothing follows). ImageViewer stays open and updates.
 - After deleting: selects the file that was next after the deleted one (or the last file if it was the last). ImageViewer stays open and updates.
+- After a directory change (`load_directory`): selects the first image in the directory, if any (`_select_first_image()`). An already-open ImageViewer follows and loads it (selection happens outside the `_auto_selecting` guard used for the table rebuild itself, so the normal `itemSelectionChanged` → viewer-update path runs).
 - Startup: the restored directory is scrolled into view in the dir tree.
 
 **Context menu (right-click on a file):**
@@ -190,6 +191,7 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 - All rotations and EXIF resets are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op, orig_orient)])` or `("reset_exif", [(path, orig_orient)])`. Undo button label changes accordingly.
 - **Apply EXIF orientation**: reads the EXIF Orientation tag, applies the corresponding transform (rotation or flip), then strips the tag. Works for all 8 EXIF orientation values. Disabled in the UI when the image has no orientation tag.
 - **Force EXIF orientation to 0°**: sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled in the UI when the image has no orientation tag.
+- **Viewer sync**: `refresh_thumbnails_for_paths()` (called after every rotation/EXIF-reset, including their undo) also reloads an open ImageViewer's image if its `current_path` is among the affected paths — whether the rotation was triggered from the viewer's own toolbar or from the main window (menu/context menu/shortcuts).
 
 ### Zone 4 — Buttons
 `[Btn Undo last rename] [stretch] [ComboBox Sidecar filter] [stretch] [Btn Rename selection]`

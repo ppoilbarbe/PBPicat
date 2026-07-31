@@ -5,13 +5,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from PIL import Image as _PilImage
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QMessageBox
 
 import pbpicat.ui.file_list_widget as _flmod
 from pbpicat.config import DEFAULTS
-from pbpicat.ui.file_list_widget import FileListWidget, _natural_sort_key, _SchemaProposalDialog, _ThumbnailWorker
+from pbpicat.ui.file_list_widget import (
+    FileListWidget,
+    _format_size,
+    _natural_sort_key,
+    _SchemaProposalDialog,
+    _ThumbnailWorker,
+)
 
 
 def _img(path):
@@ -35,6 +41,27 @@ def test_natural_sort_key_normalizes_accents():
     p = Path("Été.jpg")
     key = _natural_sort_key(p)
     assert "é" not in key.lower()
+
+
+# ---------------------------------------------------------------------------
+# _format_size
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("num_bytes", "expected"),
+    [
+        (0, "0 B"),
+        (999, "999 B"),
+        (1024, "1.0 KB"),
+        (1536, "1.5 KB"),
+        (1024 * 1024, "1.0 MB"),
+        (1024 * 1024 * 1024, "1.0 GB"),
+        (1024**4, "1.0 TB"),
+    ],
+)
+def test_format_size(num_bytes, expected):
+    assert _format_size(num_bytes) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -851,7 +878,7 @@ def test_on_thumbnail_ready_null_image(qtbot, base_config, tmp_path):
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    w._on_thumbnail_ready(0, QImage())
+    w._on_thumbnail_ready(0, QImage(), QSize())
     from PySide6.QtWidgets import QLabel
 
     cell = w.cellWidget(0, 0)
@@ -864,7 +891,55 @@ def test_on_thumbnail_ready_invalid_row(qtbot, base_config, tmp_path):
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    w._on_thumbnail_ready(999, QImage())  # no crash
+    w._on_thumbnail_ready(999, QImage(), QSize())  # no crash
+
+
+def test_on_thumbnail_ready_adds_resolution_to_name_cell(qtbot, base_config, tmp_path):
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w._on_thumbnail_ready(0, QImage(), QSize(1920, 1080))
+    assert "1920×1080" in w.item(0, w._NAME_COL).text()
+
+
+def test_on_thumbnail_ready_invalid_resolution_leaves_name_cell_unchanged(qtbot, base_config, tmp_path):
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    before = w.item(0, w._NAME_COL).text()
+    w._on_thumbnail_ready(0, QImage(), QSize())  # invalid size: not found yet
+    assert w.item(0, w._NAME_COL).text() == before
+
+
+# ---------------------------------------------------------------------------
+# _update_name_cell
+# ---------------------------------------------------------------------------
+
+
+def test_populate_table_name_cell_has_filename_and_size(qtbot, base_config, tmp_path):
+    """Right after a directory load, the Name cell shows the file name plus its
+    human-readable size on a second line (resolution is added later, once the
+    thumbnail worker reports it)."""
+    f = _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    text = w.item(0, w._NAME_COL).text()
+    lines = text.split("\n")
+    assert lines[0] == "img.png"
+    assert lines[1] == _format_size(f.stat().st_size)
+
+
+def test_update_name_cell_with_resolution(qtbot, base_config, tmp_path):
+    f = _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w._update_name_cell(0, f, resolution=QSize(640, 480))
+    text = w.item(0, w._NAME_COL).text()
+    assert text == f"img.png\n640×480  ·  {_format_size(f.stat().st_size)}"
 
 
 # ---------------------------------------------------------------------------
@@ -1171,8 +1246,8 @@ def test_refresh_preserve_selection_sets_current_row(qtbot, base_config, tmp_pat
 # ---------------------------------------------------------------------------
 
 
-def test_load_directory_does_not_trigger_viewer(qtbot, base_config, tmp_path):
-    """_on_selection_changed must not update the viewer during load_directory."""
+def test_load_directory_selects_first_image_and_updates_open_viewer(qtbot, base_config, tmp_path):
+    """load_directory auto-selects the first image; an already-open viewer follows it."""
     _img(tmp_path / "a.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
@@ -1183,7 +1258,7 @@ def test_load_directory_does_not_trigger_viewer(qtbot, base_config, tmp_path):
 
     w.load_directory(str(tmp_path))
 
-    viewer.load_image.assert_not_called()
+    viewer.load_image.assert_called_once_with(tmp_path / "a.png")
     viewer.show_message.assert_not_called()
 
 
@@ -1313,6 +1388,42 @@ def test_refresh_thumbnails_for_paths_no_match(qtbot, base_config, tmp_path, mon
     w.load_directory(str(tmp_path))
     w.refresh_thumbnails_for_paths({tmp_path / "other.png"})  # path not in display_data
     assert w._worker is None
+
+
+def test_refresh_thumbnails_for_paths_reloads_open_viewer(qtbot, base_config, tmp_path, monkeypatch):
+    """Rotating the image currently shown in an open viewer must reload it there too."""
+    _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    monkeypatch.setattr(_ThumbnailWorker, "start", lambda self: None)
+
+    viewer = MagicMock()
+    viewer.isVisible.return_value = True
+    viewer.current_path = tmp_path / "img.png"
+    w._image_viewer = viewer
+
+    w.refresh_thumbnails_for_paths({tmp_path / "img.png"})
+
+    viewer.load_image.assert_called_once_with(tmp_path / "img.png")
+
+
+def test_refresh_thumbnails_for_paths_does_not_reload_viewer_on_other_image(qtbot, base_config, tmp_path, monkeypatch):
+    _img(tmp_path / "img.png")
+    _img(tmp_path / "other.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    monkeypatch.setattr(_ThumbnailWorker, "start", lambda self: None)
+
+    viewer = MagicMock()
+    viewer.isVisible.return_value = True
+    viewer.current_path = tmp_path / "other.png"
+    w._image_viewer = viewer
+
+    w.refresh_thumbnails_for_paths({tmp_path / "img.png"})
+
+    viewer.load_image.assert_not_called()
 
 
 # ---------------------------------------------------------------------------

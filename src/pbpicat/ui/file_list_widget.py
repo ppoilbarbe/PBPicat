@@ -34,7 +34,7 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import load_all_history
-from pbpicat.image_io import load_qimage
+from pbpicat.image_io import image_size, load_qimage
 from pbpicat.platform import open_default, open_with
 from pbpicat.renamer import validate_schema
 
@@ -46,6 +46,15 @@ def _natural_sort_key(path: Path) -> str:
     name = unicodedata.normalize("NFD", name)
     name = "".join(c for c in name if unicodedata.category(c) != "Mn")
     return name.lower()
+
+
+def _format_size(num_bytes: int) -> str:
+    size = float(num_bytes)
+    for unit in ("B", "KB", "MB", "GB"):
+        if size < 1024:
+            return f"{size:.0f} {unit}" if unit == "B" else f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} TB"
 
 
 class _SchemaProposalDialog(QDialog):
@@ -78,7 +87,7 @@ class _SchemaProposalDialog(QDialog):
 class _ThumbnailWorker(QThread):
     """Load thumbnails in a background thread using QImageReader (thread-safe)."""
 
-    thumbnail_ready = Signal(int, QImage)
+    thumbnail_ready = Signal(int, QImage, QSize)
 
     def __init__(
         self,
@@ -109,7 +118,8 @@ class _ThumbnailWorker(QThread):
             if path.suffix.lower() not in self._image_exts:
                 continue
             image = load_qimage(path, self._w, self._h, auto_rotate=self._auto_rotate)
-            self.thumbnail_ready.emit(self._rows[i] if self._rows else i, image)
+            resolution = image_size(path, auto_rotate=self._auto_rotate) or QSize()
+            self.thumbnail_ready.emit(self._rows[i] if self._rows else i, image, resolution)
 
 
 class FileListWidget(QTableWidget):
@@ -220,6 +230,7 @@ class FileListWidget(QTableWidget):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.setWordWrap(True)
         self.verticalHeader().setVisible(False)
         self.setIconSize(QSize(self._thumb_w, self._thumb_h))
         self.verticalHeader().setDefaultSectionSize(self._thumb_h + 8)
@@ -249,6 +260,14 @@ class FileListWidget(QTableWidget):
             self.refresh()
         finally:
             self._auto_selecting = False
+        self._select_first_image()
+
+    def _select_first_image(self) -> None:
+        for row, (path, _sidecars) in enumerate(self._display_data):
+            if path.suffix.lower() in self._image_exts:
+                self.selectRow(row)
+                self.scrollTo(self.model().index(row, 0))
+                return
 
     def _on_dir_changed_on_disk(self) -> None:
         self._refresh_debounce.start()
@@ -407,6 +426,12 @@ class FileListWidget(QTableWidget):
 
     def refresh_thumbnails_for_paths(self, paths: set[Path]) -> None:
         """Reload thumbnails only for the given paths without rebuilding the table."""
+        if (
+            self._image_viewer is not None
+            and self._image_viewer.isVisible()
+            and self._image_viewer.current_path in paths
+        ):
+            self._image_viewer.load_image(self._image_viewer.current_path)
         self._stop_worker()
         placeholder = QPixmap(self._thumb_w, self._thumb_h)
         placeholder.fill(Qt.lightGray)
@@ -515,6 +540,23 @@ class FileListWidget(QTableWidget):
                     continue
         return result
 
+    def _update_name_cell(self, row: int, path: Path, resolution: QSize | None = None) -> None:
+        """Set the Name cell to "filename" plus a second line with resolution (images
+        only, once known) and human-readable file size."""
+        parts = []
+        if resolution is not None and resolution.isValid():
+            parts.append(f"{resolution.width()}×{resolution.height()}")
+        try:
+            parts.append(_format_size(path.stat().st_size))
+        except OSError:
+            pass
+        text = f"{path.name}\n{'  ·  '.join(parts)}" if parts else path.name
+        item = self.item(row, self._NAME_COL)
+        if item is None:
+            item = QTableWidgetItem()
+            self.setItem(row, self._NAME_COL, item)
+        item.setText(text)
+
     def _populate_table(self) -> None:
         self._rebuilding = True
         self._thumb_loaded = set()
@@ -540,7 +582,7 @@ class FileListWidget(QTableWidget):
                 thumb_label.setPixmap(placeholder)
             self.setCellWidget(row, self._THUMB_COL, thumb_label)
 
-            self.setItem(row, self._NAME_COL, QTableWidgetItem(path.name))
+            self._update_name_cell(row, path)
 
             if sidecars:
                 exts = "  ".join(sc.name[len(path.stem) :] for sc in sidecars)
@@ -642,9 +684,11 @@ class FileListWidget(QTableWidget):
                 worker.finished.connect(worker.deleteLater)
         self._visible_workers = []
 
-    def _on_thumbnail_ready(self, row: int, image: QImage) -> None:
+    def _on_thumbnail_ready(self, row: int, image: QImage, resolution: QSize) -> None:
         if row < len(self._display_data):
             self._thumb_loaded.add(self._display_data[row][0])
+            if resolution.isValid():
+                self._update_name_cell(row, self._display_data[row][0], resolution=resolution)
         widget = self.cellWidget(row, self._THUMB_COL)
         if not isinstance(widget, QLabel):
             return

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from PIL import Image
 from PySide6.QtGui import QImage, QPixmap
 
-from pbpicat.image_io import _pillow_to_qimage, load_pixmap, load_qimage
+from pbpicat.image_io import _pillow_to_qimage, image_size, load_pixmap, load_qimage
 
 # ---------------------------------------------------------------------------
 # _pillow_to_qimage
@@ -102,6 +102,24 @@ def test_load_qimage_pillow_exception(qapp, tmp_path):
         mock_reader_cls.return_value = mock_reader
         img = load_qimage(f)
     assert img.isNull()
+
+
+# ---------------------------------------------------------------------------
+# image_size
+# ---------------------------------------------------------------------------
+
+
+def test_image_size_qt_succeeds(qapp, sample_png):
+    size = image_size(sample_png)
+    assert size is not None
+    assert size.width() == 100
+    assert size.height() == 80
+
+
+def test_image_size_invalid_file_returns_none(qapp, tmp_path):
+    f = tmp_path / "test.xyz"
+    f.write_text("not an image")
+    assert image_size(f) is None
 
 
 # ---------------------------------------------------------------------------
