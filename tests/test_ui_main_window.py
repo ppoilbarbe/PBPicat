@@ -570,6 +570,45 @@ def test_rename_files_success(window, catalog_env, tmp_path, monkeypatch):
     assert window._undo_btn.isEnabled()
 
 
+# ---------------------------------------------------------------------------
+# "Fill gaps" checkbox
+# ---------------------------------------------------------------------------
+
+
+def test_fill_gaps_checkbox_default_unchecked(window):
+    assert window._fill_gaps_chk.isChecked() is False
+
+
+def test_fill_gaps_checkbox_persists_across_restart(qtbot, catalog_env):
+    """Not part of the catalog configuration, but still remembered across launches
+    (stored in ui.conf via qsettings(), not settings.json)."""
+    w1 = MainWindow()
+    qtbot.addWidget(w1)
+    w1._fill_gaps_chk.setChecked(True)
+
+    w2 = MainWindow()
+    qtbot.addWidget(w2)
+    assert w2._fill_gaps_chk.isChecked() is True
+
+
+def test_rename_files_passes_fill_gaps_flag(window, catalog_env, tmp_path):
+    from PIL import Image
+
+    Image.new("RGB", (1, 1)).save(str(tmp_path / "img.png"))
+    window._file_panel.file_list._current_dir = tmp_path
+    window._file_panel.file_list.refresh()
+    dest = tmp_path / "out"
+    dest.mkdir()
+    window._dest_edit.setText(str(dest))
+    window._fill_gaps_chk.setChecked(True)
+    with (
+        patch("pbpicat.ui.main_window.build_rename_plan", return_value=[]) as mock_build,
+        patch("pbpicat.ui.main_window.execute_rename"),
+    ):
+        window._rename_files(window._file_panel.file_list.get_all_files())
+    assert mock_build.call_args.kwargs["fill_gaps"] is True
+
+
 def test_undo_last_rename_success(window, catalog_env, tmp_path, monkeypatch):
     """Cover _undo_last_rename success path."""
     window._undo_stack.append(("rename", []))

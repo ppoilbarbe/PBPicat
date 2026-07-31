@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from pbpicat.renamer import (
+    _fill_gap_numbers,
     build_rename_plan,
     build_renumber_plan,
     execute_rename,
@@ -94,6 +95,27 @@ def test_find_max_number_extension_filter(tmp_path):
     assert find_max_number(tmp_path, "abc", {".jpg"}) == 10
     assert find_max_number(tmp_path, "abc", {".mp4"}) == 20
     assert find_max_number(tmp_path, "abc", {".png"}) == 0
+
+
+# ---------------------------------------------------------------------------
+# _fill_gap_numbers
+# ---------------------------------------------------------------------------
+
+
+def test_fill_gap_numbers_no_gaps_continues_after_max():
+    assert _fill_gap_numbers({1, 2, 3}, 2) == [4, 5]
+
+
+def test_fill_gap_numbers_fills_gaps_first():
+    assert _fill_gap_numbers({1, 2, 4}, 2) == [3, 5]
+
+
+def test_fill_gap_numbers_empty_used_starts_at_one():
+    assert _fill_gap_numbers(set(), 3) == [1, 2, 3]
+
+
+def test_fill_gap_numbers_zero_count():
+    assert _fill_gap_numbers({1, 2}, 0) == []
 
 
 # ---------------------------------------------------------------------------
@@ -237,6 +259,82 @@ def test_build_plan_numeric_continues_from_max(tmp_path):
     (subdir / "abc_1002.jpg").touch()
     plan = build_rename_plan(str(dest), ["abc", "", "", "", "", "###"], [src], [], [".jpg"])
     assert plan[0][1].name == "abc_1003.jpg"
+
+
+def test_build_plan_fill_gaps_uses_smallest_missing_number(tmp_path):
+    src = tmp_path / "img.jpg"
+    src.touch()
+    dest = tmp_path / "dest"
+    subdir = dest / "abc"
+    subdir.mkdir(parents=True)
+    (subdir / "abc_01.jpg").touch()
+    (subdir / "abc_03.jpg").touch()
+    plan = build_rename_plan(str(dest), ["abc", "", "", "", "", "##"], [src], [], [".jpg"], fill_gaps=True)
+    assert plan[0][1].name == "abc_02.jpg"
+
+
+def test_build_plan_fill_gaps_no_gap_continues_after_max(tmp_path):
+    src = tmp_path / "img.jpg"
+    src.touch()
+    dest = tmp_path / "dest"
+    subdir = dest / "abc"
+    subdir.mkdir(parents=True)
+    (subdir / "abc_01.jpg").touch()
+    (subdir / "abc_02.jpg").touch()
+    plan = build_rename_plan(str(dest), ["abc", "", "", "", "", "##"], [src], [], [".jpg"], fill_gaps=True)
+    assert plan[0][1].name == "abc_03.jpg"
+
+
+def test_build_plan_fill_gaps_separate_counters_images_videos(tmp_path):
+    img = tmp_path / "photo.jpg"
+    vid = tmp_path / "clip.mp4"
+    img.touch()
+    vid.touch()
+    dest = tmp_path / "dest"
+    subdir = dest / "abc"
+    subdir.mkdir(parents=True)
+    (subdir / "abc_01.jpg").touch()
+    (subdir / "abc_02.jpg").touch()
+    (subdir / "abc_03.jpg").touch()
+    (subdir / "abc_01.mp4").touch()
+    plan = build_rename_plan(
+        str(dest), ["abc", "", "", "", "", "##"], [img, vid], [], [".jpg"], [".mp4"], fill_gaps=True
+    )
+    names = {p[1].name for p in plan}
+    assert "abc_04.jpg" in names  # no gap for images: continues after max
+    assert "abc_02.mp4" in names  # no gap for videos either here, just next after 01
+
+
+def test_build_plan_fill_gaps_multiple_files_fill_several_gaps(tmp_path):
+    src1 = tmp_path / "img1.jpg"
+    src2 = tmp_path / "img2.jpg"
+    src1.touch()
+    src2.touch()
+    dest = tmp_path / "dest"
+    subdir = dest / "abc"
+    subdir.mkdir(parents=True)
+    (subdir / "abc_01.jpg").touch()
+    (subdir / "abc_04.jpg").touch()
+    plan = build_rename_plan(str(dest), ["abc", "", "", "", "", "##"], [src1, src2], [], [".jpg"], fill_gaps=True)
+    names = {p[1].name for p in plan}
+    assert names == {"abc_02.jpg", "abc_03.jpg"}
+
+
+def test_build_plan_fill_gaps_excludes_source_files_already_in_dest(tmp_path):
+    """A file already occupying a number in dest_subdir (same-directory rename) must not
+    block its own current number — it should be treated as free, not as an occupied gap."""
+    dest = tmp_path / "dest" / "abc"
+    dest.mkdir(parents=True)
+    src1 = dest / "abc_01.jpg"
+    src2 = dest / "abc_03.jpg"
+    src1.touch()
+    src2.touch()
+    plan = build_rename_plan(
+        str(tmp_path / "dest"), ["abc", "", "", "", "", "##"], [src1, src2], [], [".jpg"], fill_gaps=True
+    )
+    names = {p[1].name for p in plan}
+    # Both sources are excluded from "used", so gaps 01 and 02 are offered first.
+    assert names == {"abc_01.jpg", "abc_02.jpg"}
 
 
 # ---------------------------------------------------------------------------

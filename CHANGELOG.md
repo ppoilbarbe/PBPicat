@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - **File list: image resolution and human-readable file size shown under the file name** — e.g. `1920×1080  ·  32.5 KB`. File size appears as soon as a directory loads; resolution is read from the image header only (no full decode) and piggybacks on the existing lazy thumbnail worker, so it stays cheap even for large directories. Both are refreshed after a rotation, so a 90°/270° rotation's width/height swap and the file's new size are reflected immediately.
 - **File list: the first image of a directory is now auto-selected when switching directories** (if the directory contains one) — an already-open image viewer follows the new selection and displays it.
+- **"Fill gaps" checkbox** next to the destination field — when checked, "Rename all" / "Rename selection" assign the smallest missing number in the existing sequence (per image/video counter) instead of always continuing after the current max; once all gaps are filled, numbering continues past the max as before. Does not affect "Renumber from 1", which already reassigns the whole batch from scratch. Unchecked by default; the choice is a session preference persisted across restarts (`ui.conf`), deliberately kept out of the catalog configuration (`settings.json`).
 
 ### Fixed
 

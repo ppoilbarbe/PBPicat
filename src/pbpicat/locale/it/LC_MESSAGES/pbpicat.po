@@ -591,6 +591,14 @@ msgid "Browse…"
 msgstr "Sfoglia…"
 
 # ==AUTO== Automatically translated
+msgid "Fill gaps"
+msgstr "Colma i vuoti"
+
+# ==AUTO== Automatically translated
+msgid "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+msgstr "Colma i vuoti di numerazione invece di prendere il numero massimo (si applica a Rinomina tutto / Rinomina selezione)"
+
+# ==AUTO== Automatically translated
 msgid "Rename all"
 msgstr "Rinomina tutto"
 

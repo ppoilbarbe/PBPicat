@@ -1,5 +1,7 @@
+import itertools
 import re
 import uuid
+from collections.abc import Iterator
 from pathlib import Path
 
 
@@ -36,24 +38,57 @@ def validate_schema(fields: list[str]) -> tuple[list[str], list[str], str | None
     return dirs, parts, numeric_spec
 
 
+def _numbering_pattern(basename: str) -> re.Pattern:
+    if basename:
+        return re.compile(rf"(?:^|_){re.escape(basename)}_(\d+)", re.IGNORECASE)
+    return re.compile(r"(?:^|_)(\d+)(?:$|\.[^.]+$|_)", re.IGNORECASE)
+
+
+def _used_numbers(
+    dest_dir: Path, basename: str, extensions: set[str] | None = None, exclude: set[Path] | None = None
+) -> set[int]:
+    """Return every numeric suffix currently used in dest_dir for filenames containing
+    basename_NNN, among files whose suffix (lowercased) is in `extensions`.
+
+    Files in `exclude` (typically the sources of the rename batch itself, already resolved) are
+    ignored, so a file about to be renamed away doesn't block its own current number from being
+    reused.
+    """
+    pattern = _numbering_pattern(basename)
+    exclude = exclude or set()
+    used: set[int] = set()
+    if dest_dir.exists():
+        for f in dest_dir.iterdir():
+            if f.resolve() in exclude:
+                continue
+            if extensions is not None and f.suffix.lower() not in extensions:
+                continue
+            m = pattern.search(f.name)
+            if m:
+                used.add(int(m.group(1)))
+    return used
+
+
 def find_max_number(dest_dir: Path, basename: str, extensions: set[str] | None = None) -> int:
     """Return the maximum numeric suffix used in dest_dir for filenames containing basename_NNN.
 
     If extensions is given, only files whose suffix (lowercased) is in that set are considered.
     """
-    if basename:
-        pattern = re.compile(rf"(?:^|_){re.escape(basename)}_(\d+)", re.IGNORECASE)
-    else:
-        pattern = re.compile(r"(?:^|_)(\d+)(?:$|\.[^.]+$|_)", re.IGNORECASE)
-    max_num = 0
-    if dest_dir.exists():
-        for f in dest_dir.iterdir():
-            if extensions is not None and f.suffix.lower() not in extensions:
-                continue
-            m = pattern.search(f.name)
-            if m:
-                max_num = max(max_num, int(m.group(1)))
-    return max_num
+    return max(_used_numbers(dest_dir, basename, extensions), default=0)
+
+
+def _fill_gap_numbers(used: set[int], count: int) -> list[int]:
+    """Return `count` distinct positive integers not in `used`, smallest first — filling gaps
+    before continuing past the highest used number."""
+    used = set(used)
+    numbers = []
+    n = 1
+    while len(numbers) < count:
+        if n not in used:
+            numbers.append(n)
+            used.add(n)
+        n += 1
+    return numbers
 
 
 def build_rename_plan(
@@ -65,12 +100,16 @@ def build_rename_plan(
     video_extensions: list[str] | None = None,
     video_marker: str = "",
     video_marker_pos: int = 0,
+    fill_gaps: bool = False,
 ) -> list[tuple[Path, Path]]:
     """
     Build (src, dst) pairs for source_paths and their sidecars.
     Raises ValueError for schema errors, FileExistsError if a destination already exists.
 
     For video files, video_marker is inserted at video_marker_pos within the schema parts.
+
+    fill_gaps: when True, numbers are taken from the smallest missing gap in the existing
+    sequence (per image/video counter) instead of always continuing after the current max.
     """
     dirs, parts, numeric_spec = validate_schema(schema_fields)
 
@@ -92,24 +131,29 @@ def build_rename_plan(
 
     pairs: list[tuple[Path, Path]] = []
 
-    next_img_num = 0
-    next_vid_num = 0
     min_digits = 0
+    img_numbers: Iterator[int] = iter(())
+    vid_numbers: Iterator[int] = iter(())
     if numeric_spec:
         min_digits = len(numeric_spec)
-        next_img_num = find_max_number(dest_subdir, basename, img_exts) + 1
-        next_vid_num = find_max_number(dest_subdir, video_basename, video_exts) + 1
+        if fill_gaps:
+            exclude = {p.resolve() for p in source_paths}
+            n_img = sum(1 for s in source_paths if s.suffix.lower() not in video_exts)
+            n_vid = len(source_paths) - n_img
+            used_img = _used_numbers(dest_subdir, basename, img_exts, exclude)
+            used_vid = _used_numbers(dest_subdir, video_basename, video_exts, exclude)
+            img_numbers = iter(_fill_gap_numbers(used_img, n_img))
+            vid_numbers = iter(_fill_gap_numbers(used_vid, n_vid))
+        else:
+            img_numbers = itertools.count(find_max_number(dest_subdir, basename, img_exts) + 1)
+            vid_numbers = itertools.count(find_max_number(dest_subdir, video_basename, video_exts) + 1)
 
     for src in source_paths:
         is_video = src.suffix.lower() in video_exts
 
         if numeric_spec:
-            if is_video:
-                num_str = str(next_vid_num).zfill(min_digits)
-                next_vid_num += 1
-            else:
-                num_str = str(next_img_num).zfill(min_digits)
-                next_img_num += 1
+            num = next(vid_numbers if is_video else img_numbers)
+            num_str = str(num).zfill(min_digits)
         else:
             num_str = ""
 

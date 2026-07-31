@@ -33,11 +33,13 @@ from pbpicat.config import (
     duplicate_catalog,
     list_catalogs,
     load_config,
+    load_fill_number_gaps,
     load_global_config,
     load_history,
     load_last_dest,
     load_last_source_dir,
     qsettings,
+    save_fill_number_gaps,
     save_history,
     save_last_dest,
     save_last_source_dir,
@@ -460,6 +462,14 @@ class MainWindow(QMainWindow):
         browse_btn.clicked.connect(self._browse_dest)
         layout.addWidget(browse_btn)
 
+        self._fill_gaps_chk = QCheckBox(_("Fill gaps"))
+        self._fill_gaps_chk.setToolTip(
+            _("Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)")
+        )
+        self._fill_gaps_chk.setChecked(load_fill_number_gaps())
+        self._fill_gaps_chk.toggled.connect(save_fill_number_gaps)
+        layout.addWidget(self._fill_gaps_chk)
+
         self._rename_all_btn = QPushButton(_("Rename all"))
         self._rename_all_btn.setFixedWidth(130)
         self._rename_all_btn.clicked.connect(self._rename_all)
@@ -805,6 +815,7 @@ class MainWindow(QMainWindow):
                 self._config.get("video_extensions", []),
                 self._config.get("video_marker", ""),
                 self._schema_frame.get_video_marker_pos(),
+                fill_gaps=self._fill_gaps_chk.isChecked(),
             )
             execute_rename(plan)
         except (ValueError, FileExistsError, RuntimeError) as exc:

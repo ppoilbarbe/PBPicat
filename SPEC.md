@@ -120,10 +120,14 @@ Max search uses **numeric** comparison (not lexicographic).
 Correct order: 1, 2, 13, 101, 121 (not 1, 101, 121, 13, 2).
 Images and videos have **separate** counters: each starts from `max_existing + 1` filtering only files of its own extension type.
 
+**Fill gaps mode** (`build_rename_plan(..., fill_gaps=True)`, driven by the "Fill gaps" checkbox — see Zone 1): instead of always continuing after the max, each new number is the smallest positive integer not already used by an existing file of that type in `dest_subdir` (`renamer._used_numbers()`); once all gaps below the max are filled, numbering continues past it exactly like the default mode. Only affects "Rename all" / "Rename selection" (`build_rename_plan`), not "Renumber from 1" (`build_renumber_plan`, which already reassigns 1..N to the whole batch and never calls `find_max_number`). Files that are part of the current rename batch and already sit in `dest_subdir` (same-directory rename) are excluded from the "used" set — otherwise a file would block its own current number from being reused. Padding width behaves as today (`zfill`, not part of gap detection — `"003"` and `"3"` are the same integer).
+
 ## Main Window (4 vertical zones)
 
 ### Zone 1 — Destination
-`[Label Destination:] [QLineEdit DEST_ROOTDIR] [Btn Browse] [Btn Rename All] [Btn Renumber from 1]`
+`[Label Destination:] [QLineEdit DEST_ROOTDIR] [Btn Browse] [Chk Fill gaps] [Btn Rename All] [Btn Renumber from 1]`
+
+**Fill gaps checkbox**: unchecked by default; persisted across restarts in `ui.conf` (`schema/fill_number_gaps`, via `load_fill_number_gaps()`/`save_fill_number_gaps()`) — a session preference, deliberately **not** part of the catalog configuration (`settings.json`). See "Fill gaps mode" above for the numbering behaviour it enables.
 
 ### Zone 2 — Schema
 `QFrame` with N editable `QComboBox` fields interleaved with N+1 `QRadioButton` (one before, one between each field, one after).

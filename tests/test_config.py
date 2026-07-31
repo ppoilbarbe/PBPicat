@@ -224,6 +224,22 @@ def test_save_and_load_video_marker_pos(fake_qs):
 
 
 # ---------------------------------------------------------------------------
+# load_fill_number_gaps / save_fill_number_gaps
+# ---------------------------------------------------------------------------
+
+
+def test_load_fill_number_gaps_default(fake_qs):
+    assert cfg.load_fill_number_gaps() is False
+
+
+def test_save_and_load_fill_number_gaps(fake_qs):
+    cfg.save_fill_number_gaps(True)
+    assert cfg.load_fill_number_gaps() is True
+    cfg.save_fill_number_gaps(False)
+    assert cfg.load_fill_number_gaps() is False
+
+
+# ---------------------------------------------------------------------------
 # qsettings()
 # ---------------------------------------------------------------------------
 

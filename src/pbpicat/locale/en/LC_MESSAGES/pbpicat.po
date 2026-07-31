@@ -457,6 +457,12 @@ msgstr "Destination root directory (DEST_ROOTDIR)…"
 msgid "Browse…"
 msgstr "Browse…"
 
+msgid "Fill gaps"
+msgstr "Fill gaps"
+
+msgid "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+msgstr "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+
 msgid "Rename all"
 msgstr "Rename all"
 

@@ -407,3 +407,13 @@ def save_video_marker_pos(pos: int) -> None:
     qs = qsettings()
     qs.setValue("schema/video_marker_pos", pos)
     qs.sync()
+
+
+def load_fill_number_gaps() -> bool:
+    return bool(qsettings().value("schema/fill_number_gaps", False, type=bool))
+
+
+def save_fill_number_gaps(value: bool) -> None:
+    qs = qsettings()
+    qs.setValue("schema/fill_number_gaps", value)
+    qs.sync()

@@ -591,6 +591,14 @@ msgid "Browse…"
 msgstr "浏览…"
 
 # ==AUTO== Automatically translated
+msgid "Fill gaps"
+msgstr "填补编号空缺"
+
+# ==AUTO== Automatically translated
+msgid "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+msgstr "填补编号空缺，而非取最大编号（适用于“全部重命名” / “重命名所选”）"
+
+# ==AUTO== Automatically translated
 msgid "Rename all"
 msgstr "全部重命名"
 

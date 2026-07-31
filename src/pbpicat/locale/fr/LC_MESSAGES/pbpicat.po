@@ -462,6 +462,12 @@ msgstr "Répertoire racine de destination (DEST_ROOTDIR)…"
 msgid "Browse…"
 msgstr "Parcourir…"
 
+msgid "Fill gaps"
+msgstr "Combler les trous"
+
+msgid "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+msgstr "Combler les trous de numérotation au lieu de prendre le numéro max (s'applique à Renommer tout / Renommer la sélection)"
+
 msgid "Rename all"
 msgstr "Renommer tout"
 

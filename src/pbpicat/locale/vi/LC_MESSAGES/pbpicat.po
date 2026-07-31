@@ -591,6 +591,14 @@ msgid "Browse…"
 msgstr "Duyệt…"
 
 # ==AUTO== Automatically translated
+msgid "Fill gaps"
+msgstr "Lấp khoảng trống"
+
+# ==AUTO== Automatically translated
+msgid "Fill numbering gaps instead of taking the max number (applies to Rename all / Rename selection)"
+msgstr "Lấp các khoảng trống trong đánh số thay vì lấy số lớn nhất (áp dụng cho Đổi tên tất cả / Đổi tên đã chọn)"
+
+# ==AUTO== Automatically translated
 msgid "Rename all"
 msgstr "Đổi tên tất cả"
 
