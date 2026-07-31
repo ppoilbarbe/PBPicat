@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-07-31
+
 ### Added
 
 - **File list: image resolution and human-readable file size shown under the file name** — e.g. `1920×1080  ·  32.5 KB`. File size appears as soon as a directory loads; resolution is read from the image header only (no full decode) and piggybacks on the existing lazy thumbnail worker, so it stays cheap even for large directories. Both are refreshed after a rotation, so a 90°/270° rotation's width/height swap and the file's new size are reflected immediately.
