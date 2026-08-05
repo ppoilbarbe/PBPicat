@@ -38,6 +38,21 @@ import shutil as _shutil
 _jpegtran = _shutil.which("jpegtran")
 _binaries = [(_jpegtran, ".")] if _jpegtran else []
 
+# pyexiv2 loads its native libs via ctypes.CDLL() with a dynamically built path
+# (pyexiv2/lib/__init__.py), so PyInstaller's static import analysis never
+# discovers them and they must be collected here explicitly.
+# find_spec() locates the package without importing it: importing pyexiv2.lib
+# would run its ctypes.CDLL() call here too, on the build machine.
+import importlib.util as _importlib_util
+
+_pyexiv2_spec = _importlib_util.find_spec("pyexiv2")
+_pyexiv2_lib_dir = Path(_pyexiv2_spec.origin).parent / "lib"
+_binaries += [
+    (str(f), "pyexiv2/lib")
+    for f in sorted(_pyexiv2_lib_dir.iterdir())
+    if f.suffix in (".so", ".dylib", ".dll", ".pyd")
+]
+
 from PyInstaller.utils.hooks import copy_metadata
 
 _locale_root = Path("src/pbpicat/locale")

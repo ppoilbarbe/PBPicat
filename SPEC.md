@@ -301,6 +301,7 @@ Optional positional CLI arg `catalog` (name, not path; may be hidden — for a l
 ## Distribution (`pbpicat.spec`)
 PyInstaller one-file build; artifact named `PBPicat-<version>-<os>-<arch>`.
 `.mo` files, all `resources/*.svg`, and the package `dist-info` (via `copy_metadata("pbpicat")`) bundled as datas; the dist-info is required so `importlib.metadata.version("pbpicat")` works at runtime.
+`pyexiv2/lib/*.{so,dylib,dll,pyd}` bundled explicitly as binaries (into `pyexiv2/lib/`): pyexiv2 loads these via `ctypes.CDLL()` with a runtime-built path, invisible to PyInstaller's static analysis.
 macOS builds as `.app` bundle.
 Version string: `tools/git_version.sh` locally (exact tag + clean tree → `x.y.z`, else `dev`);
 CI reads `github.ref_name` and sets `PBPICAT_VERSION` before calling PyInstaller.

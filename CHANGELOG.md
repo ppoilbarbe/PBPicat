@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-08-05
+
 ### Added
 
 - **Metadata panel in the image viewer** — a new checkable "Metadata" toolbar button (in its own separator group, right of the file actions) opens a resizable side panel showing EXIF, IPTC, and XMP metadata (embedded in the file, plus the image's `.xmp` sidecar if one exists) as a formatted HTML table, read via the new `pyexiv2` dependency. The panel only reads metadata while visible — toggling it off (or navigating between images with it hidden) skips the read entirely, so browsing a directory stays fast. Its side (left/right of the image) is configurable in `Settings → Catalog configuration… → Images` ("Metadata panel side"); panel visibility and the splitter's size are remembered across viewer sessions. New shortcut: `I` toggles the panel.
@@ -16,6 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- **`make dist` executable crashed on startup with `OSError: .../pyexiv2/lib/libexiv2.so: cannot open shared object file`** — `pyexiv2` loads `libexiv2.so`/`.dylib`/`.dll` via `ctypes.CDLL()` with a path built at runtime from `os.path.dirname(__file__)`, so PyInstaller's static import analysis never discovers it and the file was silently missing from the bundle. `pbpicat.spec` now explicitly collects every native library (`.so`/`.dylib`/`.dll`/`.pyd`) from `pyexiv2/lib/` into the same relative path in the bundle.
 - **Switching catalogs (or, more rarely, quickly changing directories) could show thumbnails left over from the previous catalog/directory** — `_stop_worker()`'s blocking wait only guarantees the background thumbnail-decode thread has stopped *running*; it cannot un-post a `thumbnail_ready` event already queued (cross-thread signal) at the moment cancellation was noticed, since the worker only checks its cancel flag between files, not mid-decode. Such a stale signal could still land after the file list had been rebuilt for the new catalog's directory, painting an unrelated file's old thumbnail onto whatever now occupied that row index — and wrongly mark that row's new path as already loaded, permanently starving it of its real thumbnail (viewport-lazy loading treats the loaded-set as its sole "already have it" gate). `thumbnail_ready` now carries the path it was decoded for, and the handler discards the signal unless the row still shows that exact path. Also: switching catalogs no longer wastefully refreshes the file list for the *old* directory before switching to the new one (`MainWindow._switch_to_catalog()` now selects the new directory first), which was the main reason this raced so reliably on catalog switches specifically.
 - **Image viewer always opened tiny, pinned to the top-left corner, never restoring its previous size/position** — `ImageViewer.__init__()` only checked whether a geometry had ever been *saved*, not whether `restoreGeometry()` actually *succeeded* in applying it; `restoreGeometry()` can legitimately return `False` and do nothing (e.g. the saved geometry belongs to a screen configuration that no longer exists), which silently skipped the 75%-of-screen fallback sizing too, leaving the window at Qt's tiny built-in default. The fallback is now driven by whether the restore actually applied.
 
