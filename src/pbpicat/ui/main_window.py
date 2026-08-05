@@ -1048,10 +1048,14 @@ class MainWindow(QMainWindow):
         self._undo_stack.clear()
         self._update_undo_btn()
         self._schema_frame.rebuild(self._config)
+        # Select the new catalog's directory before reconfigure(): otherwise reconfigure()'s
+        # internal refresh() would rebuild the file list for the *old* directory first (still
+        # current at that point), wastefully scanning/decoding thumbnails for it right before
+        # select_path() below tears it down again for the real, new directory.
+        self._file_panel.dir_tree.select_path(load_last_source_dir())
         self._file_panel.reconfigure(self._config)
         self._reload_filter_history()
         self._dest_edit.setText(load_last_dest())
-        self._file_panel.dir_tree.select_path(load_last_source_dir())
         self._update_title()
         self._status.showMessage(_('Switched to catalog "{name}".').format(name=name))
 

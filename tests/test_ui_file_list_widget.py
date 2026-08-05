@@ -133,7 +133,7 @@ def test_thumbnail_worker_run_skips_non_image(tmp_path):
     f.write_text("text")
     worker = _ThumbnailWorker([f], 64, 64, {".jpg"})
     emitted = []
-    worker.thumbnail_ready.connect(lambda row, img: emitted.append(row))
+    worker.thumbnail_ready.connect(lambda row, path, img, res: emitted.append(row))
     worker.run()
     assert emitted == []
 
@@ -144,7 +144,7 @@ def test_thumbnail_worker_run_cancelled_immediately(tmp_path):
     worker = _ThumbnailWorker([f], 64, 64, {".jpg"})
     worker._cancelled = True
     emitted = []
-    worker.thumbnail_ready.connect(lambda row, img: emitted.append(row))
+    worker.thumbnail_ready.connect(lambda row, path, img, res: emitted.append(row))
     worker.run()
     assert emitted == []
 
@@ -407,6 +407,7 @@ def test_reconfigure_with_visible_image_viewer(qtbot, catalog_env, tmp_path):
     w._image_viewer = mock_viewer
     w.reconfigure(dict(config))
     mock_viewer.set_auto_rotate.assert_called_once()
+    mock_viewer.set_metadata_panel_side.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
@@ -874,11 +875,11 @@ def test_on_selection_changed_rebuilding(populated_widget):
 
 
 def test_on_thumbnail_ready_null_image(qtbot, base_config, tmp_path):
-    _img(tmp_path / "img.png")
+    p = _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    w._on_thumbnail_ready(0, QImage(), QSize())
+    w._on_thumbnail_ready(0, p, QImage(), QSize())
     from PySide6.QtWidgets import QLabel
 
     cell = w.cellWidget(0, 0)
@@ -887,30 +888,45 @@ def test_on_thumbnail_ready_null_image(qtbot, base_config, tmp_path):
 
 
 def test_on_thumbnail_ready_invalid_row(qtbot, base_config, tmp_path):
-    _img(tmp_path / "img.png")
+    p = _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    w._on_thumbnail_ready(999, QImage(), QSize())  # no crash
+    w._on_thumbnail_ready(999, p, QImage(), QSize())  # no crash
 
 
 def test_on_thumbnail_ready_adds_resolution_to_name_cell(qtbot, base_config, tmp_path):
-    _img(tmp_path / "img.png")
+    p = _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    w._on_thumbnail_ready(0, QImage(), QSize(1920, 1080))
+    w._on_thumbnail_ready(0, p, QImage(), QSize(1920, 1080))
     assert "1920×1080" in w.item(0, w._NAME_COL).text()
 
 
 def test_on_thumbnail_ready_invalid_resolution_leaves_name_cell_unchanged(qtbot, base_config, tmp_path):
-    _img(tmp_path / "img.png")
+    p = _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
     before = w.item(0, w._NAME_COL).text()
-    w._on_thumbnail_ready(0, QImage(), QSize())  # invalid size: not found yet
+    w._on_thumbnail_ready(0, p, QImage(), QSize())  # invalid size: not found yet
     assert w.item(0, w._NAME_COL).text() == before
+
+
+def test_on_thumbnail_ready_stale_path_ignored(qtbot, base_config, tmp_path):
+    """A signal for a path that no longer matches the row (stale, from a cancelled
+    worker after a directory/catalog switch) must be dropped, not painted."""
+    p = _img(tmp_path / "img.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    before = w.item(0, w._NAME_COL).text()
+    stale_path = tmp_path / "does_not_match.png"
+    w._on_thumbnail_ready(0, stale_path, QImage(), QSize(1920, 1080))
+    assert w.item(0, w._NAME_COL).text() == before
+    assert stale_path not in w._thumb_loaded
+    assert p not in w._thumb_loaded
 
 
 # ---------------------------------------------------------------------------
@@ -972,9 +988,12 @@ def test_show_image_creates_viewer(qtbot, catalog_env, sample_png, monkeypatch):
     # Mock ImageViewer to avoid Qt window creation
     mock_viewer = MagicMock()
     mock_viewer.isVisible.return_value = True
-    with patch("pbpicat.ui.file_list_widget.ImageViewer", return_value=mock_viewer):
+    with patch("pbpicat.ui.file_list_widget.ImageViewer", return_value=mock_viewer) as mock_cls:
         w._show_image(sample_png)
         mock_viewer.show.assert_called_once()
+        _args, kwargs = mock_cls.call_args
+        assert kwargs["sidecar_extensions"] == config["sidecar_extensions"]
+        assert kwargs["metadata_panel_side"] == config["metadata_panel_side"]
 
 
 def test_show_image_reuses_viewer(qtbot, catalog_env, sample_png, monkeypatch):
@@ -1318,11 +1337,12 @@ def test_thumbnail_worker_run_loads_image(tmp_path):
     _img(f)
     worker = _ThumbnailWorker([f], 64, 64, {".png"})
     emitted = []
-    worker.thumbnail_ready.connect(lambda row, img: emitted.append((row, img)))
+    worker.thumbnail_ready.connect(lambda row, path, img, res: emitted.append((row, path, img)))
     worker.run()
     assert len(emitted) == 1
     assert emitted[0][0] == 0
-    assert not emitted[0][1].isNull()
+    assert emitted[0][1] == f
+    assert not emitted[0][2].isNull()
 
 
 def test_thumbnail_worker_run_with_explicit_rows(tmp_path):
@@ -1330,7 +1350,7 @@ def test_thumbnail_worker_run_with_explicit_rows(tmp_path):
     _img(f)
     worker = _ThumbnailWorker([f], 64, 64, {".png"}, rows=[5])
     emitted = []
-    worker.thumbnail_ready.connect(lambda row, img: emitted.append(row))
+    worker.thumbnail_ready.connect(lambda row, path, img, res: emitted.append(row))
     worker.run()
     assert emitted == [5]
 

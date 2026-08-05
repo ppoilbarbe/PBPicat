@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QScrollArea,
     QSizePolicy,
+    QSplitter,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -18,6 +19,9 @@ from pbpicat.image_io import load_pixmap
 
 from .icons import ICON_SIZE as _ICON_SIZE
 from .icons import get_icon
+from .metadata_panel import MetadataPanel
+
+_METADATA_PANEL_DEFAULT_WIDTH = 320
 
 
 class _ZoomMode(Enum):
@@ -51,6 +55,8 @@ class ImageViewer(QWidget):
         zoom_step_percent: int = DEFAULTS["zoom_step_percent"],
         zoom_max_percent: int = DEFAULTS["zoom_max_percent"],
         auto_rotate: bool = True,
+        sidecar_extensions: list[str] | None = None,
+        metadata_panel_side: str = DEFAULTS["metadata_panel_side"],
     ):
         super().__init__(parent, Qt.Window)
         self.setMinimumSize(300, 200)
@@ -63,8 +69,11 @@ class ImageViewer(QWidget):
         self._drag_pos: QPoint | None = None
         self._rotate_auto_btn: QToolButton | None = None
         self._reset_exif_btn: QToolButton | None = None
+        self._metadata_btn: QToolButton | None = None
         self._auto_rotate = auto_rotate
         self._current_path: Path | None = None
+        self._sidecar_extensions = sidecar_extensions or []
+        self._metadata_side = metadata_panel_side
 
         self._setup_ui()
         self._setup_shortcuts()
@@ -72,6 +81,11 @@ class ImageViewer(QWidget):
         saved_geom = app_qsettings().value("image_viewer/geometry")
         if saved_geom:
             self.restoreGeometry(saved_geom)
+        saved_splitter = app_qsettings().value("image_viewer/metadata_splitter_state")
+        if saved_splitter:
+            self._splitter.restoreState(saved_splitter)
+        visible = bool(app_qsettings().value("image_viewer/metadata_panel_visible", False, type=bool))
+        self._metadata_btn.setChecked(visible)
 
         self.load_image(image_path)
 
@@ -103,7 +117,13 @@ class ImageViewer(QWidget):
         self._label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self._label.installEventFilter(self)
         self._scroll.setWidget(self._label)
-        root.addWidget(self._scroll, stretch=1)
+
+        self._metadata_panel = MetadataPanel()
+        self._metadata_panel.setVisible(False)
+
+        self._splitter = QSplitter(Qt.Horizontal)
+        self._place_metadata_panel(self._metadata_side)
+        root.addWidget(self._splitter, stretch=1)
 
     def _build_toolbar(self) -> QHBoxLayout:
         tb = QHBoxLayout()
@@ -198,6 +218,19 @@ class ImageViewer(QWidget):
             btn.clicked.connect(callback)
             tb.addWidget(btn)
 
+        sep4 = QToolButton()
+        sep4.setEnabled(False)
+        sep4.setFixedWidth(8)
+        tb.addWidget(sep4)
+
+        self._metadata_btn = QToolButton()
+        self._metadata_btn.setIcon(get_icon("document-properties", text_fallback="ℹ"))
+        self._metadata_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+        self._metadata_btn.setToolTip(_("Show metadata panel") + "  I")
+        self._metadata_btn.setCheckable(True)
+        self._metadata_btn.toggled.connect(self._on_metadata_toggled)
+        tb.addWidget(self._metadata_btn)
+
         tb.addStretch()
         self._zoom_label = QLabel()
         self._zoom_label.setMinimumWidth(180)
@@ -228,6 +261,7 @@ class ImageViewer(QWidget):
             ),
             (QKeySequence(Qt.Key.Key_Delete), self.delete_requested),
             (QKeySequence(Qt.Key.Key_Escape), self.close),
+            (QKeySequence(Qt.Key.Key_I), self._act_toggle_metadata),
         ]
         for seq, slot in pairs:
             sc = QShortcut(seq, self)
@@ -256,10 +290,44 @@ class ImageViewer(QWidget):
             self._rotate_auto_btn.setEnabled(has_exif)
             self._reset_exif_btn.setEnabled(has_exif)
         self._apply_zoom(center=True)
+        if self._metadata_btn is not None and self._metadata_btn.isChecked():
+            self._metadata_panel.load(path, self._sidecar_extensions)
 
     @property
     def current_path(self) -> Path | None:
         return self._current_path
+
+    def set_metadata_panel_side(self, side: str) -> None:
+        if side == self._metadata_side:
+            return
+        self._metadata_side = side
+        self._place_metadata_panel(side)
+
+    def _place_metadata_panel(self, side: str) -> None:
+        # QSplitter.insertWidget() moves a widget already in the splitter to the new index.
+        first, second = (self._metadata_panel, self._scroll) if side == "left" else (self._scroll, self._metadata_panel)
+        self._splitter.insertWidget(0, first)
+        self._splitter.insertWidget(1, second)
+        self._splitter.setStretchFactor(self._splitter.indexOf(self._scroll), 1)
+        self._splitter.setStretchFactor(self._splitter.indexOf(self._metadata_panel), 0)
+
+    def _on_metadata_toggled(self, checked: bool) -> None:
+        self._metadata_panel.setVisible(checked)
+        if checked:
+            if self._splitter.sizes()[self._splitter.indexOf(self._metadata_panel)] == 0:
+                total = sum(self._splitter.sizes()) or self.width()
+                sizes = [0, 0]
+                sizes[self._splitter.indexOf(self._metadata_panel)] = _METADATA_PANEL_DEFAULT_WIDTH
+                sizes[self._splitter.indexOf(self._scroll)] = max(1, total - _METADATA_PANEL_DEFAULT_WIDTH)
+                self._splitter.setSizes(sizes)
+            if self._current_path is not None:
+                self._metadata_panel.load(self._current_path, self._sidecar_extensions)
+        else:
+            self._metadata_panel.clear()
+        app_qsettings().setValue("image_viewer/metadata_panel_visible", checked)
+
+    def _act_toggle_metadata(self) -> None:
+        self._metadata_btn.toggle()
 
     def set_auto_rotate(self, value: bool) -> None:
         if self._auto_rotate == value:
@@ -273,6 +341,7 @@ class ImageViewer(QWidget):
         self._label.setPixmap(QPixmap())
         self._label.setText(text)
         self._zoom_label.setText("")
+        self._metadata_panel.clear()
 
     # ------------------------------------------------------------------
     # Zoom actions
@@ -458,6 +527,7 @@ class ImageViewer(QWidget):
 
     def closeEvent(self, event) -> None:  # noqa: N802
         app_qsettings().setValue("image_viewer/geometry", self.saveGeometry())
+        app_qsettings().setValue("image_viewer/metadata_splitter_state", self._splitter.saveState())
         super().closeEvent(event)
 
     def resizeEvent(self, event) -> None:  # noqa: N802

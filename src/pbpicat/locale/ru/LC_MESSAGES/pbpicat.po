@@ -55,6 +55,26 @@ msgstr ""
 "Установите libjpeg-turbo для активации этой функции."
 
 # ==AUTO== Automatically translated
+msgid "EXIF"
+msgstr "EXIF"
+
+# ==AUTO== Automatically translated
+msgid "IPTC"
+msgstr "IPTC"
+
+# ==AUTO== Automatically translated
+msgid "XMP"
+msgstr "XMP"
+
+# ==AUTO== Automatically translated
+msgid "Sidecar file"
+msgstr "Файл sidecar"
+
+# ==AUTO== Automatically translated
+msgid "XMP (sidecar)"
+msgstr "XMP (sidecar)"
+
+# ==AUTO== Automatically translated
 msgid "Open with"
 msgstr "Открыть с помощью"
 
@@ -260,6 +280,10 @@ msgstr "Применить ориентацию EXIF"
 # ==AUTO== Automatically translated
 msgid "Reset EXIF orientation"
 msgstr "Сбросить ориентацию EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Show metadata panel"
+msgstr "Показать панель метаданных"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -872,6 +896,22 @@ msgid "Platform"
 msgstr "Платформа"
 
 # ==AUTO== Automatically translated
+msgid "Name"
+msgstr "Имя"
+
+# ==AUTO== Automatically translated
+msgid "Size"
+msgstr "Размер"
+
+# ==AUTO== Automatically translated
+msgid "Dimensions"
+msgstr "Разрешение"
+
+# ==AUTO== Automatically translated
+msgid "File"
+msgstr "Файл"
+
+# ==AUTO== Automatically translated
 msgid "<b>Rename schema</b>"
 msgstr "<b>Схема переименования</b>"
 
@@ -1000,6 +1040,22 @@ msgstr "Максимально допустимый масштаб в просм
 # ==AUTO== Automatically translated
 msgid "Max zoom:"
 msgstr "Макс. масштаб:"
+
+# ==AUTO== Automatically translated
+msgid "Left"
+msgstr "Слева"
+
+# ==AUTO== Automatically translated
+msgid "Right"
+msgstr "Справа"
+
+# ==AUTO== Automatically translated
+msgid "Side of the image viewer where the metadata panel opens"
+msgstr "Сторона окна просмотра изображений, на которой открывается панель метаданных"
+
+# ==AUTO== Automatically translated
+msgid "Metadata panel side:"
+msgstr "Сторона панели метаданных:"
 
 # ==AUTO== Automatically translated
 msgid "Confirm deletions"

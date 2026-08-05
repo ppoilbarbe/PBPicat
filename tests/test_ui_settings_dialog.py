@@ -266,6 +266,23 @@ def test_image_tab_apply_to_confirm_deletions(qtbot, catalog_env, config):
     assert out["confirm_deletions"] is False
 
 
+def test_image_tab_metadata_side_default_selection(qtbot, catalog_env, config):
+    config = {**config, "metadata_panel_side": "left"}
+    tab = _ImageTab(config)
+    qtbot.addWidget(tab)
+    assert tab._metadata_side_combo.currentData() == "left"
+
+
+def test_image_tab_apply_to_metadata_side(qtbot, catalog_env, config):
+    tab = _ImageTab(config)
+    qtbot.addWidget(tab)
+    idx = tab._metadata_side_combo.findData("left")
+    tab._metadata_side_combo.setCurrentIndex(idx)
+    out = {}
+    tab.apply_to(out)
+    assert out["metadata_panel_side"] == "left"
+
+
 # ---------------------------------------------------------------------------
 # _VideoTab
 # ---------------------------------------------------------------------------

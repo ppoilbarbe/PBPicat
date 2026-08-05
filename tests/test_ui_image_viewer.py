@@ -340,7 +340,7 @@ def test_close_event_saves_geometry(qtbot, catalog_env, sample_png, monkeypatch)
     viewer = ImageViewer(sample_png)
     qtbot.addWidget(viewer)
     viewer.close()
-    mock_qs.setValue.assert_called_with("image_viewer/geometry", viewer.saveGeometry())
+    mock_qs.setValue.assert_any_call("image_viewer/geometry", viewer.saveGeometry())
 
 
 def test_resize_event_triggers_apply_zoom(qtbot, catalog_env, sample_png):
@@ -470,3 +470,127 @@ def test_zoom_to_point_zero_size_zoom_out(qtbot, catalog_env, sample_png, monkey
     viewer._zoom_to_point(QPoint(10, 10), direction=-1)
     assert viewer._mode == _ZoomMode.CUSTOM
     assert viewer._current_factor() < factor_before
+
+
+# ---------------------------------------------------------------------------
+# Metadata panel
+# ---------------------------------------------------------------------------
+
+
+def test_metadata_panel_hidden_by_default(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    assert viewer._metadata_btn.isChecked() is False
+    assert viewer._metadata_panel.isHidden() is True
+
+
+def test_metadata_panel_not_loaded_while_hidden(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_panel.load = MagicMock()
+    viewer.load_image(sample_png)
+    viewer._metadata_panel.load.assert_not_called()
+
+
+def test_toggling_metadata_button_shows_and_loads_panel(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    assert viewer._metadata_panel.isHidden() is False
+    assert "test.png" in viewer._metadata_panel._browser.toPlainText()
+
+
+def test_unchecking_metadata_button_clears_panel(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    viewer._metadata_btn.setChecked(False)
+    assert viewer._metadata_panel.isHidden() is True
+    assert viewer._metadata_panel._browser.toPlainText() == ""
+
+
+def test_load_image_refreshes_visible_metadata_panel(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    viewer.load_image(other)
+    assert "other.png" in viewer._metadata_panel._browser.toPlainText()
+
+
+def test_shortcut_i_toggles_metadata_panel(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._act_toggle_metadata()
+    assert viewer._metadata_btn.isChecked() is True
+
+
+def test_show_message_clears_metadata_panel(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    viewer.show_message("nope")
+    assert viewer._metadata_panel._browser.toPlainText() == ""
+
+
+def test_metadata_panel_side_right_by_default(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    assert viewer._splitter.widget(0) is viewer._scroll
+    assert viewer._splitter.widget(1) is viewer._metadata_panel
+
+
+def test_metadata_panel_side_left(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png, metadata_panel_side="left")
+    qtbot.addWidget(viewer)
+    assert viewer._splitter.widget(0) is viewer._metadata_panel
+    assert viewer._splitter.widget(1) is viewer._scroll
+
+
+def test_set_metadata_panel_side_live_update(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_metadata_panel_side("left")
+    assert viewer._splitter.widget(0) is viewer._metadata_panel
+    assert viewer._splitter.widget(1) is viewer._scroll
+
+
+def test_set_metadata_panel_side_noop_when_unchanged(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    splitter = viewer._splitter
+    viewer.set_metadata_panel_side("right")
+    assert viewer._splitter is splitter
+    assert viewer._splitter.widget(0) is viewer._scroll
+
+
+def test_close_event_saves_metadata_state(qtbot, catalog_env, sample_png, monkeypatch):
+    mock_qs = MagicMock()
+    mock_qs.value.return_value = None
+    monkeypatch.setattr("pbpicat.ui.image_viewer.app_qsettings", lambda: mock_qs)
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    viewer.close()
+    mock_qs.setValue.assert_any_call("image_viewer/metadata_panel_visible", True)
+    mock_qs.setValue.assert_any_call("image_viewer/metadata_splitter_state", viewer._splitter.saveState())
+
+
+def test_sidecar_extensions_passed_to_metadata_panel(qtbot, catalog_env, tmp_path):
+    from PIL import Image as _Image
+
+    image = tmp_path / "photo.png"
+    _Image.new("RGB", (5, 5)).save(str(image))
+    (tmp_path / "photo.xmp").write_text(
+        '<x:xmpmeta xmlns:x="adobe:ns:meta/">'
+        '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'
+        '<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">'
+        '<dc:title><rdf:Alt><rdf:li xml:lang="x-default">Hi</rdf:li></rdf:Alt></dc:title>'
+        "</rdf:Description></rdf:RDF></x:xmpmeta>"
+    )
+    viewer = ImageViewer(image, sidecar_extensions=[".xmp"])
+    qtbot.addWidget(viewer)
+    viewer._metadata_btn.setChecked(True)
+    text = viewer._metadata_panel._browser.toPlainText()
+    assert "photo.xmp" in text

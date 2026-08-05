@@ -129,6 +129,7 @@ DEFAULTS = {
     "confirm_deletions": True,
     "use_trash": True,
     "exif_auto_rotate": True,
+    "metadata_panel_side": "right",
 }
 
 _DEFAULT_GLOBAL_CONFIG: dict = {

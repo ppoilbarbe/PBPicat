@@ -335,6 +335,17 @@ class _ImageTab(QWidget):
         self._max_spin.setValue(self._config.get("zoom_max_percent", DEFAULTS["zoom_max_percent"]))
         form.addRow(_("Max zoom:"), self._max_spin)
 
+        self._metadata_side_combo = QComboBox()
+        self._metadata_side_combo.addItem(_("Left"), "left")
+        self._metadata_side_combo.addItem(_("Right"), "right")
+        self._metadata_side_combo.setToolTip(_("Side of the image viewer where the metadata panel opens"))
+        idx = self._metadata_side_combo.findData(
+            self._config.get("metadata_panel_side", DEFAULTS["metadata_panel_side"])
+        )
+        if idx >= 0:
+            self._metadata_side_combo.setCurrentIndex(idx)
+        form.addRow(_("Metadata panel side:"), self._metadata_side_combo)
+
         root.addLayout(form)
 
         self._confirm_deletions_cb = QCheckBox(_("Confirm deletions"))
@@ -387,6 +398,7 @@ class _ImageTab(QWidget):
         config["zoom_max_percent"] = self._max_spin.value()
         config["confirm_deletions"] = self._confirm_deletions_cb.isChecked()
         config["exif_auto_rotate"] = self._exif_auto_rotate_cb.isChecked()
+        config["metadata_panel_side"] = self._metadata_side_combo.currentData()
 
 
 class _BehaviourTab(QWidget):

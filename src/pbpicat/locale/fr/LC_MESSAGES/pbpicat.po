@@ -47,6 +47,21 @@ msgstr ""
 "La rotation JPEG sans perte nécessite jpegtran.\n"
 "Installez libjpeg-turbo pour activer cette fonctionnalité."
 
+msgid "EXIF"
+msgstr "EXIF"
+
+msgid "IPTC"
+msgstr "IPTC"
+
+msgid "XMP"
+msgstr "XMP"
+
+msgid "Sidecar file"
+msgstr "Fichier sidecar"
+
+msgid "XMP (sidecar)"
+msgstr "XMP (sidecar)"
+
 msgid "Open with"
 msgstr "Ouvrir avec"
 
@@ -209,6 +224,9 @@ msgstr "Appliquer l'orientation EXIF"
 
 msgid "Reset EXIF orientation"
 msgstr "Réinitialiser l'orientation EXIF"
+
+msgid "Show metadata panel"
+msgstr "Afficher le panneau des métadonnées"
 
 msgid "Cannot load image."
 msgstr "Impossible de charger l'image."
@@ -677,6 +695,18 @@ msgstr "Auteurs"
 msgid "Platform"
 msgstr "Plateforme"
 
+msgid "Name"
+msgstr "Nom"
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Dimensions"
+msgstr "Dimensions"
+
+msgid "File"
+msgstr "Fichier"
+
 msgid "<b>Rename schema</b>"
 msgstr "<b>Schéma de renommage</b>"
 
@@ -775,6 +805,18 @@ msgstr "Zoom maximum autorisé dans le visualiseur d'images"
 
 msgid "Max zoom:"
 msgstr "Zoom max :"
+
+msgid "Left"
+msgstr "Gauche"
+
+msgid "Right"
+msgstr "Droite"
+
+msgid "Side of the image viewer where the metadata panel opens"
+msgstr "Côté de la visionneuse d'images où s'ouvre le panneau des métadonnées"
+
+msgid "Metadata panel side:"
+msgstr "Côté du panneau des métadonnées :"
 
 msgid "Confirm deletions"
 msgstr "Confirmation des suppressions"

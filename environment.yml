@@ -12,12 +12,12 @@ dependencies:
   # Image support (Pillow fallback + HEIC/HEIF)
   - pillow
   - pillow-heif
-  # EXIF manipulation (strip orientation tag after JPEG rotation)
-  - piexif
   # Tests
   - pytest
   - pytest-qt
   - pytest-cov
+  # Independent EXIF read/write for building & verifying test fixtures (not used by app code)
+  - piexif
   # Lint / hooks
   - ruff
   - pre-commit
@@ -35,3 +35,6 @@ dependencies:
   - make
   # Dev install (editable — lancez ensuite : make install)
   - pip
+  - pip:
+      # EXIF/IPTC/XMP metadata reading (image viewer metadata panel) — not on conda-forge
+      - pyexiv2>=2.14

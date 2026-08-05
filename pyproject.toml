@@ -24,7 +24,7 @@ dependencies = [
     "PySide6>=6.6.0",
     "Pillow>=10.0",
     "pillow-heif>=0.16",
-    "piexif>=1.1",
+    "pyexiv2>=2.14",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +37,8 @@ dev = [
     "sphinx>=7",
     "sphinx-rtd-theme>=2",
     "sphinx-autobuild>=2024",
+    # Independent EXIF read/write for building & verifying test fixtures (not used by app code)
+    "piexif>=1.1",
 ]
 
 [project.scripts]

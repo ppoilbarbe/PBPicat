@@ -87,7 +87,7 @@ class _SchemaProposalDialog(QDialog):
 class _ThumbnailWorker(QThread):
     """Load thumbnails in a background thread using QImageReader (thread-safe)."""
 
-    thumbnail_ready = Signal(int, QImage, QSize)
+    thumbnail_ready = Signal(int, object, QImage, QSize)  # row, path, image, resolution
 
     def __init__(
         self,
@@ -119,7 +119,7 @@ class _ThumbnailWorker(QThread):
                 continue
             image = load_qimage(path, self._w, self._h, auto_rotate=self._auto_rotate)
             resolution = image_size(path, auto_rotate=self._auto_rotate) or QSize()
-            self.thumbnail_ready.emit(self._rows[i] if self._rows else i, image, resolution)
+            self.thumbnail_ready.emit(self._rows[i] if self._rows else i, path, image, resolution)
 
 
 class FileListWidget(QTableWidget):
@@ -224,6 +224,7 @@ class FileListWidget(QTableWidget):
         self._zoom_step_percent: int = config.get("zoom_step_percent", 25)
         self._zoom_max_percent: int = config.get("zoom_max_percent", 3200)
         self._exif_auto_rotate: bool = config.get("exif_auto_rotate", True)
+        self._metadata_panel_side: str = config.get("metadata_panel_side", "right")
 
     def _setup_table(self) -> None:
         self.setHorizontalHeaderLabels([_("Preview"), _("File name"), _("Sidecar")])
@@ -326,6 +327,7 @@ class FileListWidget(QTableWidget):
         self.setIconSize(QSize(self._thumb_w, self._thumb_h))
         if self._image_viewer and self._image_viewer.isVisible():
             self._image_viewer.set_auto_rotate(self._exif_auto_rotate)
+            self._image_viewer.set_metadata_panel_side(self._metadata_panel_side)
         self.refresh()
 
     def set_sidecar_filter(self, pattern: str) -> None:
@@ -684,11 +686,22 @@ class FileListWidget(QTableWidget):
                 worker.finished.connect(worker.deleteLater)
         self._visible_workers = []
 
-    def _on_thumbnail_ready(self, row: int, image: QImage, resolution: QSize) -> None:
-        if row < len(self._display_data):
-            self._thumb_loaded.add(self._display_data[row][0])
-            if resolution.isValid():
-                self._update_name_cell(row, self._display_data[row][0], resolution=resolution)
+    def _on_thumbnail_ready(self, row: int, path: Path, image: QImage, resolution: QSize) -> None:
+        """Apply a decoded thumbnail to its row — unless the table was rebuilt in the
+        meantime (directory/catalog switch, filter/sort change): `_stop_worker()`'s
+        blocking wait() stops the worker thread, but cannot un-post a thumbnail_ready
+        event already queued (cross-thread signal) before cancellation was noticed.
+        Without this path check, such a stale signal would paint a thumbnail from the
+        previous directory onto whatever unrelated file now occupies that row index —
+        and wrongly mark that file's path as loaded, permanently starving it of its
+        real thumbnail for the lifetime of this table (viewport-lazy loading trusts
+        _thumb_loaded as its sole "already have it" gate).
+        """
+        if row >= len(self._display_data) or self._display_data[row][0] != path:
+            return
+        self._thumb_loaded.add(path)
+        if resolution.isValid():
+            self._update_name_cell(row, path, resolution=resolution)
         widget = self.cellWidget(row, self._THUMB_COL)
         if not isinstance(widget, QLabel):
             return
@@ -729,6 +742,8 @@ class FileListWidget(QTableWidget):
                 self._zoom_step_percent,
                 self._zoom_max_percent,
                 auto_rotate=self._exif_auto_rotate,
+                sidecar_extensions=self._sidecar_exts,
+                metadata_panel_side=self._metadata_panel_side,
             )
             self._image_viewer.navigate_prev.connect(lambda: self._navigate_viewer(-1))
             self._image_viewer.navigate_next.connect(lambda: self._navigate_viewer(+1))

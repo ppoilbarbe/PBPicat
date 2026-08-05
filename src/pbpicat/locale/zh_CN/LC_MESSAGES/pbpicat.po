@@ -55,6 +55,26 @@ msgstr ""
 "请安装libjpeg-turbo以启用此功能。"
 
 # ==AUTO== Automatically translated
+msgid "EXIF"
+msgstr "EXIF"
+
+# ==AUTO== Automatically translated
+msgid "IPTC"
+msgstr "IPTC"
+
+# ==AUTO== Automatically translated
+msgid "XMP"
+msgstr "XMP"
+
+# ==AUTO== Automatically translated
+msgid "Sidecar file"
+msgstr "Sidecar 文件"
+
+# ==AUTO== Automatically translated
+msgid "XMP (sidecar)"
+msgstr "XMP（sidecar）"
+
+# ==AUTO== Automatically translated
 msgid "Open with"
 msgstr "用...打开"
 
@@ -260,6 +280,10 @@ msgstr "应用EXIF方向"
 # ==AUTO== Automatically translated
 msgid "Reset EXIF orientation"
 msgstr "重置 EXIF 方向"
+
+# ==AUTO== Automatically translated
+msgid "Show metadata panel"
+msgstr "显示元数据面板"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -872,6 +896,22 @@ msgid "Platform"
 msgstr "平台"
 
 # ==AUTO== Automatically translated
+msgid "Name"
+msgstr "名称"
+
+# ==AUTO== Automatically translated
+msgid "Size"
+msgstr "大小"
+
+# ==AUTO== Automatically translated
+msgid "Dimensions"
+msgstr "分辨率"
+
+# ==AUTO== Automatically translated
+msgid "File"
+msgstr "文件"
+
+# ==AUTO== Automatically translated
 msgid "<b>Rename schema</b>"
 msgstr "<b>重命名方案</b>"
 
@@ -1000,6 +1040,22 @@ msgstr "图像查看器允许的最大缩放比例"
 # ==AUTO== Automatically translated
 msgid "Max zoom:"
 msgstr "最大缩放："
+
+# ==AUTO== Automatically translated
+msgid "Left"
+msgstr "左"
+
+# ==AUTO== Automatically translated
+msgid "Right"
+msgstr "右"
+
+# ==AUTO== Automatically translated
+msgid "Side of the image viewer where the metadata panel opens"
+msgstr "图像查看器中元数据面板打开的位置"
+
+# ==AUTO== Automatically translated
+msgid "Metadata panel side:"
+msgstr "元数据面板位置："
 
 # ==AUTO== Automatically translated
 msgid "Confirm deletions"

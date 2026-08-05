@@ -88,6 +88,7 @@ All actions set `setStatusTip()` so the status bar shows the description when ho
 | `confirm_deletions` | bool | true | If true, show a confirmation dialog before deleting files (default Yes) |
 | `delete_list_max_files` | int | 12 | When deleting more files than this threshold, show the count instead of listing file names |
 | `exif_auto_rotate` | bool | true | If true, thumbnails and ImageViewer auto-rotate images according to the EXIF Orientation tag |
+| `metadata_panel_side` | str | "right" | Side ("left"/"right") of the ImageViewer where the metadata panel opens |
 
 ## Rename Schema
 - N editable combobox fields with per-field history
@@ -142,7 +143,8 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 - **Thumbnail loading is viewport-lazy**: `_start_worker()` only dispatches `_ThumbnailWorker` for rows currently visible (plus one screenful of margin above/below), not the whole directory. `_thumb_loaded: set[Path]` tracks which files already have a thumbnail (reset on each `_populate_table()`). Scrolling (`verticalScrollBar().valueChanged`) and resizing (`resizeEvent`) re-trigger `_start_worker()` through a 400 ms debounce timer (`_visible_thumbs_debounce`), so newly-visible rows get their thumbnails loaded on demand. Keeps directory load/refresh fast regardless of file count (e.g. thousands of files in one folder).
   - The 400 ms debounce specifically targets mouse-wheel/keyboard scrolling: each wheel notch fires `valueChanged`, and if consecutive notches are spaced further apart than the debounce interval, each pause triggers a load for that transient position. Scrolling a long distance with the wheel means passing through (and pausing within) many more such intermediate positions than a single scrollbar-drag jump, so the number of triggered batches — and thus perceived lag — scales with distance travelled, not with the destination row itself (jumping directly to any row via drag-and-release stays fast regardless of position, since it's a single settle point).
   - While the scrollbar handle is actively being dragged (`isSliderDown()`), the debounce is a no-op — loading only happens once via `sliderReleased`, otherwise a slow/paused drag across a long list would trigger a load at every intermediate position along the way.
-  - Restarting the worker on scroll/resize uses `_cancel_worker_async()` (cancel flag + `deleteLater` on `finished`, no blocking `wait()`), not `_stop_worker()`: rows/paths stay valid since the table isn't rebuilt, so a stray `thumbnail_ready` from the just-cancelled thread is harmless, and the GUI thread never stalls waiting for a large in-flight JPEG decode — important since mouse-wheel scrolling naturally re-triggers the debounce many times over a long scroll session. `_stop_worker()` (blocking) is still used wherever `_populate_table()` follows (directory/filter/sort changes), since stale signals landing on rebuilt rows would show the wrong file's thumbnail.
+  - Restarting the worker on scroll/resize uses `_cancel_worker_async()` (cancel flag + `deleteLater` on `finished`, no blocking `wait()`), not `_stop_worker()`: rows/paths stay valid since the table isn't rebuilt, so a stray `thumbnail_ready` from the just-cancelled thread is harmless, and the GUI thread never stalls waiting for a large in-flight JPEG decode — important since mouse-wheel scrolling naturally re-triggers the debounce many times over a long scroll session. `_stop_worker()` (blocking) is still used wherever `_populate_table()` follows (directory/filter/sort changes/catalog switch).
+  - `_stop_worker()`'s blocking `wait()` only guarantees the worker thread has stopped *running* — it cannot un-post a `thumbnail_ready` event already queued (cross-thread `AutoConnection`) at the moment cancellation was noticed, since a worker only checks its cancel flag between files, not mid-decode. Such a stale signal can still be delivered *after* `_populate_table()` has rebuilt the table for a new directory/catalog, with a row index that now points at a completely unrelated file. `thumbnail_ready` therefore carries the path it was decoded for (not just the row), and `_on_thumbnail_ready()` discards the signal unless `self._display_data[row][0]` still equals that path — otherwise it would both paint the wrong image and wrongly mark the new file's path as already-loaded in `_thumb_loaded`, permanently starving it of its real thumbnail (viewport-lazy loading treats `_thumb_loaded` as the sole "already have it" gate, so nothing else would ever re-request it for that table's lifetime).
   - The pending batch (visible rows + margin not yet in `_thumb_loaded`) is split across up to 4 concurrent `_ThumbnailWorker` instances (`self._visible_workers`, capped by `os.cpu_count()`), instead of one worker decoding the whole batch sequentially — cuts wall-clock time for a freshly-scrolled-to batch roughly by the number of cores used. `self._worker` (singular) remains dedicated to `refresh_thumbnails_for_paths()`'s targeted subset reload; `_stop_worker()`/`_cancel_worker_async()` handle both.
   - `image_io.py`'s `load_qimage()` (called by `_ThumbnailWorker`, off the GUI thread) and `load_pixmap()` (called by `ImageViewer.load_image()`, on the GUI thread) serialize their `QImageReader` decode behind a shared `threading.Lock` (`_qimage_reader_lock`): Qt's image-format plugins deadlock if invoked concurrently from more than one thread, which reliably froze the app when a rename's `refresh_and_select()` reloaded the viewer's image on the GUI thread at the same moment `_start_worker()` was decoding thumbnails for the same refresh in the background.
 
@@ -191,7 +193,7 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 - If `jpegtran` fails for another reason (e.g. "Premature end of JPEG file" on a genuinely truncated file, such as some panorama shots missing trailing data), `_jpegtran_error_hints()` prepends a user-friendly explanation to the raw `jpegtran` message when a known pattern matches. `RuntimeError`/`QMessageBox` for both rotation and undo failures are prefixed with the file name so the user knows which file is at fault.
 - Batch rotation (`_rotate_images()`): a failure on one file does not stop the batch — processing continues for the remaining selected files. Errors are reported via a single `QMessageBox` with a short summary ("N file(s) could not be rotated.") and the full per-file list in `setDetailedText()` (collapsible, scrollable) — avoids an unusably tall dialog when rotating a large selection (e.g. thousands of files) where many fail for the same reason.
 - Other formats (PNG, TIFF, BMP, WebP): uses Pillow (`rotate`, `transpose`). Always lossless for these formats.
-- After JPEG rotation, the EXIF Orientation tag is stripped using `piexif` (required dep).
+- After JPEG rotation, the EXIF Orientation tag is stripped using `pyexiv2` (`set_exif_orientation()`; no-op if the file has no EXIF block at all).
 - All rotations and EXIF resets are **undoable**: pushed to the undo stack as `("rotation", [(path, undo_op, orig_orient)])` or `("reset_exif", [(path, orig_orient)])`. Undo button label changes accordingly.
 - **Apply EXIF orientation**: reads the EXIF Orientation tag, applies the corresponding transform (rotation or flip), then strips the tag. Works for all 8 EXIF orientation values. Disabled in the UI when the image has no orientation tag.
 - **Force EXIF orientation to 0°**: sets the EXIF Orientation tag to 1 (normal) without rotating pixels. Disabled in the UI when the image has no orientation tag.
@@ -209,7 +211,7 @@ Same actions available in the **Images** menu and in the **ImageViewer** toolbar
 
 #### ImageViewer (`ui/image_viewer.py`)
 Non-modal window opened by double-clicking the preview column.
-Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | **0°** | sep | **Open** | **Open with** | **Template** | **Delete** | stretch | zoom label.
+Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | **0°** | sep | **Open** | **Open with** | **Template** | **Delete** | sep | **Metadata** (checkable) | stretch | zoom label.
 The **EXIF** (Apply EXIF orientation) and **0°** (Force EXIF orientation to 0°) buttons are disabled when the loaded image has no EXIF orientation tag.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
 Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
@@ -222,10 +224,18 @@ Action buttons emit signals (`open_requested`, `open_with_requested`, `template_
 | + / − | Zoom in / out (also numpad) |
 | ↑ / ↓ | Navigate prev/next image |
 | Del | Delete current image and sidecars |
+| I | Toggle metadata panel |
 | Escape | Close window |
 
 Mouse gestures: **double-click** centers the viewport on the clicked point; **Ctrl+left-click** zooms in centered on the clicked point; **Ctrl+right-click** zooms out centered on the clicked point (both CUSTOM mode).
 When switching zoom mode or loading a new image, the viewport is centered; in CUSTOM mode, scroll position is preserved proportionally.
+
+**Metadata panel** (`ui/metadata_panel.py`, checkable **Metadata** toolbar button, own separator group — deliberately set apart from the other groups):
+- A `QSplitter(Qt.Horizontal)` holds the image `QScrollArea` and a `MetadataPanel` (read-only `QTextBrowser`, HTML-formatted). Side (`metadata_panel_side` config, "left"/"right") picks the widget order; `ImageViewer.set_metadata_panel_side()` reorders it live if the setting changes while the viewer is open (`FileListWidget.reconfigure()`).
+- **Lazy**: metadata is only read (`pbpicat.metadata.read_metadata()`) while the panel is visible — toggling it off clears the panel and no read happens on the next `load_image()`/navigation until toggled back on. Avoids the memory/time cost of parsing EXIF/IPTC/XMP for images the user never inspects.
+- Sections rendered (each omitted if empty): **File** (name, human size, pixel dimensions via `image_io.image_size()`) | **EXIF** | **IPTC** | **XMP** (embedded, via `pyexiv2.Image.read_exif/read_iptc/read_xmp`) | **XMP (sidecar)** — read from the image's `.xmp` sidecar if one exists among `sidecar_extensions` (`metadata.find_xmp_sidecar()`, same `parent / (stem + ext)` convention as elsewhere). Tag keys have their EXIF/Iptc/Xmp family prefix stripped for readability.
+- Panel visibility and splitter sizes persist across viewer sessions in `app.conf` (`image_viewer/metadata_panel_visible`, `image_viewer/metadata_splitter_state`), independent of per-image window geometry.
+- Setting: **Settings → Catalog configuration… → Images** tab, "Metadata panel side" combo (Left/Right).
 
 ## Rename Logic (`src/renamer.py`)
 1. `validate_schema(fields)` → `(dirs, parts, numeric_spec)` or `ValueError`
@@ -243,7 +253,7 @@ When switching zoom mode or loading a new image, the viewport is centered; in CU
 Menu **Settings → Catalog configuration…** (Ctrl+,) — tabs:
 - **Rename Schema**: QSpinBox (field count 1–12) + dynamic QFormLayout (titles); max history and max deletion list size
 - **Sidecar Extensions**: QListWidget + add/delete (multi-dot extensions supported); QComboBox "Default extension for new sidecar" populated from the list; "Delete empty sidecar files" checkbox
-- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer; "Confirm deletions" checkbox (default checked); "Apply EXIF rotation" checkbox (default checked) — controls `exif_auto_rotate`
+- **Images**: QListWidget + add/delete for recognized image extensions; zoom step (%) and max zoom (%) for ImageViewer; "Metadata panel side" combo (Left/Right) — controls `metadata_panel_side`; "Confirm deletions" checkbox (default checked); "Apply EXIF rotation" checkbox (default checked) — controls `exif_auto_rotate`
 - **Video**: QListWidget extensions + marker field
 - **Thumbnails**: max width/height
 - OK → `save_config()` + `schema_frame.rebuild(config)`
@@ -268,7 +278,7 @@ Menu **Settings → Histories…**
 | App config + `last_dest` | `$XDG_CONFIG_HOME/pbpicat/<catalog>/settings.json` |
 | Field histories + sidecar filter history | `$XDG_CONFIG_HOME/pbpicat/<catalog>/history.json` |
 | Last source dir (`source/last_dir`), video marker pos (`schema/video_marker_pos`) | `$XDG_CONFIG_HOME/pbpicat/<catalog>/ui.conf` (QSettings IniFormat) |
-| Window geometry for all windows except About | `$XDG_CONFIG_HOME/pbpicat/app.conf` (QSettings IniFormat, via `app_qsettings()`) |
+| Window geometry for all windows except About; ImageViewer metadata panel visibility (`image_viewer/metadata_panel_visible`) and splitter state (`image_viewer/metadata_splitter_state`) | `$XDG_CONFIG_HOME/pbpicat/app.conf` (QSettings IniFormat, via `app_qsettings()`) |
 | Program-level settings (default sidecars, language) | `$XDG_CONFIG_HOME/pbpicat/global_settings.json` |
 
 `$XDG_CONFIG_HOME` defaults to `~/.config` if unset.
@@ -311,6 +321,9 @@ PBPicat/
     ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf, app_qsettings() → app.conf
     ├── i18n.py            # gettext bootstrap
     ├── renamer.py         # pure logic (no Qt)
+    ├── image_io.py        # load_qimage/load_pixmap/image_size (Qt decode, shared QImageReader lock)
+    ├── image_ops.py       # lossless rotation + EXIF orientation get/set (pure logic, no Qt)
+    ├── metadata.py         # EXIF/IPTC/XMP + XMP-sidecar reading via pyexiv2 (pure logic, no Qt)
     ├── locale/            # en fr de es it ru vi zh_CN
     │   └── <lang>/LC_MESSAGES/pbpicat.{po,mo}
     ├── resources/
@@ -329,5 +342,6 @@ PBPicat/
         ├── file_panel.py
         ├── dir_tree.py
         ├── file_list_widget.py   # FileListWidget + _ThumbnailWorker + Open/OpenWith/Template/Delete context menu
-        └── image_viewer.py       # Open/OpenWith/Template/Delete signals + toolbar buttons
+        ├── image_viewer.py       # Open/OpenWith/Template/Delete signals + toolbar buttons + metadata panel splitter
+        └── metadata_panel.py     # MetadataPanel: QTextBrowser rendering metadata.read_metadata() as HTML
 ```

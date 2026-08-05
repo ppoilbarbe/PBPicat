@@ -55,6 +55,26 @@ msgstr ""
 "Cài đặt libjpeg-turbo để bật tính năng này."
 
 # ==AUTO== Automatically translated
+msgid "EXIF"
+msgstr "EXIF"
+
+# ==AUTO== Automatically translated
+msgid "IPTC"
+msgstr "IPTC"
+
+# ==AUTO== Automatically translated
+msgid "XMP"
+msgstr "XMP"
+
+# ==AUTO== Automatically translated
+msgid "Sidecar file"
+msgstr "Tệp sidecar"
+
+# ==AUTO== Automatically translated
+msgid "XMP (sidecar)"
+msgstr "XMP (sidecar)"
+
+# ==AUTO== Automatically translated
 msgid "Open with"
 msgstr "Mở bằng"
 
@@ -260,6 +280,10 @@ msgstr "Áp dụng định hướng EXIF"
 # ==AUTO== Automatically translated
 msgid "Reset EXIF orientation"
 msgstr "Đặt lại hướng EXIF"
+
+# ==AUTO== Automatically translated
+msgid "Show metadata panel"
+msgstr "Hiển thị bảng siêu dữ liệu"
 
 # ==AUTO== Automatically translated
 msgid "Cannot load image."
@@ -872,6 +896,22 @@ msgid "Platform"
 msgstr "Nền tảng"
 
 # ==AUTO== Automatically translated
+msgid "Name"
+msgstr "Tên"
+
+# ==AUTO== Automatically translated
+msgid "Size"
+msgstr "Kích thước"
+
+# ==AUTO== Automatically translated
+msgid "Dimensions"
+msgstr "Độ phân giải"
+
+# ==AUTO== Automatically translated
+msgid "File"
+msgstr "Tệp"
+
+# ==AUTO== Automatically translated
 msgid "<b>Rename schema</b>"
 msgstr "<b>Lược đồ đổi tên</b>"
 
@@ -1000,6 +1040,22 @@ msgstr "Mức thu phóng tối đa cho phép trong trình xem ảnh"
 # ==AUTO== Automatically translated
 msgid "Max zoom:"
 msgstr "Thu phóng tối đa:"
+
+# ==AUTO== Automatically translated
+msgid "Left"
+msgstr "Trái"
+
+# ==AUTO== Automatically translated
+msgid "Right"
+msgstr "Phải"
+
+# ==AUTO== Automatically translated
+msgid "Side of the image viewer where the metadata panel opens"
+msgstr "Phía của trình xem ảnh nơi bảng siêu dữ liệu mở ra"
+
+# ==AUTO== Automatically translated
+msgid "Metadata panel side:"
+msgstr "Phía của bảng siêu dữ liệu:"
 
 # ==AUTO== Automatically translated
 msgid "Confirm deletions"

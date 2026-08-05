@@ -12,7 +12,6 @@ from pbpicat.image_ops import (
     _find_jpegtran,
     _pil_apply,
     _pil_save_lossless,
-    _sanitize_exif_for_dump,
     _strip_jpeg_orientation,
     get_exif_orientation,
     is_jpeg,
@@ -427,10 +426,10 @@ def test_rotate_jpeg_jpegtran_failure_raises_runtimeerror(tmp_path):
 
 
 def test_set_exif_orientation_exception_is_silenced(tmp_path):
-    import piexif
+    import pyexiv2
 
     p = _jpeg_exif(tmp_path / "img.jpg", 3)
-    with patch.object(piexif, "insert", side_effect=Exception("piexif boom")):
+    with patch.object(pyexiv2.Image, "modify_exif", side_effect=Exception("pyexiv2 boom")):
         set_exif_orientation(p, 6)  # must not raise
 
 
@@ -490,29 +489,3 @@ def test_pil_save_lossless_else_branch(tmp_path):
     assert p.exists()
     with Image.open(p) as loaded:
         assert loaded.size == (160, 96)
-
-
-# ---------------------------------------------------------------------------
-# _sanitize_exif_for_dump
-# ---------------------------------------------------------------------------
-
-
-def test_sanitize_exif_for_dump_converts_int_to_bytes():
-    """Undefined-typed tag stored as int is converted to bytes (line 152)."""
-    import piexif
-
-    scene_type_tag = piexif.ExifIFD.SceneType
-    exif_dict = {"Exif": {scene_type_tag: 1}}
-    _sanitize_exif_for_dump(exif_dict)
-    assert exif_dict["Exif"][scene_type_tag] == (1).to_bytes(1, "big")
-
-
-def test_sanitize_exif_for_dump_leaves_bytes_unchanged():
-    """Undefined-typed tag already stored as bytes is not modified."""
-    import piexif
-
-    scene_type_tag = piexif.ExifIFD.SceneType
-    original = b"\x01"
-    exif_dict = {"Exif": {scene_type_tag: original}}
-    _sanitize_exif_for_dump(exif_dict)
-    assert exif_dict["Exif"][scene_type_tag] is original

@@ -47,6 +47,21 @@ msgstr ""
 "JPEG lossless rotation requires jpegtran.\n"
 "Install libjpeg-turbo to enable this feature."
 
+msgid "EXIF"
+msgstr "EXIF"
+
+msgid "IPTC"
+msgstr "IPTC"
+
+msgid "XMP"
+msgstr "XMP"
+
+msgid "Sidecar file"
+msgstr "Sidecar file"
+
+msgid "XMP (sidecar)"
+msgstr "XMP (sidecar)"
+
 msgid "Open with"
 msgstr "Open with"
 
@@ -209,6 +224,9 @@ msgstr "Apply EXIF orientation"
 
 msgid "Reset EXIF orientation"
 msgstr "Reset EXIF orientation"
+
+msgid "Show metadata panel"
+msgstr "Show metadata panel"
 
 msgid "Cannot load image."
 msgstr "Cannot load image."
@@ -672,6 +690,18 @@ msgstr "Authors"
 msgid "Platform"
 msgstr "Platform"
 
+msgid "Name"
+msgstr "Name"
+
+msgid "Size"
+msgstr "Size"
+
+msgid "Dimensions"
+msgstr "Dimensions"
+
+msgid "File"
+msgstr "File"
+
 msgid "<b>Rename schema</b>"
 msgstr "<b>Rename schema</b>"
 
@@ -770,6 +800,18 @@ msgstr "Maximum zoom allowed in the image viewer"
 
 msgid "Max zoom:"
 msgstr "Max zoom:"
+
+msgid "Left"
+msgstr "Left"
+
+msgid "Right"
+msgstr "Right"
+
+msgid "Side of the image viewer where the metadata panel opens"
+msgstr "Side of the image viewer where the metadata panel opens"
+
+msgid "Metadata panel side:"
+msgstr "Metadata panel side:"
 
 msgid "Confirm deletions"
 msgstr "Confirm deletions"
