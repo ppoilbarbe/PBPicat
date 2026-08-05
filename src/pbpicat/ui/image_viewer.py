@@ -79,8 +79,11 @@ class ImageViewer(QWidget):
         self._setup_shortcuts()
 
         saved_geom = app_qsettings().value("image_viewer/geometry")
-        if saved_geom:
-            self.restoreGeometry(saved_geom)
+        # restoreGeometry() can legitimately fail (e.g. saved on a screen configuration that no
+        # longer exists) and returns False without changing anything — checking only whether a
+        # value was saved, not whether it actually applied, left the window stuck at Qt's tiny
+        # default top-left placement instead of falling back to the sized/centered geometry below.
+        geom_restored = bool(saved_geom) and self.restoreGeometry(saved_geom)
         saved_splitter = app_qsettings().value("image_viewer/metadata_splitter_state")
         if saved_splitter:
             self._splitter.restoreState(saved_splitter)
@@ -89,7 +92,7 @@ class ImageViewer(QWidget):
 
         self.load_image(image_path)
 
-        if not saved_geom:
+        if not geom_restored:
             screen = self.screen() or (parent.screen() if parent else None)
             if screen:
                 avail = screen.availableGeometry()

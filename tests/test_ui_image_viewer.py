@@ -65,6 +65,23 @@ def test_image_viewer_restores_geometry(qtbot, catalog_env, sample_png, monkeypa
     qtbot.addWidget(viewer)
 
 
+def test_image_viewer_falls_back_when_restore_geometry_fails(qtbot, catalog_env, sample_png, monkeypatch):
+    """A saved but invalid/stale geometry blob (e.g. from a screen configuration that no
+    longer exists) makes restoreGeometry() return False — the window must still get the
+    75%-of-screen fallback size instead of staying stuck at Qt's tiny default, which was
+    the actual bug: only "was something saved" was checked, not "did it actually apply"."""
+    mock_qs = MagicMock()
+    mock_qs.value.return_value = b"\x01\x02\x03"  # present but not valid saveGeometry() output
+    monkeypatch.setattr("pbpicat.ui.image_viewer.app_qsettings", lambda: mock_qs)
+    monkeypatch.setattr(ImageViewer, "restoreGeometry", lambda self, geom: False)
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    screen = viewer.screen()
+    avail = screen.availableGeometry()
+    assert viewer.width() == int(avail.width() * 0.75)
+    assert viewer.height() == int(avail.height() * 0.75)
+
+
 def test_image_viewer_no_screen(qtbot, catalog_env, sample_png, monkeypatch):
     """Branch: screen() returns None → fallback resize."""
     mock_qs = MagicMock()
