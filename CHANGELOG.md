@@ -6,6 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **App icon for PyInstaller packaging** — `pbpicat.ico` (Windows) and `pbpicat.icns` (macOS) are now synced from [PBIcons](https://github.com/ppoilbarbe/PBIcons) via `tools/update_icons.py` and embedded as the executable/`.app` bundle icon in `pbpicat.spec`.
+- **`make update-icons`** — new Makefile target wrapping `tools/update_icons.py`.
+
+### Changed
+
+- **`tools/update_icons.py`** generalized beyond SVG: it now also syncs the binary `pbpicat.ico`/`pbpicat.icns` app icon files, byte-for-byte, from the same PBIcons source.
+
 ## [1.18.0] - 2026-08-07
 
 ### Added

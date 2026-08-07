@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Sync SVG icons in src/pbpicat/resources/ from the PBIcons project.
+"""Sync icons in src/pbpicat/resources/ from the PBIcons project.
+
+Two kinds of files live in that directory, both sourced from PBIcons:
+
+- The app icon files used by PyInstaller packaging: `pbpicat.ico` and
+  `pbpicat.icns` (`_APP_ICON_FILES` below). The app's own GUI icon is
+  `pbpicat.svg`, already covered by the SVG sync below.
+- Toolbar/action SVG icons (`delete.svg`, `movie.svg`, …) and `pbpicat.svg`
+  itself: every `*.svg` already present in the resources directory.
 
 Icons are looked up by filename (case-insensitive) within a fixed list of
 PBIcons subdirectories, `_ICON_DIRS`, tried in order — not a recursive search
@@ -9,7 +17,7 @@ treated as not found (see the error below).
 Lookup order, per icon:
     1. A local PBIcons checkout: a directory named "pbicons" (any case),
        sibling of this project's root, searched in `_ICON_DIRS` order for a
-       same-named .svg file.
+       same-named file.
     2. If not found there (including if no such local checkout exists at
        all), the PBIcons GitHub repository (ppoilbarbe/PBIcons, "main"
        branch), fetched over the network and searched in the same order.
@@ -23,10 +31,16 @@ never altered — e.g. no re-adding of the old `style="width:100%;height:100%"`
 override some icons used to carry, which caused unexpected rendering on some
 platforms) whenever its SHA-256 differs from the local resources/ copy.
 
+Note: `.png`/`.jpg` files in PBIcons are stored via Git LFS; fetching them
+from GitHub raw returns the LFS pointer text, not the actual bytes, which is
+treated as an error below. A local PBIcons checkout (with LFS objects
+smudged in) is required to sync those. `.svg`/`.ico`/`.icns` are not
+LFS-tracked in PBIcons and work either way.
+
 Usage:
-    python tools/update_icons.py                  # sync every *.svg already in resources/
-    python tools/update_icons.py movie delete      # sync only the named icon(s)
-    python tools/update_icons.py --dry-run         # report what would change, write nothing
+    python tools/update_icons.py               # sync every icon file (see above)
+    python tools/update_icons.py movie.svg      # sync only the named file(s)
+    python tools/update_icons.py --dry-run      # report what would change, write nothing
 
 An optional GITHUB_TOKEN environment variable is used (if set) to authenticate
 the GitHub API call, to avoid the low unauthenticated rate limit.
@@ -43,6 +57,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 RESOURCES_DIR = ROOT / "src" / "pbpicat" / "resources"
+
+# App icon files (PyInstaller packaging), always synced regardless of what's
+# already on disk.
+_APP_ICON_FILES = (
+    "pbpicat.ico",
+    "pbpicat.icns",
+)
 
 # PBIcons subdirectories to search for an icon, in priority order.
 _ICON_DIRS = ("programs", "actions", "media")
@@ -67,15 +88,15 @@ def find_local_pbicons_dir() -> Path | None:
     return None
 
 
-def find_local_svg(pbicons_dir: Path, filename: str) -> Path | None:
+def find_local_file(pbicons_dir: Path, filename: str) -> Path | None:
     target = filename.lower()
     subdirs = {p.name.lower(): p for p in pbicons_dir.iterdir() if p.is_dir()}
     for dirname in _ICON_DIRS:
         subdir = subdirs.get(dirname)
         if subdir is None:
             continue
-        for path in sorted(subdir.glob("*.svg")):
-            if path.name.lower() == target:
+        for path in sorted(subdir.iterdir()):
+            if path.is_file() and path.name.lower() == target:
                 return path
     return None
 
@@ -91,13 +112,14 @@ def _github_request(url: str) -> bytes:
 
 
 def fetch_github_index() -> dict[str, str]:
-    """Return {lowercased filename: path in repo} for every .svg directly under
-    an `_ICON_DIRS` subdirectory, favoring earlier directories on a name clash."""
+    """Return {lowercased filename: path in repo} for every file directly
+    under an `_ICON_DIRS` subdirectory, favoring earlier directories on a
+    name clash."""
     data = json.loads(_github_request(_GITHUB_TREE_API))
     by_dir: dict[str, dict[str, str]] = {dirname: {} for dirname in _ICON_DIRS}
     for entry in data.get("tree", []):
         path = entry.get("path", "")
-        if entry.get("type") != "blob" or not path.lower().endswith(".svg"):
+        if entry.get("type") != "blob":
             continue
         top_dir, _, rest = path.partition("/")
         if not rest or "/" in rest or top_dir not in by_dir:
@@ -111,7 +133,7 @@ def fetch_github_index() -> dict[str, str]:
     return index
 
 
-def fetch_github_svg(repo_path: str) -> bytes:
+def fetch_github_file(repo_path: str) -> bytes:
     url = _GITHUB_RAW_BASE + urllib.parse.quote(repo_path)
     content = _github_request(url)
     if content.startswith(b"version https://git-lfs.github.com/spec"):
@@ -120,16 +142,21 @@ def fetch_github_svg(repo_path: str) -> bytes:
 
 
 def resolve_icon(name: str, local_dir: Path | None, github_index: dict[str, str] | None) -> tuple[bytes, str] | None:
-    """Return (content, source description) for `name`, or None if not found anywhere."""
+    """Return (content, source description) for `name`, or None if not found."""
     if local_dir is not None:
-        src = find_local_svg(local_dir, name)
+        src = find_local_file(local_dir, name)
         if src is not None:
             return src.read_bytes(), f"local:{src.relative_to(local_dir)}"
     if github_index is not None:
         repo_path = github_index.get(name.lower())
         if repo_path is not None:
-            return fetch_github_svg(repo_path), f"github:{repo_path}"
+            return fetch_github_file(repo_path), f"github:{repo_path}"
     return None
+
+
+def default_names() -> list[str]:
+    svgs = sorted(p.name for p in RESOURCES_DIR.glob("*.svg"))
+    return svgs + list(_APP_ICON_FILES)
 
 
 def main() -> None:
@@ -139,9 +166,7 @@ def main() -> None:
     dry_run = "--dry-run" in args
     names = [a for a in args if not a.startswith("-")]
     if not names:
-        names = sorted(p.name for p in RESOURCES_DIR.glob("*.svg"))
-    else:
-        names = [n if n.lower().endswith(".svg") else f"{n}.svg" for n in names]
+        names = default_names()
 
     local_dir = find_local_pbicons_dir()
     if local_dir is not None:

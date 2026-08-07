@@ -24,7 +24,8 @@ C  := \033[36m
 
 .DEFAULT_GOAL := help
 .PHONY: all help venv venv-update install run test coverage lint format hooks \
-        translate compile-mo force-translate new-lang docs docs-live dist srcdist clean
+        translate compile-mo force-translate new-lang docs docs-live dist srcdist clean \
+        update-icons
 
 all: translate ## Build all generated artifacts (strings → .mo)
 
@@ -79,6 +80,9 @@ docs: ## Build HTML documentation
 
 docs-live: ## Build docs and watch for changes (hot reload)
 	$(CONDA_RUN) sphinx-autobuild $(DOCS) $(DOCS)/_build/html
+
+update-icons: ## Sync SVG icons and app icons (.ico/.icns) from PBIcons
+	$(CONDA_RUN) python tools/update_icons.py
 
 # ── i18n ──────────────────────────────────────────────────────────────────────
 
