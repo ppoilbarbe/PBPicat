@@ -6,6 +6,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.18.0] - 2026-08-07
+
+### Added
+
+- **`tools/update_icons.py`** — syncs the SVG icons in `src/pbpicat/resources/` from the [PBIcons](https://github.com/ppoilbarbe/PBIcons) project (the icon source of truth), by filename regardless of PBIcons subdirectory. Looks up a local PBIcons checkout next to the project root first (case-insensitive folder name), falling back to the GitHub repository over the network. Only overwrites a file when its SHA-256 differs from the PBIcons original.
+- **Image viewer: video files are now displayed instead of leaving the window stale/blank** — selecting a video shows the `movie` icon, scaled/centered like Fit-window zoom; all zoom and content-editing controls (rotate, EXIF orientation) are disabled while it's shown, since there's nothing to zoom or rotate. For consistency, double-clicking a video (or pressing Return/Enter on it) in the file list now opens/activates the image viewer the same way images do, instead of launching the system's default video player.
+- **Image viewer: selecting multiple files now shows the first one with a navigable thumbnail strip** instead of a "Cannot display multiple files simultaneously." message — a strip along the bottom of the window shows a thumbnail per selected file, with the one currently displayed marked by a highlighted border; clicking a thumbnail, or the Left/Right arrow keys, move through the selection (Up/Down, which navigate the whole directory, are inactive during a multi-selection).
+
+### Changed
+
+- **File list: video thumbnails now show a `movie.svg` icon instead of a plain "▶" character** — scaled and centered proportionally to the configured thumbnail size via `QIcon.pixmap()`, matching the sizing/centering already used for image thumbnails.
+- **All SVG icons re-synced from PBIcons** (via the new `tools/update_icons.py`) — drops the `style="width:100%;height:100%"` override most of them carried since their initial import, which caused unexpected rendering on some platforms. PBIcons' own `width`/`height` attributes are kept as-is instead.
+
+### Fixed
+
+- **Image viewer toolbar actions (Open, Open with, Template, rotate, Delete) silently did nothing whenever 2+ files were selected in the file list** — they resolved "which file is displayed" from the table's row selection, which is ambiguous (and was left unresolved) as soon as more than one row was selected. They now resolve against the file actually displayed in the viewer (`ImageViewer.current_path`), which also keeps them correct after navigating a multi-selection with Left/Right.
+
 ## [1.17.0] - 2026-08-05
 
 ### Added

@@ -4,6 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import QEvent, QPoint, QSize, Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
+    QFrame,
     QHBoxLayout,
     QLabel,
     QScrollArea,
@@ -15,13 +16,15 @@ from PySide6.QtWidgets import (
 )
 
 from pbpicat.config import DEFAULTS, app_qsettings
-from pbpicat.image_io import load_pixmap
+from pbpicat.image_io import load_pixmap, load_qimage
 
 from .icons import ICON_SIZE as _ICON_SIZE
 from .icons import get_icon
 from .metadata_panel import MetadataPanel
 
 _METADATA_PANEL_DEFAULT_WIDTH = 320
+_SELECTION_STRIP_THUMB = 56
+_VIDEO_PLACEHOLDER_SIZE = 512
 
 
 class _ZoomMode(Enum):
@@ -30,6 +33,94 @@ class _ZoomMode(Enum):
     FIT_HEIGHT = auto()
     ONE_TO_ONE = auto()
     CUSTOM = auto()
+
+
+class _ClickableLabel(QLabel):
+    clicked = Signal()
+
+    def mousePressEvent(self, event) -> None:  # noqa: N802
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+        super().mousePressEvent(event)
+
+
+_STRIP_HIGHLIGHT_STYLE = "border: 3px solid palette(highlight); border-radius: 4px; padding: 0px;"
+_STRIP_PLAIN_STYLE = "border: 3px solid transparent; padding: 0px;"
+
+
+class _SelectionStrip(QScrollArea):
+    """Horizontal strip of thumbnails for a multi-file selection.
+
+    Spans the full window width below the splitter. Highlights the currently
+    displayed file and lets the user click a thumbnail to jump straight to it,
+    in addition to ImageViewer's Left/Right shortcuts.
+    """
+
+    thumbnail_clicked = Signal(int)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setFixedHeight(_SELECTION_STRIP_THUMB + 16)
+
+        container = QWidget()
+        self._layout = QHBoxLayout(container)
+        self._layout.setContentsMargins(4, 4, 4, 4)
+        self._layout.setSpacing(4)
+        self._layout.addStretch()
+        self.setWidget(container)
+
+        self._labels: list[QLabel] = []
+        self.current_index: int = 0
+
+    @staticmethod
+    def _thumbnail_pixmap(path: Path, video_extensions: set[str]) -> QPixmap:
+        if path.suffix.lower() in video_extensions:
+            icon = get_icon("movie", text_fallback="▶")
+            return icon.pixmap(_SELECTION_STRIP_THUMB, _SELECTION_STRIP_THUMB)
+        image = load_qimage(path, _SELECTION_STRIP_THUMB, _SELECTION_STRIP_THUMB)
+        return QPixmap.fromImage(image) if not image.isNull() else QPixmap()
+
+    def set_paths(self, paths: list[Path], current_index: int, video_extensions: set[str]) -> None:
+        # setParent(None) detaches (and removes from the layout) immediately; deleteLater()
+        # alone leaves the widget laid out until the event loop next processes deferred
+        # deletes, so a set_paths() call arriving before that (e.g. selection changing
+        # again within the same event-loop tick) would show stale thumbnails alongside
+        # the new ones.
+        for label in self._labels:
+            label.setParent(None)
+            label.deleteLater()
+        self._labels = []
+
+        for index, path in enumerate(paths):
+            label = _ClickableLabel()
+            label.setFixedSize(_SELECTION_STRIP_THUMB + 4, _SELECTION_STRIP_THUMB + 4)
+            label.setAlignment(Qt.AlignCenter)
+            label.setCursor(Qt.PointingHandCursor)
+            label.setPixmap(self._thumbnail_pixmap(path, video_extensions))
+            label.setToolTip(path.name)
+            label.clicked.connect(lambda i=index: self.thumbnail_clicked.emit(i))
+            self._layout.insertWidget(self._layout.count() - 1, label)
+            self._labels.append(label)
+
+        self.set_current_index(current_index)
+
+    def refresh_thumbnail(self, index: int, path: Path, video_extensions: set[str]) -> None:
+        """Regenerate a single thumbnail in place (e.g. after the file's pixels changed
+        from a rotation), without rebuilding the whole strip or touching the highlight."""
+        if not (0 <= index < len(self._labels)):
+            return
+        self._labels[index].setPixmap(self._thumbnail_pixmap(path, video_extensions))
+
+    def set_current_index(self, index: int) -> None:
+        self.current_index = index
+        for i, label in enumerate(self._labels):
+            label.setStyleSheet(_STRIP_HIGHLIGHT_STYLE if i == index else _STRIP_PLAIN_STYLE)
+        if 0 <= index < len(self._labels):
+            self.ensureWidgetVisible(self._labels[index])
 
 
 class ImageViewer(QWidget):
@@ -57,6 +148,7 @@ class ImageViewer(QWidget):
         auto_rotate: bool = True,
         sidecar_extensions: list[str] | None = None,
         metadata_panel_side: str = DEFAULTS["metadata_panel_side"],
+        video_extensions: list[str] | None = None,
     ):
         super().__init__(parent, Qt.Window)
         self.setMinimumSize(300, 200)
@@ -74,6 +166,10 @@ class ImageViewer(QWidget):
         self._current_path: Path | None = None
         self._sidecar_extensions = sidecar_extensions or []
         self._metadata_side = metadata_panel_side
+        self._video_extensions: set[str] = set(video_extensions or [])
+        self._video_mode = False
+        self._selection_paths: list[Path] = []
+        self._selection_index = 0
 
         self._setup_ui()
         self._setup_shortcuts()
@@ -90,7 +186,7 @@ class ImageViewer(QWidget):
         visible = bool(app_qsettings().value("image_viewer/metadata_panel_visible", False, type=bool))
         self._metadata_btn.setChecked(visible)
 
-        self.load_image(image_path)
+        self.display(image_path)
 
         if not geom_restored:
             screen = self.screen() or (parent.screen() if parent else None)
@@ -128,6 +224,11 @@ class ImageViewer(QWidget):
         self._place_metadata_panel(self._metadata_side)
         root.addWidget(self._splitter, stretch=1)
 
+        self._strip = _SelectionStrip()
+        self._strip.setVisible(False)
+        self._strip.thumbnail_clicked.connect(self._act_selection_goto)
+        root.addWidget(self._strip)
+
     def _build_toolbar(self) -> QHBoxLayout:
         tb = QHBoxLayout()
         tb.setSpacing(2)
@@ -159,6 +260,7 @@ class ImageViewer(QWidget):
         sep.setFixedWidth(8)
         tb.addWidget(sep)
 
+        self._zoom_inout_buttons: list[QToolButton] = []
         for icon_name, fallback, tip, slot in [
             ("zoom-in", "＋", _("Zoom in  +"), self._act_zoom_in),
             ("zoom-out", "－", _("Zoom out  −"), self._act_zoom_out),
@@ -169,12 +271,14 @@ class ImageViewer(QWidget):
             btn.setToolTip(tip)
             btn.clicked.connect(slot)
             tb.addWidget(btn)
+            self._zoom_inout_buttons.append(btn)
 
         sep2 = QToolButton()
         sep2.setEnabled(False)
         sep2.setFixedWidth(8)
         tb.addWidget(sep2)
 
+        self._rotate_buttons: list[QToolButton] = []
         for icon_name, fallback, tip, callback in [
             ("object-rotate-left", "↺", _("Rotate 90° CCW"), lambda: self.rotate_requested.emit(-90)),
             ("object-rotate-right", "↻", _("Rotate 90° CW"), lambda: self.rotate_requested.emit(90)),
@@ -186,6 +290,7 @@ class ImageViewer(QWidget):
             btn.setToolTip(tip)
             btn.clicked.connect(callback)
             tb.addWidget(btn)
+            self._rotate_buttons.append(btn)
 
         self._rotate_auto_btn = QToolButton()
         self._rotate_auto_btn.setIcon(get_icon("auto-rotate", text_fallback="EXIF"))
@@ -257,6 +362,8 @@ class ImageViewer(QWidget):
             (QKeySequence(Qt.KeyboardModifier.KeypadModifier | Qt.Key.Key_Minus), self._act_zoom_out),
             (QKeySequence(Qt.Key.Key_Up), self.navigate_prev),
             (QKeySequence(Qt.Key.Key_Down), self.navigate_next),
+            (QKeySequence(Qt.Key.Key_Left), self._act_selection_prev),
+            (QKeySequence(Qt.Key.Key_Right), self._act_selection_next),
             (QKeySequence.StandardKey.Open, self.open_requested),
             (
                 QKeySequence(Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier | Qt.Key.Key_O),
@@ -274,7 +381,15 @@ class ImageViewer(QWidget):
     # Public API
     # ------------------------------------------------------------------
 
+    def display(self, path: Path) -> None:
+        """Show `path`, dispatching to the video or image renderer by extension."""
+        if path.suffix.lower() in self._video_extensions:
+            self.show_video(path)
+        else:
+            self.load_image(path)
+
     def load_image(self, path: Path) -> None:
+        self._set_video_mode(False)
         self._current_path = path
         self.setWindowTitle(path.name)
         self._pixmap = load_pixmap(path, auto_rotate=self._auto_rotate)
@@ -295,6 +410,74 @@ class ImageViewer(QWidget):
         self._apply_zoom(center=True)
         if self._metadata_btn is not None and self._metadata_btn.isChecked():
             self._metadata_panel.load(path, self._sidecar_extensions)
+
+    def show_video(self, path: Path) -> None:
+        self._current_path = path
+        self.setWindowTitle(path.name)
+        icon = get_icon("movie", text_fallback="▶")
+        self._pixmap = icon.pixmap(QSize(_VIDEO_PLACEHOLDER_SIZE, _VIDEO_PLACEHOLDER_SIZE))
+        self._zoom_min = 0.01
+        self._label.setText("")
+        self._mode = _ZoomMode.FIT_WINDOW
+        self._set_video_mode(True)
+        self._update_button_states()
+        self._apply_zoom(center=True)
+        if self._metadata_btn is not None and self._metadata_btn.isChecked():
+            self._metadata_panel.load(path, self._sidecar_extensions)
+
+    def _set_video_mode(self, active: bool) -> None:
+        self._video_mode = active
+        for btn in self._zoom_buttons + self._zoom_inout_buttons + self._rotate_buttons:
+            btn.setEnabled(not active)
+        if active:
+            self._rotate_auto_btn.setEnabled(False)
+            self._reset_exif_btn.setEnabled(False)
+
+    def set_selection(self, paths: list[Path], current: Path | None = None) -> None:
+        """Set the multi/single-file selection. len==1 hides the strip and displays
+        that file; len>=2 shows the strip and displays `current` (or `paths[0]` if
+        `current` is None or not in `paths`). Purely self-contained ImageViewer
+        state — never touches the file list's own table selection."""
+        self._selection_paths = list(paths)
+        self._selection_index = paths.index(current) if current is not None and current in paths else 0
+        if len(paths) > 1:
+            self._strip.set_paths(paths, self._selection_index, self._video_extensions)
+            self._strip.setVisible(True)
+        else:
+            self._strip.setVisible(False)
+        self.display(paths[self._selection_index])
+
+    def refresh_paths(self, paths: set[Path]) -> None:
+        """Refresh anything currently showing pixel data for `paths` — the main
+        viewport if it displays one of them, and any matching thumbnail(s) in the
+        selection strip — after their pixels changed externally (e.g. a rotation
+        triggered from the viewer's own toolbar or from the main window)."""
+        if self._current_path in paths:
+            self.display(self._current_path)
+        for index, path in enumerate(self._selection_paths):
+            if path in paths:
+                self._strip.refresh_thumbnail(index, path, self._video_extensions)
+
+    def _act_selection_prev(self) -> None:
+        if len(self._selection_paths) < 2:
+            return
+        self._selection_index = max(0, self._selection_index - 1)
+        self._strip.set_current_index(self._selection_index)
+        self.display(self._selection_paths[self._selection_index])
+
+    def _act_selection_next(self) -> None:
+        if len(self._selection_paths) < 2:
+            return
+        self._selection_index = min(len(self._selection_paths) - 1, self._selection_index + 1)
+        self._strip.set_current_index(self._selection_index)
+        self.display(self._selection_paths[self._selection_index])
+
+    def _act_selection_goto(self, index: int) -> None:
+        if not (0 <= index < len(self._selection_paths)):
+            return
+        self._selection_index = index
+        self._strip.set_current_index(index)
+        self.display(self._selection_paths[index])
 
     @property
     def current_path(self) -> Path | None:
@@ -337,14 +520,7 @@ class ImageViewer(QWidget):
             return
         self._auto_rotate = value
         if self._current_path is not None:
-            self.load_image(self._current_path)
-
-    def show_message(self, text: str) -> None:
-        self._pixmap = QPixmap()
-        self._label.setPixmap(QPixmap())
-        self._label.setText(text)
-        self._zoom_label.setText("")
-        self._metadata_panel.clear()
+            self.display(self._current_path)
 
     # ------------------------------------------------------------------
     # Zoom actions
@@ -373,11 +549,15 @@ class ImageViewer(QWidget):
     # ------------------------------------------------------------------
 
     def _set_mode(self, mode: _ZoomMode) -> None:
+        if self._video_mode and mode != _ZoomMode.FIT_WINDOW:
+            return
         self._mode = mode
         self._update_button_states()
         self._apply_zoom(center=True)
 
     def _apply_custom(self, factor: float) -> None:
+        if self._video_mode:
+            return
         self._factor = max(self._zoom_min, min(self._zoom_max, factor))
         self._mode = _ZoomMode.CUSTOM
         self._update_button_states()
@@ -449,10 +629,13 @@ class ImageViewer(QWidget):
                 hbar.setValue(hbar.maximum() // 2)
 
         # Update zoom label
-        factor = scaled.width() / orig_w if orig_w else 1.0
-        at_max = self._mode == _ZoomMode.CUSTOM and self._factor >= self._zoom_max
-        suffix = _(" (max)") if at_max else ""
-        self._zoom_label.setText(f"{orig_w}×{orig_h}  {factor * 100:.0f}%{suffix}")
+        if self._video_mode:
+            self._zoom_label.setText("")
+        else:
+            factor = scaled.width() / orig_w if orig_w else 1.0
+            at_max = self._mode == _ZoomMode.CUSTOM and self._factor >= self._zoom_max
+            suffix = _(" (max)") if at_max else ""
+            self._zoom_label.setText(f"{orig_w}×{orig_h}  {factor * 100:.0f}%{suffix}")
 
     def _update_button_states(self) -> None:
         mode_order = [
@@ -511,6 +694,8 @@ class ImageViewer(QWidget):
         vbar.setValue(int(label_pos.y() - vp.height() / 2))
 
     def _zoom_to_point(self, label_pos, direction: int = 1) -> None:
+        if self._video_mode:
+            return
         label_w = self._label.width()
         label_h = self._label.height()
         if label_w == 0 or label_h == 0:

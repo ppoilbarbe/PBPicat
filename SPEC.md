@@ -152,7 +152,7 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 | Location | Key | Effect |
 |----------|-----|--------|
 | FileListWidget | ← or → | Focus moves to DirTree |
-| FileListWidget | Return / Enter | Opens current file (image viewer or external player); no effect on sidecar column |
+| FileListWidget | Return / Enter | Opens current file in the image viewer (images and videos); no effect on sidecar column |
 | DirTree (leaf node) | → | Focus moves to FileListWidget; selects row 0 if nothing was selected |
 
 A leaf node is a directory with no loaded subdirectories (`rowCount == 0` after Qt processes the key). `QFileSystemModel` loads lazily, so this also handles unscanned directories in a single keypress.
@@ -162,8 +162,8 @@ When `FileListWidget` receives focus and has no selected row, row 0 is selected 
 #### FileListWidget
 | Col | Content | Double-click / Return | Hover |
 |-----|---------|--------------|-------|
-| Preview | Async thumbnail (QThread) or ▶ for video | Opens ImageViewer (images) or external player (videos) | — |
-| Name | Filename | Opens ImageViewer (images) or external player (videos) | Tooltip: previewed final name (number = 1) |
+| Preview | Async thumbnail (QThread) or `resources/movie.svg` icon (scaled/centered via `QIcon.pixmap`, keeps aspect ratio) for video | Opens/activates the ImageViewer, image or video (`_show_in_viewer()`) | — |
+| Name | Filename | Opens/activates the ImageViewer, image or video (`_show_in_viewer()`) | Tooltip: previewed final name (number = 1) |
 | Sidecar | `●` + extensions if present, `○` otherwise | If sidecar exists: opens text sidecars (QDesktopServices). If no sidecar: opens `<stem><sidecar_new_extension>` in the default editor (file need not exist). | — |
 
 Return/Enter acts like a double-click on the Name column (ignores the sidecar logic).
@@ -214,7 +214,7 @@ Non-modal window opened by double-clicking the preview column.
 Toolbar (left→right): **Fit** | **1:1** | **Width** | **Height** | sep | **+** | **−** | sep | **↺** | **↻** | **↕** | **EXIF** | **0°** | sep | **Open** | **Open with** | **Template** | **Delete** | sep | **Metadata** (checkable) | stretch | zoom label.
 The **EXIF** (Apply EXIF orientation) and **0°** (Force EXIF orientation to 0°) buttons are disabled when the loaded image has no EXIF orientation tag.
 Icons: FreeDesktop theme → `resources/zoom_*.svg` → text fallback.
-Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers.
+Action buttons emit signals (`open_requested`, `open_with_requested`, `template_requested`, `delete_requested`) connected to `FileListWidget` handlers — resolved against `ImageViewer.current_path` (the file actually displayed), not the table's row selection, so they stay correct after Left/Right selection-strip navigation.
 | Key | Action |
 |-----|--------|
 | 0 / X | Fit window (default) |
@@ -222,13 +222,18 @@ Action buttons emit signals (`open_requested`, `open_with_requested`, `template_
 | W | Fit width |
 | H | Fit height |
 | + / − | Zoom in / out (also numpad) |
-| ↑ / ↓ | Navigate prev/next image |
+| ↑ / ↓ | Navigate prev/next media file (single-selection only) |
+| ← / → | Navigate within the current multi-file selection (only active when 2+ files are selected) |
 | Del | Delete current image and sidecars |
 | I | Toggle metadata panel |
 | Escape | Close window |
 
 Mouse gestures: **double-click** centers the viewport on the clicked point; **Ctrl+left-click** zooms in centered on the clicked point; **Ctrl+right-click** zooms out centered on the clicked point (both CUSTOM mode).
 When switching zoom mode or loading a new image, the viewport is centered; in CUSTOM mode, scroll position is preserved proportionally.
+
+**Video display**: `ImageViewer.display(path)` dispatches by extension (`video_extensions` ctor kwarg) to `load_image()` or `show_video()`. `show_video()` shows the `movie` icon (`get_icon("movie")`) scaled/centered like Fit-window zoom, and locks the viewer in "video mode": the 4 zoom-mode buttons, zoom in/out, and the 3 rotate buttons + EXIF/0° buttons are all disabled, the zoom mode is forced to `FIT_WINDOW` (`_set_mode`/`_apply_custom`/`_zoom_to_point` all no-op while `_video_mode` is set, except re-selecting Fit window itself), and the zoom label is blank. Returning to an image via `load_image()` restores normal control state.
+
+**Multi-file selection**: `ImageViewer.set_selection(paths, current=None)` — called by `FileListWidget._on_selection_changed()` on every selection change (always `current=None`, i.e. `paths[0]`), and by `_show_in_viewer(path, selection=...)` on double-click, which passes the full current table selection with `current=path` so a Shift+double-click that keeps a multi-row selection displays/highlights the double-clicked file rather than resetting to the first row. `current` not in `paths` (or omitted) falls back to `paths[0]`. With 2+ paths, a horizontal thumbnail strip (`_SelectionStrip`, `QScrollArea`) appears along the full width of the window, below the splitter (outside it, in the outer `QVBoxLayout`, so the metadata panel just gets less vertical space and its own `QTextBrowser` scrolls as needed) — the currently displayed file is highlighted with a solid border (`_STRIP_HIGHLIGHT_STYLE`) and kept scrolled into view. Clicking a thumbnail (`_ClickableLabel`, `thumbnail_clicked` signal → `_act_selection_goto()`) jumps straight to that file. Left/Right move `_selection_index` within `_selection_paths` (clamped, no wraparound) the same way; both paths are entirely internal to `ImageViewer` — they never touch the file list's table selection. Up/Down (`navigate_prev`/`navigate_next` → `FileListWidget._navigate_viewer()`) naturally become inert during a multi-selection since that handler already requires exactly one selected table row. With a single file selected, the strip is hidden.
 
 **Metadata panel** (`ui/metadata_panel.py`, checkable **Metadata** toolbar button, own separator group — deliberately set apart from the other groups):
 - A `QSplitter(Qt.Horizontal)` holds the image `QScrollArea` and a `MetadataPanel` (read-only `QTextBrowser`, HTML-formatted). Side (`metadata_panel_side` config, "left"/"right") picks the widget order; `ImageViewer.set_metadata_panel_side()` reorders it live if the setting changes while the viewer is open (`FileListWidget.reconfigure()`).

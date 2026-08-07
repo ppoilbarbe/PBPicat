@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""Sync SVG icons in src/pbpicat/resources/ from the PBIcons project.
+
+Icons are looked up by filename (case-insensitive) within a fixed list of
+PBIcons subdirectories, `_ICON_DIRS`, tried in order — not a recursive search
+of the whole PBIcons tree, so an icon in a subdirectory outside that list is
+treated as not found (see the error below).
+
+Lookup order, per icon:
+    1. A local PBIcons checkout: a directory named "pbicons" (any case),
+       sibling of this project's root, searched in `_ICON_DIRS` order for a
+       same-named .svg file.
+    2. If not found there (including if no such local checkout exists at
+       all), the PBIcons GitHub repository (ppoilbarbe/PBIcons, "main"
+       branch), fetched over the network and searched in the same order.
+
+If an icon is found in neither place, this is an error: either `_ICON_DIRS`
+below is missing the subdirectory the icon actually lives in and needs
+updating, or the icon genuinely doesn't exist in PBIcons.
+
+PBIcons is the source of truth: a file is copied byte-for-byte (its content is
+never altered — e.g. no re-adding of the old `style="width:100%;height:100%"`
+override some icons used to carry, which caused unexpected rendering on some
+platforms) whenever its SHA-256 differs from the local resources/ copy.
+
+Usage:
+    python tools/update_icons.py                  # sync every *.svg already in resources/
+    python tools/update_icons.py movie delete      # sync only the named icon(s)
+    python tools/update_icons.py --dry-run         # report what would change, write nothing
+
+An optional GITHUB_TOKEN environment variable is used (if set) to authenticate
+the GitHub API call, to avoid the low unauthenticated rate limit.
+"""
+
+import hashlib
+import json
+import os
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+RESOURCES_DIR = ROOT / "src" / "pbpicat" / "resources"
+
+# PBIcons subdirectories to search for an icon, in priority order.
+_ICON_DIRS = ("programs", "actions", "media")
+
+_GITHUB_REPO = "ppoilbarbe/PBIcons"
+_GITHUB_BRANCH = "main"
+_GITHUB_TREE_API = f"https://api.github.com/repos/{_GITHUB_REPO}/git/trees/{_GITHUB_BRANCH}?recursive=1"
+_GITHUB_RAW_BASE = f"https://raw.githubusercontent.com/{_GITHUB_REPO}/{_GITHUB_BRANCH}/"
+
+_USER_AGENT = "pbpicat-update-icons"
+
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def find_local_pbicons_dir() -> Path | None:
+    """Return the PBIcons checkout sibling of this project's root, if any."""
+    for entry in ROOT.parent.iterdir():
+        if entry.is_dir() and entry.name.lower() == "pbicons":
+            return entry
+    return None
+
+
+def find_local_svg(pbicons_dir: Path, filename: str) -> Path | None:
+    target = filename.lower()
+    subdirs = {p.name.lower(): p for p in pbicons_dir.iterdir() if p.is_dir()}
+    for dirname in _ICON_DIRS:
+        subdir = subdirs.get(dirname)
+        if subdir is None:
+            continue
+        for path in sorted(subdir.glob("*.svg")):
+            if path.name.lower() == target:
+                return path
+    return None
+
+
+def _github_request(url: str) -> bytes:
+    headers = {"User-Agent": _USER_AGENT}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return response.read()
+
+
+def fetch_github_index() -> dict[str, str]:
+    """Return {lowercased filename: path in repo} for every .svg directly under
+    an `_ICON_DIRS` subdirectory, favoring earlier directories on a name clash."""
+    data = json.loads(_github_request(_GITHUB_TREE_API))
+    by_dir: dict[str, dict[str, str]] = {dirname: {} for dirname in _ICON_DIRS}
+    for entry in data.get("tree", []):
+        path = entry.get("path", "")
+        if entry.get("type") != "blob" or not path.lower().endswith(".svg"):
+            continue
+        top_dir, _, rest = path.partition("/")
+        if not rest or "/" in rest or top_dir not in by_dir:
+            continue
+        by_dir[top_dir][rest.lower()] = path
+
+    index: dict[str, str] = {}
+    for dirname in _ICON_DIRS:
+        for filename, path in by_dir[dirname].items():
+            index.setdefault(filename, path)
+    return index
+
+
+def fetch_github_svg(repo_path: str) -> bytes:
+    url = _GITHUB_RAW_BASE + urllib.parse.quote(repo_path)
+    content = _github_request(url)
+    if content.startswith(b"version https://git-lfs.github.com/spec"):
+        raise RuntimeError(f"{repo_path} is stored via git-lfs and can't be fetched as raw content")
+    return content
+
+
+def resolve_icon(name: str, local_dir: Path | None, github_index: dict[str, str] | None) -> tuple[bytes, str] | None:
+    """Return (content, source description) for `name`, or None if not found anywhere."""
+    if local_dir is not None:
+        src = find_local_svg(local_dir, name)
+        if src is not None:
+            return src.read_bytes(), f"local:{src.relative_to(local_dir)}"
+    if github_index is not None:
+        repo_path = github_index.get(name.lower())
+        if repo_path is not None:
+            return fetch_github_svg(repo_path), f"github:{repo_path}"
+    return None
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if "-h" in args or "--help" in args:
+        sys.exit(__doc__)
+    dry_run = "--dry-run" in args
+    names = [a for a in args if not a.startswith("-")]
+    if not names:
+        names = sorted(p.name for p in RESOURCES_DIR.glob("*.svg"))
+    else:
+        names = [n if n.lower().endswith(".svg") else f"{n}.svg" for n in names]
+
+    local_dir = find_local_pbicons_dir()
+    if local_dir is not None:
+        print(f"Local PBIcons checkout: {local_dir}")
+    else:
+        print("No local PBIcons checkout found next to the project root; will use GitHub.")
+
+    github_index: dict[str, str] | None = None
+    updated: list[tuple[str, str]] = []
+    unchanged: list[str] = []
+    missing: list[str] = []
+
+    for name in names:
+        content_source = resolve_icon(name, local_dir, github_index)
+        if content_source is None and github_index is None:
+            print("Fetching PBIcons file index from GitHub…")
+            try:
+                github_index = fetch_github_index()
+            except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as exc:
+                sys.exit(f"error: could not reach GitHub ({exc})")
+            content_source = resolve_icon(name, local_dir, github_index)
+
+        if content_source is None:
+            missing.append(name)
+            continue
+
+        content, source = content_source
+        dest = RESOURCES_DIR / name
+        if dest.exists() and sha256(dest.read_bytes()) == sha256(content):
+            unchanged.append(name)
+            continue
+        updated.append((name, source))
+        if not dry_run:
+            dest.write_bytes(content)
+
+    verb = "would update" if dry_run else "updated"
+    for name, source in updated:
+        print(f"  {verb} {name}  ({source})")
+    for name in unchanged:
+        print(f"  unchanged {name}")
+    if missing:
+        dirs = ", ".join(_ICON_DIRS)
+        for name in missing:
+            print(f"  ERROR: {name} not found in [{dirs}] (local checkout or GitHub)", file=sys.stderr)
+        print(
+            f"error: {len(missing)} icon(s) not found under {dirs} — either _ICON_DIRS in this "
+            "script needs a new subdirectory, or the icon doesn't exist in PBIcons",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

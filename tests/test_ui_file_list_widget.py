@@ -711,25 +711,33 @@ def test_delete_selected_empty(widget, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# _viewer_row helper
+# _viewer_entry helper
 # ---------------------------------------------------------------------------
 
 
-def test_viewer_row_no_selection(widget):
-    assert widget._viewer_row() is None
+def test_viewer_entry_no_viewer(widget):
+    assert widget._viewer_entry() is None
 
 
-def test_viewer_row_multiple_selection(populated_widget):
+def test_viewer_entry_no_current_path(populated_widget):
     w, d = populated_widget
-    w.selectAll()
-    assert w._viewer_row() is None
+    w._image_viewer = MagicMock(current_path=None)
+    assert w._viewer_entry() is None
 
 
-def test_viewer_row_single_selection(populated_widget):
+def test_viewer_entry_stale_path(populated_widget):
     w, d = populated_widget
-    w.selectRow(0)
-    row = w._viewer_row()
-    assert row == 0
+    w._image_viewer = MagicMock(current_path=d / "missing.png")
+    assert w._viewer_entry() is None
+
+
+def test_viewer_entry_match(populated_widget):
+    w, d = populated_widget
+    path = w._display_data[0][0]
+    w._image_viewer = MagicMock(current_path=path)
+    entry = w._viewer_entry()
+    assert entry is not None
+    assert entry[0] == path
 
 
 # ---------------------------------------------------------------------------
@@ -745,7 +753,7 @@ def test_open_from_viewer_no_selection(widget, monkeypatch):
 
 def test_open_from_viewer_with_selection(populated_widget, monkeypatch):
     w, d = populated_widget
-    w.selectRow(0)
+    w._image_viewer = MagicMock(current_path=w._display_data[0][0])
     with patch("pbpicat.ui.file_list_widget.open_default") as mock:
         w._open_from_viewer()
         mock.assert_called_once()
@@ -765,7 +773,7 @@ def test_template_from_viewer_no_selection(widget, monkeypatch):
 
 def test_template_from_viewer_with_selection(populated_widget, monkeypatch):
     w, d = populated_widget
-    w.selectRow(0)
+    w._image_viewer = MagicMock(current_path=w._display_data[0][0])
     with patch.object(w, "_propose_schema") as mock:
         w._template_from_viewer()
         mock.assert_called_once()
@@ -779,7 +787,7 @@ def test_delete_from_viewer_no_selection(widget, monkeypatch):
 
 def test_delete_from_viewer_with_selection(populated_widget, monkeypatch):
     w, d = populated_widget
-    w.selectRow(0)
+    w._image_viewer = MagicMock(current_path=w._display_data[0][0])
     with patch.object(w, "_delete_file") as mock:
         w._delete_from_viewer()
         mock.assert_called_once()
@@ -800,9 +808,9 @@ def test_on_double_click_image(qtbot, base_config, tmp_path, catalog_env):
     w = FileListWidget(config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    with patch.object(w, "_show_image") as mock_show:
+    with patch.object(w, "_show_in_viewer") as mock_show:
         w._on_double_click(0, w._NAME_COL)
-        mock_show.assert_called_once()
+        mock_show.assert_called_once_with(f, selection=[f])
 
 
 def test_on_double_click_video(qtbot, base_config, tmp_path):
@@ -813,9 +821,9 @@ def test_on_double_click_video(qtbot, base_config, tmp_path):
     w = FileListWidget(config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
-    with patch("pbpicat.ui.file_list_widget.open_default") as mock_open:
+    with patch.object(w, "_show_in_viewer") as mock_show:
         w._on_double_click(0, w._NAME_COL)
-        mock_open.assert_called_once()
+        mock_show.assert_called_once_with(f, selection=[])
 
 
 def test_on_double_click_sidecar_with_sidecars(qtbot, base_config, tmp_path):
@@ -860,7 +868,7 @@ def test_on_selection_changed_multiple(populated_widget, catalog_env):
     w.selectAll()
     mock_viewer.reset_mock()  # clear calls triggered by selectAll signal
     w._on_selection_changed()
-    mock_viewer.show_message.assert_called_once()
+    mock_viewer.set_selection.assert_called_once_with(w.get_selected_files())
 
 
 def test_on_selection_changed_rebuilding(populated_widget):
@@ -971,12 +979,12 @@ def test_close_event(qtbot, base_config, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Additional coverage: _show_image, _navigate_viewer, contextMenuEvent
+# Additional coverage: _show_in_viewer, _navigate_viewer, contextMenuEvent
 # ---------------------------------------------------------------------------
 
 
-def test_show_image_creates_viewer(qtbot, catalog_env, sample_png, monkeypatch):
-    """Cover _show_image (lines 446-454)."""
+def test_show_in_viewer_creates_viewer(qtbot, catalog_env, sample_png, monkeypatch):
+    """Cover _show_in_viewer (lines 446-454)."""
     config = dict(DEFAULTS)
     config["confirm_deletions"] = False
     config["delete_empty_sidecars"] = False
@@ -989,15 +997,16 @@ def test_show_image_creates_viewer(qtbot, catalog_env, sample_png, monkeypatch):
     mock_viewer = MagicMock()
     mock_viewer.isVisible.return_value = True
     with patch("pbpicat.ui.file_list_widget.ImageViewer", return_value=mock_viewer) as mock_cls:
-        w._show_image(sample_png)
+        w._show_in_viewer(sample_png)
         mock_viewer.show.assert_called_once()
         _args, kwargs = mock_cls.call_args
         assert kwargs["sidecar_extensions"] == config["sidecar_extensions"]
         assert kwargs["metadata_panel_side"] == config["metadata_panel_side"]
+        assert kwargs["video_extensions"] == list(w._video_exts)
 
 
-def test_show_image_reuses_viewer(qtbot, catalog_env, sample_png, monkeypatch):
-    """Cover _show_image when viewer already visible (lines 455-458)."""
+def test_show_in_viewer_reuses_viewer(qtbot, catalog_env, sample_png, monkeypatch):
+    """Cover _show_in_viewer when viewer already visible (lines 455-458)."""
     config = dict(DEFAULTS)
     config["confirm_deletions"] = False
     config["delete_empty_sidecars"] = False
@@ -1006,8 +1015,71 @@ def test_show_image_reuses_viewer(qtbot, catalog_env, sample_png, monkeypatch):
     mock_viewer = MagicMock()
     mock_viewer.isVisible.return_value = True
     w._image_viewer = mock_viewer
-    w._show_image(sample_png)
-    mock_viewer.load_image.assert_called_once_with(sample_png)
+    w._show_in_viewer(sample_png)
+    mock_viewer.display.assert_called_once_with(sample_png)
+
+
+def test_show_in_viewer_reuses_viewer_for_video(qtbot, base_config, tmp_path):
+    """Double-clicking a video while the viewer is already open must reuse it (display(),
+    not load_image() — which would try to decode the video as an image)."""
+    video = tmp_path / "clip.mp4"
+    video.write_bytes(b"fake")
+    config = dict(base_config)
+    config["video_extensions"] = [".mp4"]
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    w._image_viewer = mock_viewer
+    w._show_in_viewer(video)
+    mock_viewer.display.assert_called_once_with(video)
+    mock_viewer.load_image.assert_not_called()
+
+
+def test_show_in_viewer_shift_double_click_keeps_selection_strip(populated_widget):
+    """Shift+double-click keeps the table's multi-row selection — the viewer must show
+    the full selection strip with the double-clicked file as the one displayed, not
+    silently drop back to single-file mode."""
+    w, d = populated_widget
+    paths = [p for p, _ in w._display_data]
+    assert len(paths) >= 2
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    w._image_viewer = mock_viewer
+    w._show_in_viewer(paths[1], selection=paths)
+    mock_viewer.set_selection.assert_called_once_with(paths, current=paths[1])
+    mock_viewer.display.assert_not_called()
+
+
+def test_show_in_viewer_creates_viewer_with_selection_strip(qtbot, catalog_env, sample_png, monkeypatch, tmp_path):
+    """Same as above but for the branch that constructs a brand-new ImageViewer
+    (no viewer open yet when the Shift+double-click happens)."""
+    other = tmp_path / "other.png"
+    from PIL import Image as _Image
+
+    _Image.new("RGB", (5, 5)).save(str(other))
+    config = dict(DEFAULTS)
+    config["confirm_deletions"] = False
+    config["delete_empty_sidecars"] = False
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    with patch("pbpicat.ui.file_list_widget.ImageViewer", return_value=mock_viewer):
+        w._show_in_viewer(sample_png, selection=[sample_png, other])
+    mock_viewer.set_selection.assert_called_once_with([sample_png, other], current=sample_png)
+
+
+def test_show_in_viewer_single_selection_does_not_call_set_selection(qtbot, catalog_env, sample_png):
+    """A plain double-click (selection == [path]) must not open the strip."""
+    w = FileListWidget(dict(DEFAULTS))
+    qtbot.addWidget(w)
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    w._image_viewer = mock_viewer
+    w._show_in_viewer(sample_png, selection=[sample_png])
+    mock_viewer.display.assert_called_once_with(sample_png)
+    mock_viewer.set_selection.assert_not_called()
 
 
 def test_navigate_viewer_forward(qtbot, catalog_env, tmp_path):
@@ -1055,7 +1127,7 @@ def test_on_selection_changed_image(qtbot, catalog_env, sample_png):
     w._image_viewer = mock_viewer
     w.selectRow(0)
     w._on_selection_changed()
-    mock_viewer.load_image.assert_called()
+    mock_viewer.set_selection.assert_called_once_with([sample_png])
 
 
 def test_refresh_preserve_selection(qtbot, catalog_env, tmp_path):
@@ -1277,8 +1349,7 @@ def test_load_directory_selects_first_image_and_updates_open_viewer(qtbot, base_
 
     w.load_directory(str(tmp_path))
 
-    viewer.load_image.assert_called_once_with(tmp_path / "a.png")
-    viewer.show_message.assert_not_called()
+    viewer.set_selection.assert_called_once_with([tmp_path / "a.png"])
 
 
 def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
@@ -1300,8 +1371,7 @@ def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):
     w.focusInEvent(event)
 
     assert len(w.selectedIndexes()) == 0  # auto-select skipped while viewer is visible
-    viewer.load_image.assert_not_called()
-    viewer.show_message.assert_not_called()
+    viewer.set_selection.assert_not_called()
 
 
 def test_focus_in_event_mouse_does_not_auto_select(qtbot, base_config, tmp_path):
@@ -1323,8 +1393,7 @@ def test_focus_in_event_mouse_does_not_auto_select(qtbot, base_config, tmp_path)
     w.focusInEvent(event)
 
     assert len(w.selectedIndexes()) == 0  # no auto-select: the click will handle it
-    viewer.load_image.assert_not_called()
-    viewer.show_message.assert_not_called()
+    viewer.set_selection.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -1410,8 +1479,10 @@ def test_refresh_thumbnails_for_paths_no_match(qtbot, base_config, tmp_path, mon
     assert w._worker is None
 
 
-def test_refresh_thumbnails_for_paths_reloads_open_viewer(qtbot, base_config, tmp_path, monkeypatch):
-    """Rotating the image currently shown in an open viewer must reload it there too."""
+def test_refresh_thumbnails_for_paths_delegates_to_open_viewer(qtbot, base_config, tmp_path, monkeypatch):
+    """Rotating a file must let an open viewer refresh anything it shows for it —
+    the main viewport and/or a matching thumbnail in its selection strip — which
+    ImageViewer.refresh_paths() itself decides based on what it's currently showing."""
     _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
@@ -1420,30 +1491,21 @@ def test_refresh_thumbnails_for_paths_reloads_open_viewer(qtbot, base_config, tm
 
     viewer = MagicMock()
     viewer.isVisible.return_value = True
-    viewer.current_path = tmp_path / "img.png"
     w._image_viewer = viewer
 
     w.refresh_thumbnails_for_paths({tmp_path / "img.png"})
 
-    viewer.load_image.assert_called_once_with(tmp_path / "img.png")
+    viewer.refresh_paths.assert_called_once_with({tmp_path / "img.png"})
 
 
-def test_refresh_thumbnails_for_paths_does_not_reload_viewer_on_other_image(qtbot, base_config, tmp_path, monkeypatch):
+def test_refresh_thumbnails_for_paths_no_open_viewer(qtbot, base_config, tmp_path, monkeypatch):
     _img(tmp_path / "img.png")
-    _img(tmp_path / "other.png")
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     w.load_directory(str(tmp_path))
     monkeypatch.setattr(_ThumbnailWorker, "start", lambda self: None)
 
-    viewer = MagicMock()
-    viewer.isVisible.return_value = True
-    viewer.current_path = tmp_path / "other.png"
-    w._image_viewer = viewer
-
-    w.refresh_thumbnails_for_paths({tmp_path / "img.png"})
-
-    viewer.load_image.assert_not_called()
+    w.refresh_thumbnails_for_paths({tmp_path / "img.png"})  # no crash without a viewer
 
 
 # ---------------------------------------------------------------------------
@@ -1474,11 +1536,11 @@ def test_scan_directory_empty_sidecar_unlink_oserror(qtbot, catalog_env, tmp_pat
 
 
 # ---------------------------------------------------------------------------
-# _navigate_viewer: skip video file (line 562)
+# _navigate_viewer: video files are navigable (ImageViewer can display them)
 # ---------------------------------------------------------------------------
 
 
-def test_navigate_viewer_skips_video(qtbot, catalog_env, tmp_path):
+def test_navigate_viewer_reaches_video(qtbot, catalog_env, tmp_path):
     config = dict(DEFAULTS)
     config["confirm_deletions"] = False
     config["delete_empty_sidecars"] = False
@@ -1493,8 +1555,8 @@ def test_navigate_viewer_skips_video(qtbot, catalog_env, tmp_path):
     mock_viewer.isVisible.return_value = True
     w._image_viewer = mock_viewer
     w.selectRow(0)  # a.png
-    w._navigate_viewer(+1)  # should skip b.mp4 and land on c.png
-    assert w.get_selected_files()[0].name == "c.png"
+    w._navigate_viewer(+1)  # lands on b.mp4 — no longer skipped
+    assert w.get_selected_files()[0].name == "b.mp4"
 
 
 # ---------------------------------------------------------------------------
@@ -1618,7 +1680,7 @@ def test_context_menu_with_all_actions(populated_widget, mock_qmenu, monkeypatch
 
 def test_open_with_from_viewer_with_selection(populated_widget):
     w, _ = populated_widget
-    w.selectRow(0)
+    w._image_viewer = MagicMock(current_path=w._display_data[0][0])
     with patch("pbpicat.ui.file_list_widget.open_with") as mock_open:
         w._open_with_from_viewer()
     mock_open.assert_called_once()
@@ -1631,7 +1693,7 @@ def test_open_with_from_viewer_with_selection(populated_widget):
 
 def test_rotate_from_viewer_with_selection(populated_widget):
     w, _ = populated_widget
-    w.selectRow(0)
+    w._image_viewer = MagicMock(current_path=w._display_data[0][0])
     callback = MagicMock()
     w.set_rotate_callback(callback)
     w._rotate_from_viewer(90)

@@ -124,10 +124,6 @@ msgstr "Nombre de archivo ({sel}/{n})"
 msgid "File name ({n})"
 msgstr "Nombre de archivo ({n})"
 
-# ==AUTO== Automatically translated
-msgid "Cannot display multiple files simultaneously."
-msgstr "No se pueden mostrar varios archivos simultáneamente."
-
 #, python-brace-format
 msgid "Move {count} files to trash?"
 msgstr "¿Mover {count} archivos a la papelera?"

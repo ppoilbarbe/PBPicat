@@ -38,6 +38,7 @@ from pbpicat.image_io import image_size, load_qimage
 from pbpicat.platform import open_default, open_with
 from pbpicat.renamer import validate_schema
 
+from .icons import get_icon
 from .image_viewer import ImageViewer
 
 
@@ -428,12 +429,8 @@ class FileListWidget(QTableWidget):
 
     def refresh_thumbnails_for_paths(self, paths: set[Path]) -> None:
         """Reload thumbnails only for the given paths without rebuilding the table."""
-        if (
-            self._image_viewer is not None
-            and self._image_viewer.isVisible()
-            and self._image_viewer.current_path in paths
-        ):
-            self._image_viewer.load_image(self._image_viewer.current_path)
+        if self._image_viewer is not None and self._image_viewer.isVisible():
+            self._image_viewer.refresh_paths(paths)
         self._stop_worker()
         placeholder = QPixmap(self._thumb_w, self._thumb_h)
         placeholder.fill(Qt.lightGray)
@@ -578,8 +575,8 @@ class FileListWidget(QTableWidget):
             thumb_label.setAlignment(Qt.AlignCenter)
             thumb_label.setFixedSize(self._thumb_w + 4, self._thumb_h + 4)
             if path.suffix.lower() in self._video_exts:
-                thumb_label.setFont(QFont("", 24))
-                thumb_label.setText("▶")
+                icon = get_icon("movie", text_fallback="▶")
+                thumb_label.setPixmap(icon.pixmap(self._thumb_w, self._thumb_h))
             else:
                 thumb_label.setPixmap(placeholder)
             self.setCellWidget(row, self._THUMB_COL, thumb_label)
@@ -729,12 +726,15 @@ class FileListWidget(QTableWidget):
                 new_sc.touch()
                 open_default(new_sc)
                 self.refresh_and_select(row)
-        elif path.suffix.lower() in self._image_exts:
-            self._show_image(path)
-        elif path.suffix.lower() in self._video_exts:
-            open_default(path)
+        elif path.suffix.lower() in self._image_exts or path.suffix.lower() in self._video_exts:
+            self._show_in_viewer(path, selection=self.get_selected_files())
 
-    def _show_image(self, path: Path) -> None:
+    def _show_in_viewer(self, path: Path, selection: list[Path] | None = None) -> None:
+        """Open (or reuse) the image viewer on `path` — image or video, dispatched by
+        `ImageViewer.display()`. If `selection` has more than one file (e.g. a
+        Shift+double-click that keeps a multi-row selection), the viewer shows the
+        full selection strip with `path` as the initially displayed file."""
+        multi = selection if selection is not None and len(selection) > 1 else None
         if self._image_viewer is None or not self._image_viewer.isVisible():
             self._image_viewer = ImageViewer(
                 path,
@@ -744,6 +744,7 @@ class FileListWidget(QTableWidget):
                 auto_rotate=self._exif_auto_rotate,
                 sidecar_extensions=self._sidecar_exts,
                 metadata_panel_side=self._metadata_panel_side,
+                video_extensions=list(self._video_exts),
             )
             self._image_viewer.navigate_prev.connect(lambda: self._navigate_viewer(-1))
             self._image_viewer.navigate_next.connect(lambda: self._navigate_viewer(+1))
@@ -753,8 +754,13 @@ class FileListWidget(QTableWidget):
             self._image_viewer.delete_requested.connect(self._delete_from_viewer)
             self._image_viewer.rotate_requested.connect(self._rotate_from_viewer)
             self._image_viewer.show()
+            if multi is not None:
+                self._image_viewer.set_selection(multi, current=path)
         else:
-            self._image_viewer.load_image(path)
+            if multi is not None:
+                self._image_viewer.set_selection(multi, current=path)
+            else:
+                self._image_viewer.display(path)
             self._image_viewer.raise_()
             self._image_viewer.activateWindow()
 
@@ -762,10 +768,11 @@ class FileListWidget(QTableWidget):
         rows = {idx.row() for idx in self.selectedIndexes()}
         if len(rows) != 1:
             return
+        media_exts = self._image_exts | self._video_exts
         row = next(iter(rows)) + direction
         while 0 <= row < len(self._display_data):
             path, _ = self._display_data[row]
-            if path.suffix.lower() in self._image_exts:
+            if path.suffix.lower() in media_exts:
                 self.selectRow(row)
                 self.scrollToItem(self.item(row, self._NAME_COL))
                 return
@@ -776,18 +783,10 @@ class FileListWidget(QTableWidget):
             return
         if self._image_viewer is None or not self._image_viewer.isVisible():
             return
-        rows = {idx.row() for idx in self.selectedIndexes()}
-        if len(rows) == 0:
+        paths = self.get_selected_files()
+        if not paths:
             return  # transient empty selection during double-click clear+reselect cycle
-        if len(rows) > 1:
-            self._image_viewer.show_message(_("Cannot display multiple files simultaneously."))
-            return
-        row = next(iter(rows))
-        if row >= len(self._display_data):  # pragma: no cover — rows == len(_display_data); index always valid
-            return
-        path, _sidecars = self._display_data[row]
-        if path.suffix.lower() in self._image_exts:
-            self._image_viewer.load_image(path)
+        self._image_viewer.set_selection(paths)
 
     def viewportEvent(self, event: QEvent) -> bool:  # noqa: N802
         if event.type() == QEvent.Type.ToolTip and self._get_schema_fields is not None:
@@ -890,38 +889,42 @@ class FileListWidget(QTableWidget):
         if entry:
             self._delete_file(*entry)
 
-    def _viewer_row(self) -> int | None:
-        rows = {idx.row() for idx in self.selectedIndexes()}
-        if len(rows) != 1:
+    def _viewer_entry(self) -> tuple[Path, list[Path]] | None:
+        """Return the (path, sidecars) row of `_display_data` currently displayed in
+        the image viewer, resolved by path rather than table row selection — after
+        Left/Right selection-strip navigation, the displayed file can be any member
+        of a multi-selection, not tied to which row(s) are selected in the table."""
+        if self._image_viewer is None:
             return None
-        row = next(iter(rows))
-        return row if row < len(self._display_data) else None
+        path = self._image_viewer.current_path
+        if path is None:
+            return None
+        return next(((p, s) for p, s in self._display_data if p == path), None)
 
     def _open_from_viewer(self) -> None:
-        row = self._viewer_row()
-        if row is not None:
-            open_default(self._display_data[row][0])
+        entry = self._viewer_entry()
+        if entry is not None:
+            open_default(entry[0])
 
     def _open_with_from_viewer(self) -> None:
-        row = self._viewer_row()
-        if row is not None:
-            open_with(self._display_data[row][0], self._image_viewer)
+        entry = self._viewer_entry()
+        if entry is not None:
+            open_with(entry[0], self._image_viewer)
 
     def _template_from_viewer(self) -> None:
-        row = self._viewer_row()
-        if row is not None:
-            self._propose_schema(self._display_data[row][0])
+        entry = self._viewer_entry()
+        if entry is not None:
+            self._propose_schema(entry[0])
 
     def _rotate_from_viewer(self, op) -> None:
-        row = self._viewer_row()
-        if row is not None and self._rotate_callback is not None:
-            self._rotate_callback([self._display_data[row][0]], op)
+        entry = self._viewer_entry()
+        if entry is not None and self._rotate_callback is not None:
+            self._rotate_callback([entry[0]], op)
 
     def _delete_from_viewer(self) -> None:
-        row = self._viewer_row()
-        if row is not None:
-            path, sidecars = self._display_data[row]
-            self._delete_file(path, sidecars, dialog_parent=self._image_viewer)
+        entry = self._viewer_entry()
+        if entry is not None:
+            self._delete_file(*entry, dialog_parent=self._image_viewer)
 
     def _delete_file(self, path: Path, sidecars: list[Path], dialog_parent=None) -> None:
         parent = dialog_parent if dialog_parent is not None else self

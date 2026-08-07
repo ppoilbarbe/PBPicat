@@ -124,10 +124,6 @@ msgstr "Tên tệp ({sel}/{n})"
 msgid "File name ({n})"
 msgstr "Tên tệp ({n})"
 
-# ==AUTO== Automatically translated
-msgid "Cannot display multiple files simultaneously."
-msgstr "Không thể hiển thị nhiều tệp cùng lúc."
-
 #, python-brace-format
 msgid "Move {count} files to trash?"
 msgstr "Chuyển {count} tệp vào thùng rác?"

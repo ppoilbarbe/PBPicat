@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from PIL import Image
 from PySide6.QtCore import QEvent, QPoint, Qt
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QKeySequence, QMouseEvent
 
 from pbpicat.ui.icons import _text_icon, get_icon
 from pbpicat.ui.image_viewer import ImageViewer, _ZoomMode
@@ -94,7 +94,7 @@ def test_image_viewer_no_screen(qtbot, catalog_env, sample_png, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# load_image / show_message
+# load_image
 # ---------------------------------------------------------------------------
 
 
@@ -112,14 +112,6 @@ def test_load_image_small_dimension(qtbot, catalog_env, tmp_path):
     viewer = ImageViewer(tiny)
     qtbot.addWidget(viewer)
     assert viewer._zoom_min == 1.0
-
-
-def test_show_message(qtbot, catalog_env, sample_png):
-    viewer = ImageViewer(sample_png)
-    qtbot.addWidget(viewer)
-    viewer.show_message("Hello")
-    assert viewer._label.text() == "Hello"
-    assert viewer._zoom_label.text() == ""
 
 
 # ---------------------------------------------------------------------------
@@ -543,14 +535,6 @@ def test_shortcut_i_toggles_metadata_panel(qtbot, catalog_env, sample_png):
     assert viewer._metadata_btn.isChecked() is True
 
 
-def test_show_message_clears_metadata_panel(qtbot, catalog_env, sample_png):
-    viewer = ImageViewer(sample_png)
-    qtbot.addWidget(viewer)
-    viewer._metadata_btn.setChecked(True)
-    viewer.show_message("nope")
-    assert viewer._metadata_panel._browser.toPlainText() == ""
-
-
 def test_metadata_panel_side_right_by_default(qtbot, catalog_env, sample_png):
     viewer = ImageViewer(sample_png)
     qtbot.addWidget(viewer)
@@ -611,3 +595,318 @@ def test_sidecar_extensions_passed_to_metadata_panel(qtbot, catalog_env, tmp_pat
     viewer._metadata_btn.setChecked(True)
     text = viewer._metadata_panel._browser.toPlainText()
     assert "photo.xmp" in text
+
+
+# ---------------------------------------------------------------------------
+# display() dispatch / show_video / video mode
+# ---------------------------------------------------------------------------
+
+
+def _video(tmp_path, name="clip.mp4"):
+    path = tmp_path / name
+    path.write_bytes(b"fake")
+    return path
+
+
+def test_display_dispatches_image(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "load_image") as mock_load, patch.object(viewer, "show_video") as mock_video:
+        viewer.display(sample_png)
+    mock_load.assert_called_once_with(sample_png)
+    mock_video.assert_not_called()
+
+
+def test_display_dispatches_video(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "load_image") as mock_load, patch.object(viewer, "show_video") as mock_video:
+        viewer.display(video)
+    mock_video.assert_called_once_with(video)
+    mock_load.assert_not_called()
+
+
+def test_show_video_enters_video_mode(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+
+    assert viewer._video_mode is True
+    assert viewer._mode == _ZoomMode.FIT_WINDOW
+    assert viewer.current_path == video
+    assert viewer.windowTitle() == video.name
+    assert not viewer._pixmap.isNull()
+    assert viewer._zoom_label.text() == ""
+    for btn in viewer._zoom_buttons + viewer._zoom_inout_buttons + viewer._rotate_buttons:
+        assert btn.isEnabled() is False
+    assert viewer._rotate_auto_btn.isEnabled() is False
+    assert viewer._reset_exif_btn.isEnabled() is False
+
+
+def test_load_image_after_show_video_restores_controls(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+    viewer.load_image(sample_png)
+
+    assert viewer._video_mode is False
+    for btn in viewer._zoom_buttons + viewer._zoom_inout_buttons + viewer._rotate_buttons:
+        assert btn.isEnabled() is True
+
+
+def test_video_mode_blocks_set_mode(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+    viewer._act_1to1()
+    assert viewer._mode == _ZoomMode.FIT_WINDOW
+
+
+def test_video_mode_allows_set_mode_fit_window(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+    viewer._act_fit_window()  # same mode, must not be blocked
+    assert viewer._mode == _ZoomMode.FIT_WINDOW
+
+
+def test_video_mode_blocks_apply_custom(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+    viewer._act_zoom_in()
+    assert viewer._mode == _ZoomMode.FIT_WINDOW
+
+
+def test_video_mode_blocks_zoom_to_point(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.show_video(video)
+    viewer._zoom_to_point(QPoint(10, 10))
+    assert viewer._mode == _ZoomMode.FIT_WINDOW
+
+
+def test_video_extensions_defaults_to_empty(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    assert viewer._video_extensions == set()
+
+
+# ---------------------------------------------------------------------------
+# set_selection / selection-strip navigation
+# ---------------------------------------------------------------------------
+
+
+def test_set_selection_single_hides_strip(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._strip.setVisible(True)  # simulate strip left over from a previous multi-selection
+    with patch.object(viewer, "display") as mock_display:
+        viewer.set_selection([sample_png])
+    mock_display.assert_called_once_with(sample_png)
+    assert viewer._strip.isVisible() is False
+
+
+def test_set_selection_multiple_shows_strip_and_first_file(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "display") as mock_display:
+        viewer.set_selection([sample_png, other])
+    mock_display.assert_called_once_with(sample_png)
+    assert viewer._strip.isHidden() is False
+    assert viewer._selection_index == 0
+    assert len(viewer._strip._labels) == 2
+
+
+def test_set_selection_with_current_displays_and_highlights_it(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "display") as mock_display:
+        viewer.set_selection([sample_png, other], current=other)
+    mock_display.assert_called_once_with(other)
+    assert viewer._selection_index == 1
+    assert viewer._strip.current_index == 1
+
+
+def test_set_selection_current_not_in_paths_falls_back_to_first(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    unrelated = tmp_path / "unrelated.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "display") as mock_display:
+        viewer.set_selection([sample_png, other], current=unrelated)
+    mock_display.assert_called_once_with(sample_png)
+    assert viewer._selection_index == 0
+
+
+def test_selection_next_prev_clamped(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])
+
+    viewer._act_selection_prev()  # already at index 0 → no-op
+    assert viewer._selection_index == 0
+
+    viewer._act_selection_next()
+    assert viewer._selection_index == 1
+    assert viewer.current_path == other
+
+    viewer._act_selection_next()  # already at last index → no-op
+    assert viewer._selection_index == 1
+
+    viewer._act_selection_prev()
+    assert viewer._selection_index == 0
+    assert viewer.current_path == sample_png
+
+
+def test_selection_next_noop_for_single_file(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png])
+    viewer._act_selection_next()
+    assert viewer._selection_index == 0
+
+
+def test_selection_right_shortcut_navigates(qtbot, catalog_env, sample_png, tmp_path):
+    from PySide6.QtGui import QShortcut
+
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.show()
+    qtbot.waitActive(viewer)
+    viewer.set_selection([sample_png, other])
+
+    shortcuts = [sc for sc in viewer.findChildren(QShortcut) if sc.key() == QKeySequence(Qt.Key.Key_Right)]
+    assert len(shortcuts) == 1
+    shortcuts[0].activated.emit()
+
+    assert viewer.current_path == other
+
+
+def test_selection_strip_renders_video_icon(qtbot, catalog_env, sample_png, tmp_path):
+    video = _video(tmp_path)
+    viewer = ImageViewer(sample_png, video_extensions=[".mp4"])
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, video])
+    assert len(viewer._strip._labels) == 2
+    assert not viewer._strip._labels[1].pixmap().isNull()
+
+
+def test_selection_strip_highlights_current_thumbnail(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])
+
+    assert "palette(highlight)" in viewer._strip._labels[0].styleSheet()
+    assert "palette(highlight)" not in viewer._strip._labels[1].styleSheet()
+
+    viewer._act_selection_next()
+    assert "palette(highlight)" not in viewer._strip._labels[0].styleSheet()
+    assert "palette(highlight)" in viewer._strip._labels[1].styleSheet()
+
+
+def test_clicking_strip_thumbnail_navigates(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])
+
+    viewer._strip._labels[1].clicked.emit()
+
+    assert viewer._selection_index == 1
+    assert viewer.current_path == other
+    assert "palette(highlight)" in viewer._strip._labels[1].styleSheet()
+
+
+def test_selection_goto_out_of_range_ignored(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])
+    viewer._act_selection_goto(5)
+    assert viewer._selection_index == 0
+    assert viewer.current_path == sample_png
+
+
+def test_clickable_label_emits_on_left_click(qtbot, catalog_env):
+    from pbpicat.ui.image_viewer import _ClickableLabel
+
+    label = _ClickableLabel()
+    qtbot.addWidget(label)
+    with qtbot.waitSignal(label.clicked, timeout=500):
+        qtbot.mouseClick(label, Qt.LeftButton)
+
+
+# ---------------------------------------------------------------------------
+# refresh_paths (e.g. after an external rotation)
+# ---------------------------------------------------------------------------
+
+
+def test_refresh_paths_reloads_current_single_file(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "display") as mock_display:
+        viewer.refresh_paths({sample_png})
+    mock_display.assert_called_once_with(sample_png)
+
+
+def test_refresh_paths_ignores_unrelated_path(qtbot, catalog_env, sample_png, tmp_path):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    with patch.object(viewer, "display") as mock_display:
+        viewer.refresh_paths({tmp_path / "other.png"})
+    mock_display.assert_not_called()
+
+
+def test_refresh_paths_updates_matching_strip_thumbnail(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])  # displays sample_png, index 0
+
+    with patch.object(viewer._strip, "refresh_thumbnail") as mock_refresh:
+        viewer.refresh_paths({other})
+    mock_refresh.assert_called_once_with(1, other, viewer._video_extensions)
+
+
+def test_refresh_paths_updates_both_viewport_and_strip_for_displayed_file(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer.set_selection([sample_png, other])  # displays sample_png, index 0
+
+    with (
+        patch.object(viewer, "display") as mock_display,
+        patch.object(viewer._strip, "refresh_thumbnail") as mock_refresh,
+    ):
+        viewer.refresh_paths({sample_png})
+    mock_display.assert_called_once_with(sample_png)
+    mock_refresh.assert_called_once_with(0, sample_png, viewer._video_extensions)
+
+
+def test_selection_strip_refresh_thumbnail_out_of_range(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._strip.refresh_thumbnail(0, sample_png, set())  # no labels yet — no crash
