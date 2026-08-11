@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import unicodedata
 from collections.abc import Callable
 from pathlib import Path
@@ -36,7 +37,7 @@ from PySide6.QtWidgets import (
 from pbpicat.config import load_all_history
 from pbpicat.image_io import image_size, load_qimage
 from pbpicat.platform import open_default, open_with
-from pbpicat.renamer import validate_schema
+from pbpicat.renamer import execute_copy, execute_rename, validate_schema
 
 from .icons import get_icon
 from .image_viewer import ImageViewer
@@ -131,12 +132,20 @@ class FileListWidget(QTableWidget):
 
     Signals:
         rename_requested(list[Path])
+        files_moved(list[tuple[Path, Path]])
+        files_copied(list[tuple[Path, Path]])
+        files_moved_external(list[tuple[Path, Path]])
+        files_copied_external(list[tuple[Path, Path]])
     """
 
     rename_requested = Signal(list)
     schema_proposed = Signal(list)
     file_count_changed = Signal(int)
     orphan_sidecar_count_changed = Signal(int)
+    files_moved = Signal(list)
+    files_copied = Signal(list)
+    files_moved_external = Signal(list)
+    files_copied_external = Signal(list)
 
     _THUMB_COL = 0
     _NAME_COL = 1
@@ -879,7 +888,16 @@ class FileListWidget(QTableWidget):
         mime.setUrls([QUrl.fromLocalFile(str(f)) for f in files])
         drag = QDrag(self)
         drag.setMimeData(mime)
-        drag.exec(Qt.CopyAction)
+        # Both actions supported so Qt's native drag loop live-tracks Ctrl/Shift and updates
+        # the cursor accordingly (Ctrl = copy, Shift = move — Qt's own cross-platform
+        # modifier-to-action mapping, not overridable from application code). No modifier
+        # held falls back to Qt.MoveAction, matching the app's default purpose (rename/move).
+        # Explicit cursor for the copy action: several window managers/compositors don't
+        # render Qt's built-in per-action drag cursors distinctly (or at all), so without
+        # this the cursor can look identical regardless of the negotiated action. Move keeps
+        # Qt's default drag cursor; only Copy needs a pixmap that stands out from it.
+        drag.setDragCursor(get_icon("duplicate", "edit-copy").pixmap(24, 24), Qt.CopyAction)
+        drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.MoveAction)
 
     def _delete_selection(self) -> None:
         files = self.get_selected_files()
@@ -981,6 +999,124 @@ class FileListWidget(QTableWidget):
         if errors:
             QMessageBox.warning(parent, _("Deletion error"), "\n".join(errors))
         self._delete_rows_and_select(next_row)
+
+    def _internal_drop_entries(self, paths: list[Path], dest: Path) -> list[tuple[Path, list[Path]]]:
+        """Resolve dragged paths (from this app's own selection) into (path, sidecars)
+        entries via `_display_data`, skipping files already located in `dest`."""
+        path_set = set(paths)
+        return [(p, scs) for p, scs in self._display_data if p in path_set and p.parent != dest]
+
+    def move_files_to(self, paths: list[Path], dest_dir: str) -> None:
+        """Move dropped files (and their sidecars) to `dest_dir`, keeping their names unchanged."""
+        dest = Path(dest_dir)
+        entries = self._internal_drop_entries(paths, dest)
+        if not entries:
+            return
+
+        plan: list[tuple[Path, Path]] = []
+        for p, scs in entries:
+            plan.append((p, dest / p.name))
+            plan.extend((sc, dest / sc.name) for sc in scs)
+
+        next_row = self.next_row_after_files([p for p, _ in entries])
+        try:
+            execute_rename(plan)
+        except (FileExistsError, RuntimeError) as exc:
+            QMessageBox.critical(self, _("Move error"), str(exc))
+            return
+
+        self._delete_rows_and_select(next_row)
+        self.files_moved.emit(plan)
+
+    def copy_files_to(self, paths: list[Path], dest_dir: str) -> None:
+        """Copy dropped files (and their sidecars) to `dest_dir`, keeping their names
+        unchanged and the originals in place (Shift-drag)."""
+        dest = Path(dest_dir)
+        entries = self._internal_drop_entries(paths, dest)
+        if not entries:
+            return
+
+        plan: list[tuple[Path, Path]] = []
+        for p, scs in entries:
+            plan.append((p, dest / p.name))
+            plan.extend((sc, dest / sc.name) for sc in scs)
+
+        try:
+            execute_copy(plan)
+        except (FileExistsError, RuntimeError) as exc:
+            QMessageBox.critical(self, _("Copy error"), str(exc))
+            return
+
+        self.files_copied.emit(plan)
+
+    def _external_drop_entries(self, paths: list[Path], dest: Path) -> list[tuple[Path, list[Path]]]:
+        """Resolve dropped paths (from outside the app) into (path, sidecars) entries,
+        skipping non-files and files already in `dest`. Sidecars are looked up on disk
+        since external paths aren't tracked in `_display_data`."""
+        entries: list[tuple[Path, list[Path]]] = []
+        for p in paths:
+            if not p.is_file() or p.parent == dest:
+                continue
+            sidecars = [p.parent / (p.stem + ext) for ext in self._sidecar_exts if (p.parent / (p.stem + ext)).exists()]
+            entries.append((p, sidecars))
+        return entries
+
+    def move_external_files_to(self, paths: list[Path], dest_dir: str) -> None:
+        """Move files dropped from outside the app (e.g. a file manager) into `dest_dir`,
+        keeping their names unchanged. Not added to the undo stack."""
+        dest = Path(dest_dir)
+        entries = self._external_drop_entries(paths, dest)
+        if not entries:
+            return
+
+        plan: list[tuple[Path, Path]] = []
+        for p, scs in entries:
+            plan.append((p, dest / p.name))
+            plan.extend((sc, dest / sc.name) for sc in scs)
+
+        try:
+            execute_rename(plan)
+        except (FileExistsError, RuntimeError) as exc:
+            QMessageBox.critical(self, _("Move error"), str(exc))
+            return
+
+        if self._current_dir is not None and dest == self._current_dir:
+            self._refresh_preserve_selection()
+        self.files_moved_external.emit(plan)
+
+    def copy_external_files_to(self, paths: list[Path], dest_dir: str) -> None:
+        """Copy files dropped from outside the app (e.g. a file manager) into `dest_dir`,
+        keeping their names unchanged and the originals in place. Not added to the undo stack."""
+        dest = Path(dest_dir)
+        entries = self._external_drop_entries(paths, dest)
+        if not entries:
+            return
+
+        plan: list[tuple[Path, Path]] = []
+        for p, scs in entries:
+            plan.append((p, dest / p.name))
+            plan.extend((sc, dest / sc.name) for sc in scs)
+
+        conflicts = [dst for _, dst in plan if dst.exists()]
+        if conflicts:
+            names = ", ".join(p.name for p in conflicts)
+            QMessageBox.critical(
+                self, _("Copy error"), _("Destination file(s) already exist: {names}").format(names=names)
+            )
+            return
+
+        errors = []
+        for src, dst in plan:
+            try:
+                shutil.copy2(src, dst)
+            except OSError as exc:
+                errors.append(f"{src.name} : {exc}")
+        if errors:
+            QMessageBox.warning(self, _("Copy error"), "\n".join(errors))
+
+        if self._current_dir is not None and dest == self._current_dir:
+            self._refresh_preserve_selection()
+        self.files_copied_external.emit(plan)
 
     def _remove_empty_parents(self, directory: Path) -> None:
         d = directory

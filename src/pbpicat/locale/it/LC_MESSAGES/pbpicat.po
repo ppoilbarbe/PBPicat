@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "Errore di eliminazione"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "Errore di spostamento"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "Errore di copia"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "File di destinazione già esistente/i: {names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "Modello"
 
@@ -755,12 +768,40 @@ msgstr "{n} file rinominato/i con successo."
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} file spostato/i."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} file copiato/i."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Annulla rotazione ({n})"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Annulla ultima rotazione (ripristina i dati pixel originali)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Annulla spostamento ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Annulla l'ultimo spostamento (ripristina i file nella cartella originale)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Annulla copia ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Annulla l'ultima copia (elimina le copie, gli originali restano invariati)"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "Rotazione annullata."
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "Reimpostazione orientamento EXIF annullata."
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "Ultimo spostamento annullato."
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "Ultima copia annullata."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

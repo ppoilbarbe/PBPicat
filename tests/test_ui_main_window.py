@@ -636,6 +636,126 @@ def test_undo_renumber(window, catalog_env, monkeypatch):
         window._undo_last_rename()
 
 
+# ---------------------------------------------------------------------------
+# Drag-and-drop move (files_moved signal / undo)
+# ---------------------------------------------------------------------------
+
+
+def test_on_files_moved_pushes_undo(window, catalog_env, tmp_path):
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"
+    window._on_files_moved([(src, dst)])
+    assert len(window._undo_stack) == 1
+    kind, plan = window._undo_stack[0]
+    assert kind == "move"
+    assert plan == [(src, dst)]
+    assert _("{n} file(s) moved.").format(n=1) == window._status.currentMessage()
+
+
+def test_update_undo_btn_move_label(window, catalog_env):
+    window._undo_stack.append(("move", [(Path("/tmp/a.jpg"), Path("/tmp/dest/a.jpg"))]))
+    window._update_undo_btn()
+    assert window._undo_btn.isEnabled()
+    assert "(1)" in window._undo_btn.text()
+
+
+def test_undo_move_success(window, catalog_env, tmp_path):
+    """Cover _undo_last_rename with move kind: file moves back to its source folder."""
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = tmp_path / "a.jpg"
+    dst = dest / "a.jpg"
+    dst.write_bytes(b"data")
+    window._undo_stack.append(("move", [(src, dst)]))
+    window._undo_btn.setEnabled(True)
+
+    window._undo_last_rename()
+
+    assert src.exists()
+    assert not dst.exists()
+    assert not dest.exists()  # emptied destination folder removed by undo_rename
+    assert len(window._undo_stack) == 0
+    assert _("Last move undone.") == window._status.currentMessage()
+
+
+def test_undo_move_error(window, catalog_env, tmp_path):
+    """Cover _undo_last_rename move-kind error path (dst missing)."""
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"  # never created
+    window._undo_stack.append(("move", [(src, dst)]))
+    with patch.object(QMessageBox, "critical", return_value=None):
+        window._undo_last_rename()
+    assert len(window._undo_stack) == 1  # not popped on error
+
+
+def test_on_files_copied_pushes_undo(window, catalog_env, tmp_path):
+    """Internal copy (Shift-drag) is undoable, unlike external copies."""
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"
+    window._on_files_copied([(src, dst)])
+    assert len(window._undo_stack) == 1
+    kind, plan = window._undo_stack[0]
+    assert kind == "copy"
+    assert plan == [(src, dst)]
+    assert _("{n} file(s) copied.").format(n=1) == window._status.currentMessage()
+
+
+def test_update_undo_btn_copy_label(window, catalog_env):
+    window._undo_stack.append(("copy", [(Path("/tmp/a.jpg"), Path("/tmp/dest/a.jpg"))]))
+    window._update_undo_btn()
+    assert window._undo_btn.isEnabled()
+    assert "(1)" in window._undo_btn.text()
+
+
+def test_undo_copy_success(window, catalog_env, tmp_path):
+    """Cover _undo_last_rename with copy kind: the copy is deleted, the original is untouched."""
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = tmp_path / "a.jpg"
+    src.write_bytes(b"original")
+    dst = dest / "a.jpg"
+    dst.write_bytes(b"copy")
+    window._undo_stack.append(("copy", [(src, dst)]))
+    window._undo_btn.setEnabled(True)
+
+    window._undo_last_rename()
+
+    assert src.exists()  # original untouched
+    assert src.read_bytes() == b"original"
+    assert not dst.exists()
+    assert not dest.exists()  # emptied destination folder removed by undo_copy
+    assert len(window._undo_stack) == 0
+    assert _("Last copy undone.") == window._status.currentMessage()
+
+
+def test_undo_copy_error(window, catalog_env, tmp_path):
+    """Cover _undo_last_rename copy-kind error path (dst missing)."""
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"  # never created
+    window._undo_stack.append(("copy", [(src, dst)]))
+    with patch.object(QMessageBox, "critical", return_value=None):
+        window._undo_last_rename()
+    assert len(window._undo_stack) == 1  # not popped on error
+
+
+def test_on_external_files_moved_no_undo(window, catalog_env, tmp_path):
+    """Files dragged in from outside the app are never added to the undo stack."""
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"
+    window._on_external_files_moved([(src, dst)])
+    assert window._undo_stack == []
+    assert _("{n} file(s) moved.").format(n=1) == window._status.currentMessage()
+
+
+def test_on_external_files_copied_no_undo(window, catalog_env, tmp_path):
+    """Files copied in from outside the app are never added to the undo stack."""
+    src = tmp_path / "a.jpg"
+    dst = tmp_path / "dest" / "a.jpg"
+    window._on_external_files_copied([(src, dst)])
+    assert window._undo_stack == []
+    assert _("{n} file(s) copied.").format(n=1) == window._status.currentMessage()
+
+
 def test_renumber_all_with_plan(window, catalog_env, tmp_path, monkeypatch):
     """Cover _renumber_all with a real plan."""
     from PIL import Image

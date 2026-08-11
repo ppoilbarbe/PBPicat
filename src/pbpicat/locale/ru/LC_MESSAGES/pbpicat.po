@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "Ошибка удаления"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "Ошибка перемещения"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "Ошибка копирования"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "Файл(ы) назначения уже существуют: {names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "Шаблон"
 
@@ -755,12 +768,40 @@ msgstr "{n} файл(ов) успешно переименован(о)."
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} файл(ов) перемещено."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} файл(ов) скопировано."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Отменить поворот ({n})"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Отменить последний поворот (восстанавливает исходные данные пикселей)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Отменить перемещение ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Отменить последнее перемещение (восстанавливает файлы в исходную папку)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Отменить копирование ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Отменить последнее копирование (удаляет копии, оригиналы не затрагиваются)"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "Поворот отменён."
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "Сброс ориентации EXIF отменён."
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "Последнее перемещение отменено."
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "Последнее копирование отменено."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

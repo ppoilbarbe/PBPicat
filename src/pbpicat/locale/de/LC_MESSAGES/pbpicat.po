@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "Loeschfehler"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "Verschiebefehler"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "Kopierfehler"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "Zieldatei(en) existieren bereits: {names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "Vorlage"
 
@@ -755,12 +768,40 @@ msgstr "{n} Datei(en) erfolgreich umbenannt."
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} Datei(en) verschoben."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} Datei(en) kopiert."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Rotation rückgängig machen ({n})"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Letzte Rotation rückgängig machen (stellt ursprüngliche Pixeldaten wieder her)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Verschieben rückgängig machen ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Letztes Verschieben rückgängig machen (stellt Dateien im ursprünglichen Ordner wieder her)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Kopieren rückgängig machen ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Letztes Kopieren rückgängig machen (löscht die Kopien, Originale bleiben unverändert)"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "Rotation rückgängig gemacht."
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "Zurücksetzen der EXIF-Orientierung rückgängig gemacht."
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "Letztes Verschieben rückgängig gemacht."
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "Letztes Kopieren rückgängig gemacht."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

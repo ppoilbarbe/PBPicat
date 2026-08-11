@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "Lỗi xóa"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "Lỗi di chuyển"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "Lỗi sao chép"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "Tệp đích đã tồn tại: {names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "Mẫu"
 
@@ -755,12 +768,40 @@ msgstr "{n} tệp đã được đổi tên thành công."
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "Đã di chuyển {n} tệp."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "Đã sao chép {n} tệp."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Hoàn tác xoay ({n})"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Hoàn tác lần xoay cuối (khôi phục dữ liệu điểm ảnh gốc)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Hoàn tác di chuyển ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Hoàn tác lần di chuyển cuối cùng (khôi phục tệp về thư mục ban đầu)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Hoàn tác sao chép ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Hoàn tác lần sao chép cuối (xóa các bản sao, tệp gốc không bị ảnh hưởng)"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "Đã hoàn tác xoay."
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "Việc đặt lại hướng EXIF đã được hoàn tác."
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "Đã hoàn tác lần di chuyển cuối."
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "Đã hoàn tác lần sao chép cuối."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

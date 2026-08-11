@@ -134,6 +134,16 @@ msgstr "Could not move to trash: {name}"
 msgid "Deletion error"
 msgstr "Deletion error"
 
+msgid "Move error"
+msgstr "Move error"
+
+msgid "Copy error"
+msgstr "Copy error"
+
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "Destination file(s) already exist: {names}"
+
 msgid "Template"
 msgstr "Template"
 
@@ -582,11 +592,33 @@ msgid "{n} file(s) renamed successfully."
 msgstr "{n} file(s) renamed successfully."
 
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} file(s) moved."
+
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} file(s) copied."
+
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Undo rotation ({n})"
 
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Undo last rotation (restores original pixel data)"
+
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Undo move ({n})"
+
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Undo last move (restores files to their original folder)"
+
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Undo copy ({n})"
+
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Undo last copy (deletes the copies, originals are untouched)"
 
 #, python-brace-format
 msgid "Undo rename ({n})"
@@ -606,6 +638,12 @@ msgstr "Rotation undone."
 
 msgid "EXIF orientation reset undone."
 msgstr "EXIF orientation reset undone."
+
+msgid "Last move undone."
+msgstr "Last move undone."
+
+msgid "Last copy undone."
+msgstr "Last copy undone."
 
 msgid "Last rename undone."
 msgstr "Last rename undone."

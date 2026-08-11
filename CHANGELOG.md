@@ -6,8 +6,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-08-11
+
 ### Added
 
+- **Drag-and-drop move/copy to a folder** — dragging selected files from the file list onto a directory in the folder tree moves them (and their sidecars) into that folder without renaming them; holding Ctrl copies instead (Shift, or no modifier, moves). The cursor updates live during the drag to reflect the current action, following the OS's own drag-and-drop convention. Both are undoable from the "Undo" button, same as a rename.
+- **Drag-and-drop from other applications** — the folder tree now also accepts files dragged in from outside PBPicat (a file manager or any other app). The dropped files (and their sidecars) are copied or moved into the target folder depending on the action proposed by the source application (Copy vs Move). These external drops are not added to the undo stack. Dragging files *out* of PBPicat (e.g. to paste a path into a terminal) only ever hands over the file names — never the sidecars, and never triggers a copy/move on PBPicat's side, regardless of the negotiated action.
 - **App icon for PyInstaller packaging** — `pbpicat.ico` (Windows) and `pbpicat.icns` (macOS) are now synced from [PBIcons](https://github.com/ppoilbarbe/PBIcons) via `tools/update_icons.py` and embedded as the executable/`.app` bundle icon in `pbpicat.spec`.
 - **`make update-icons`** — new Makefile target wrapping `tools/update_icons.py`.
 

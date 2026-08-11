@@ -1,5 +1,6 @@
 import itertools
 import re
+import shutil
 import uuid
 from collections.abc import Iterator
 from pathlib import Path
@@ -339,6 +340,53 @@ def execute_rename(pairs: list[tuple[Path, Path]]) -> None:
 
     source_dirs = {src.parent for src, _ in pairs}
     for d in sorted(source_dirs, key=lambda p: len(p.parts), reverse=True):
+        try:
+            if d.exists() and not any(d.iterdir()):
+                d.rmdir()
+        except OSError:
+            pass
+
+
+def execute_copy(pairs: list[tuple[Path, Path]]) -> None:
+    """
+    Execute copy pairs atomically: pre-check all destinations, then copy.
+    Rolls back (deletes the destinations already copied) on error. Sources are
+    never touched.
+    """
+    for _src, dst in pairs:
+        if dst.exists():
+            raise FileExistsError(f"Le fichier destination existe déjà : {dst.name}")
+
+    copied: list[Path] = []
+    try:
+        for src, dst in pairs:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            copied.append(dst)
+    except OSError as exc:
+        for dst in reversed(copied):
+            try:
+                dst.unlink()
+            except OSError:
+                pass
+        raise RuntimeError(f"Erreur lors de la copie : {exc}") from exc
+
+
+def undo_copy(pairs: list[tuple[Path, Path]]) -> None:
+    """
+    Reverse a copy plan: delete each dst. The src original was never touched by
+    execute_copy, so it needs no restoring. Removes empty destination directories
+    afterwards.
+    """
+    missing = [dst for _, dst in pairs if not dst.exists()]
+    if missing:
+        raise FileNotFoundError("Fichier(s) introuvable(s) pour l'annulation : " + ", ".join(p.name for p in missing))
+
+    for _src, dst in pairs:
+        dst.unlink()
+
+    dest_dirs = {dst.parent for _, dst in pairs}
+    for d in sorted(dest_dirs, key=lambda p: len(p.parts), reverse=True):
         try:
             if d.exists() and not any(d.iterdir()):
                 d.rmdir()

@@ -117,6 +117,16 @@ files). PBPicat:
 - Removes empty source directories after renaming.
 - Supports multi-level undo: click **Undo last rename** (or press Ctrl+Z) repeatedly to reverse successive rename and renumber operations one by one.
 
+### Drag-and-drop
+
+Drag selected files from the file list onto a folder in the directory tree to organize them without going through the rename schema:
+
+- By default, files (and their sidecars) are moved into the target folder, keeping their names.
+- Hold **Ctrl** to copy instead of moving; the cursor changes to reflect the current action.
+- Both moves and copies are undoable, same as a rename.
+- Files dragged in from another application (e.g. a file manager) are copied or moved into the target folder depending on the action you choose there; these are not undoable.
+- Dragging files out of PBPicat (e.g. to paste a path into a terminal) only hands over their names — never the sidecars, and it never moves or copies anything on PBPicat's side.
+
 ### Image viewer
 
 Double-clicking a thumbnail opens the non-modal image viewer. Its toolbar provides zoom controls (**Fit**, **1:1**, **Width**, **Height**, **+**, **−**), rotation buttons (**↺**, **↻**, **↕**, **EXIF**, **0°**), and file action buttons (**Open**, **Open with**, **Template**, **Delete**).

@@ -1,12 +1,60 @@
 """Tests for src/pbpicat/ui/dir_tree.py."""
 
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QMimeData, QModelIndex, QPoint, Qt, QUrl
 
 import pbpicat.ui.dir_tree as _dtmod
 from pbpicat.ui.dir_tree import DirTree
+
+
+class _FakePosition:
+    def __init__(self, point):
+        self._point = point
+
+    def toPoint(self):  # noqa: N802
+        return self._point
+
+
+class _FakeDropEvent:
+    """Stand-in for QDropEvent/QDragMoveEvent: exposes position()/mimeData()/source()/
+    proposedAction() and records ignore()/acceptProposedAction() calls without needing
+    a real drag."""
+
+    def __init__(self, point, mime, source=None, proposed_action=Qt.MoveAction):
+        self._position = _FakePosition(point)
+        self._mime = mime
+        self._source = source
+        self._proposed_action = proposed_action
+        self.ignored = False
+        self.accepted = False
+
+    def position(self):
+        return self._position
+
+    def mimeData(self):  # noqa: N802
+        return self._mime
+
+    def source(self):
+        return self._source
+
+    def proposedAction(self):  # noqa: N802
+        return self._proposed_action
+
+    def ignore(self):
+        self.ignored = True
+
+    def acceptProposedAction(self):  # noqa: N802
+        self.accepted = True
+
+
+def _mime_with_url(path="/tmp/some_image.jpg"):
+    mime = QMimeData()
+    mime.setUrls([QUrl.fromLocalFile(path)])
+    return mime
+
 
 # ---------------------------------------------------------------------------
 # Module-level patches applied to every test in this file
@@ -244,3 +292,155 @@ def test_try_select_early_return(tree_with_model):
     tree, _ = tree_with_model
     tree._target_path = None
     tree._try_select()
+
+
+# ---------------------------------------------------------------------------
+# Drag-and-drop (move files onto a folder)
+# ---------------------------------------------------------------------------
+
+
+def test_drag_enter_event_accepts_urls(tree_with_model):
+    tree, _ = tree_with_model
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url())
+    tree.dragEnterEvent(event)
+    assert event.accepted
+    assert not event.ignored
+
+
+def test_drag_enter_event_rejects_no_urls(tree_with_model):
+    tree, _ = tree_with_model
+    event = _FakeDropEvent(QPoint(0, 0), QMimeData())
+    tree.dragEnterEvent(event)
+    assert event.ignored
+    assert not event.accepted
+
+
+def test_drag_move_event_valid_index_accepts(tree_with_model, monkeypatch):
+    tree, _ = tree_with_model
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url())
+    tree.dragMoveEvent(event)
+    assert event.accepted
+
+
+def test_drag_move_event_invalid_index_ignores(tree_with_model, monkeypatch):
+    tree, _ = tree_with_model
+    monkeypatch.setattr(tree, "indexAt", lambda point: QModelIndex())
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url())
+    tree.dragMoveEvent(event)
+    assert event.ignored
+
+
+def test_drop_event_calls_move_files_to(tree_with_model, monkeypatch):
+    """Internal drag (source is the app's own file list) proposing Move → move_files_to, undoable."""
+    tree, mock_fl = tree_with_model
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    dest = tree._model.filePath(idx)
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    src = "/tmp/some_image.jpg"
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url(src), source=mock_fl, proposed_action=Qt.MoveAction)
+    tree.dropEvent(event)
+
+    assert event.accepted
+    assert not event.ignored
+    mock_fl.move_files_to.assert_called_once_with([Path(src)], dest)
+    mock_fl.copy_files_to.assert_not_called()
+    mock_fl.move_external_files_to.assert_not_called()
+    mock_fl.copy_external_files_to.assert_not_called()
+
+
+def test_drop_event_internal_copy_calls_copy_files_to(tree_with_model, monkeypatch):
+    """Internal drag (source is the app's own file list) proposing Copy (Shift-drag) → copy_files_to, undoable."""
+    tree, mock_fl = tree_with_model
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    dest = tree._model.filePath(idx)
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    src = "/tmp/some_image.jpg"
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url(src), source=mock_fl, proposed_action=Qt.CopyAction)
+    tree.dropEvent(event)
+
+    assert event.accepted
+    mock_fl.copy_files_to.assert_called_once_with([Path(src)], dest)
+    mock_fl.move_files_to.assert_not_called()
+    mock_fl.move_external_files_to.assert_not_called()
+    mock_fl.copy_external_files_to.assert_not_called()
+
+
+def test_drop_event_external_move_calls_move_external_files_to(tree_with_model, monkeypatch):
+    """External drag (source is None, e.g. a file manager) proposing Move → move_external_files_to."""
+    tree, mock_fl = tree_with_model
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    dest = tree._model.filePath(idx)
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    src = "/tmp/some_image.jpg"
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url(src), source=None, proposed_action=Qt.MoveAction)
+    tree.dropEvent(event)
+
+    assert event.accepted
+    mock_fl.move_external_files_to.assert_called_once_with([Path(src)], dest)
+    mock_fl.move_files_to.assert_not_called()
+    mock_fl.copy_files_to.assert_not_called()
+    mock_fl.copy_external_files_to.assert_not_called()
+
+
+def test_drop_event_external_copy_calls_copy_external_files_to(tree_with_model, monkeypatch):
+    """External drag (source is None) proposing Copy → copy_external_files_to."""
+    tree, mock_fl = tree_with_model
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    dest = tree._model.filePath(idx)
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    src = "/tmp/some_image.jpg"
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url(src), source=None, proposed_action=Qt.CopyAction)
+    tree.dropEvent(event)
+
+    assert event.accepted
+    mock_fl.copy_external_files_to.assert_called_once_with([Path(src)], dest)
+    mock_fl.move_files_to.assert_not_called()
+    mock_fl.copy_files_to.assert_not_called()
+    mock_fl.move_external_files_to.assert_not_called()
+
+
+def test_drop_event_invalid_index_ignored(tree_with_model, monkeypatch):
+    tree, mock_fl = tree_with_model
+    monkeypatch.setattr(tree, "indexAt", lambda point: QModelIndex())
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url())
+    tree.dropEvent(event)
+    assert event.ignored
+    mock_fl.move_files_to.assert_not_called()
+
+
+def test_drop_event_no_file_list_ignored(qtbot, monkeypatch):
+    tree = DirTree()
+    qtbot.addWidget(tree)
+    tree.set_file_list(MagicMock())
+    idx = tree.currentIndex()
+    assert idx.isValid()
+    tree._file_list = None
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    event = _FakeDropEvent(QPoint(0, 0), _mime_with_url())
+    tree.dropEvent(event)
+
+    assert event.ignored
+
+
+def test_drop_event_no_urls_ignored(tree_with_model, monkeypatch):
+    tree, mock_fl = tree_with_model
+    idx = tree.currentIndex()
+    monkeypatch.setattr(tree, "indexAt", lambda point: idx)
+
+    event = _FakeDropEvent(QPoint(0, 0), QMimeData())
+    tree.dropEvent(event)
+
+    assert event.ignored
+    mock_fl.move_files_to.assert_not_called()

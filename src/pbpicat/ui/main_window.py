@@ -50,6 +50,7 @@ from pbpicat.renamer import (
     build_renumber_plan,
     execute_rename,
     execute_renumber,
+    undo_copy,
     undo_rename,
     undo_renumber,
 )
@@ -446,6 +447,10 @@ class MainWindow(QMainWindow):
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_rename_btn)
         self._file_panel.file_list.itemSelectionChanged.connect(self._update_image_actions)
         self._file_panel.file_list.orphan_sidecar_count_changed.connect(self._on_orphan_count_changed)
+        self._file_panel.file_list.files_moved.connect(self._on_files_moved)
+        self._file_panel.file_list.files_copied.connect(self._on_files_copied)
+        self._file_panel.file_list.files_moved_external.connect(self._on_external_files_moved)
+        self._file_panel.file_list.files_copied_external.connect(self._on_external_files_copied)
 
         self._file_panel.dir_tree.directory_selected.connect(self._on_directory_changed)
 
@@ -835,6 +840,30 @@ class MainWindow(QMainWindow):
         next_row = self._file_panel.file_list.next_row_after_files(file_paths)
         self._file_panel.file_list.refresh_and_select(next_row)
 
+    def _on_files_moved(self, plan: list) -> None:
+        self._undo_stack.append(("move", plan))
+        self._update_undo_btn()
+        media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
+        n = len([p for p, _ in plan if p.suffix.lower() in media_exts])
+        self._status.showMessage(_("{n} file(s) moved.").format(n=n))
+
+    def _on_files_copied(self, plan: list) -> None:
+        self._undo_stack.append(("copy", plan))
+        self._update_undo_btn()
+        media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
+        n = len([p for p, _ in plan if p.suffix.lower() in media_exts])
+        self._status.showMessage(_("{n} file(s) copied.").format(n=n))
+
+    def _on_external_files_moved(self, plan: list) -> None:
+        media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
+        n = len([p for p, _ in plan if p.suffix.lower() in media_exts])
+        self._status.showMessage(_("{n} file(s) moved.").format(n=n))
+
+    def _on_external_files_copied(self, plan: list) -> None:
+        media_exts = set(self._config.get("image_extensions", [])) | set(self._config.get("video_extensions", []))
+        n = len([p for p, _ in plan if p.suffix.lower() in media_exts])
+        self._status.showMessage(_("{n} file(s) copied.").format(n=n))
+
     def _update_undo_btn(self) -> None:
         n = len(self._undo_stack)
         if n:
@@ -842,6 +871,12 @@ class MainWindow(QMainWindow):
             if kind == "rotation":
                 label = _("Undo rotation ({n})").format(n=n)
                 tip = _("Undo last rotation (restores original pixel data)")
+            elif kind == "move":
+                label = _("Undo move ({n})").format(n=n)
+                tip = _("Undo last move (restores files to their original folder)")
+            elif kind == "copy":
+                label = _("Undo copy ({n})").format(n=n)
+                tip = _("Undo last copy (deletes the copies, originals are untouched)")
             else:
                 label = _("Undo rename ({n})").format(n=n)
                 tip = _("Undo last rename (restores files to their original location)")
@@ -873,6 +908,8 @@ class MainWindow(QMainWindow):
 
                 for path, orig_orient in plan:
                     set_exif_orientation(path, orig_orient)
+            elif kind == "copy":
+                undo_copy(plan)
             else:
                 undo_rename(plan)
         except (FileNotFoundError, FileExistsError, RuntimeError, ValueError) as exc:
@@ -888,6 +925,12 @@ class MainWindow(QMainWindow):
         elif kind == "reset_exif":
             self._status.showMessage(_("EXIF orientation reset undone."))
             self._file_panel.file_list.refresh_thumbnails_for_paths({p for p, _ in plan})
+        elif kind == "move":
+            self._status.showMessage(_("Last move undone."))
+            restored = {src for src, _dst in plan}
+            self._file_panel.file_list.refresh_and_select_paths(restored)
+        elif kind == "copy":
+            self._status.showMessage(_("Last copy undone."))
         else:
             self._status.showMessage(_("Last rename undone."))
             restored = {src for src, _dst in plan}

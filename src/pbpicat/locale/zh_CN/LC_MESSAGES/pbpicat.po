@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "删除错误"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "移动错误"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "复制错误"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "目标文件已存在：{names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "模板"
 
@@ -755,12 +768,40 @@ msgstr "{n} 个文件已成功重命名。"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "已移动 {n} 个文件。"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "已复制 {n} 个文件。"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "撤销旋转（{n}）"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "撤销上次旋转（恢复原始像素数据）"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "撤销移动（{n}）"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "撤销上次移动（将文件恢复到原始文件夹）"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "撤销复制（{n}）"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "撤销上次复制（删除副本，原始文件保持不变）"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "旋转已撤销。"
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "EXIF 方向重置已撤销。"
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "上次移动已撤销。"
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "上次复制已撤销。"
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

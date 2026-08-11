@@ -15,6 +15,8 @@ class DirTree(QTreeView):
         self._target_path: str | None = None
         self._scroll_path: str | None = None
         self._file_list = None
+        self.setAcceptDrops(True)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.DropOnly)
 
     def set_file_list(self, file_list) -> None:
         self._file_list = file_list
@@ -130,3 +132,36 @@ class DirTree(QTreeView):
             if path != self._scroll_path:
                 self._scroll_path = None
             self.directory_selected.emit(path)
+
+    def dragEnterEvent(self, event) -> None:  # noqa: N802
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event) -> None:  # noqa: N802
+        idx = self.indexAt(event.position().toPoint())
+        if idx.isValid() and event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event) -> None:  # noqa: N802
+        idx = self.indexAt(event.position().toPoint())
+        mime = event.mimeData()
+        if not idx.isValid() or self._file_list is None or not mime.hasUrls():
+            event.ignore()
+            return
+        dest_dir = self._model.filePath(idx)
+        paths = [Path(url.toLocalFile()) for url in mime.urls() if url.isLocalFile()]
+        event.acceptProposedAction()
+        is_copy = event.proposedAction() == Qt.CopyAction
+        if event.source() is self._file_list:
+            if is_copy:
+                self._file_list.copy_files_to(paths, dest_dir)
+            else:
+                self._file_list.move_files_to(paths, dest_dir)
+        elif is_copy:
+            self._file_list.copy_external_files_to(paths, dest_dir)
+        else:
+            self._file_list.move_external_files_to(paths, dest_dir)

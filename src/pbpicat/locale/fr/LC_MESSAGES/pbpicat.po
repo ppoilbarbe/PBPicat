@@ -134,6 +134,16 @@ msgstr "Impossible de déplacer vers la corbeille : {name}"
 msgid "Deletion error"
 msgstr "Erreur de suppression"
 
+msgid "Move error"
+msgstr "Erreur de déplacement"
+
+msgid "Copy error"
+msgstr "Erreur de copie"
+
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "Le(s) fichier(s) de destination existe(nt) déjà : {names}"
+
 msgid "Template"
 msgstr "Modèle"
 
@@ -587,11 +597,33 @@ msgid "{n} file(s) renamed successfully."
 msgstr "{n} fichier(s) renommé(s) avec succès."
 
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} fichier(s) déplacé(s)."
+
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} fichier(s) copié(s)."
+
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Annuler la rotation ({n})"
 
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Annuler la dernière rotation (restaure les données pixel d'origine)"
+
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Annuler le déplacement ({n})"
+
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Annule le dernier déplacement (remet les fichiers dans leur dossier d'origine)"
+
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Annuler la copie ({n})"
+
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Annule la dernière copie (supprime les copies, les originaux restent inchangés)"
 
 #, python-brace-format
 msgid "Undo rename ({n})"
@@ -611,6 +643,12 @@ msgstr "Rotation annulée."
 
 msgid "EXIF orientation reset undone."
 msgstr "Réinitialisation de l'orientation EXIF annulée."
+
+msgid "Last move undone."
+msgstr "Dernier déplacement annulé."
+
+msgid "Last copy undone."
+msgstr "Dernière copie annulée."
 
 msgid "Last rename undone."
 msgstr "Dernier renommage annulé."

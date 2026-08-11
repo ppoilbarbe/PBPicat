@@ -1,5 +1,6 @@
 """Tests for src/pbpicat/ui/file_list_widget.py."""
 
+import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -486,6 +487,430 @@ def test_delete_file_with_confirmation(qtbot, catalog_env, tmp_path):
     with patch.object(QMessageBox, "exec", return_value=QMessageBox.Yes):
         w._delete_file(f, [])
     assert not f.exists()
+
+
+# ---------------------------------------------------------------------------
+# move_files_to
+# ---------------------------------------------------------------------------
+
+
+def test_move_files_to_moves_file_and_sidecar(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+    sc = d / "img_001.xmp"
+    assert src.exists()
+    assert sc.exists()
+
+    w.move_files_to([src], str(dest))
+
+    assert not src.exists()
+    assert not sc.exists()
+    assert (dest / "img_001.png").exists()
+    assert (dest / "img_001.xmp").exists()
+
+
+def test_move_files_to_removes_row_from_table(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+
+    w.move_files_to([src], str(dest))
+
+    assert src not in w.get_all_files()
+    assert w.rowCount() == 1
+
+
+def test_move_files_to_emits_files_moved_signal(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+    sc = d / "img_001.xmp"
+
+    plans = []
+    w.files_moved.connect(plans.append)
+    w.move_files_to([src], str(dest))
+
+    assert len(plans) == 1
+    pairs = set(plans[0])
+    assert (src, dest / "img_001.png") in pairs
+    assert (sc, dest / "img_001.xmp") in pairs
+
+
+def test_move_files_to_same_directory_is_noop(populated_widget):
+    w, d = populated_widget
+    src = d / "img_001.png"
+
+    plans = []
+    w.files_moved.connect(plans.append)
+    w.move_files_to([src], str(d))
+
+    assert plans == []
+    assert src.exists()
+
+
+def test_move_files_to_unrelated_path_is_noop(populated_widget, tmp_path):
+    w, _d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    plans = []
+    w.files_moved.connect(plans.append)
+    w.move_files_to([tmp_path / "unrelated.png"], str(dest))
+
+    assert plans == []
+
+
+def test_move_files_to_conflict_shows_error_and_keeps_file(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_002.png"
+    (dest / "img_002.png").write_bytes(b"existing")
+
+    with patch.object(QMessageBox, "critical", return_value=None) as mock_crit:
+        w.move_files_to([src], str(dest))
+
+    mock_crit.assert_called_once()
+    assert src.exists()
+    assert src in w.get_all_files()
+
+
+# ---------------------------------------------------------------------------
+# copy_files_to (internal Shift-drag onto the folder tree)
+# ---------------------------------------------------------------------------
+
+
+def test_copy_files_to_copies_file_and_sidecar_keeps_original(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+    sc = d / "img_001.xmp"
+
+    w.copy_files_to([src], str(dest))
+
+    assert src.exists()  # original kept
+    assert sc.exists()
+    assert (dest / "img_001.png").exists()
+    assert (dest / "img_001.xmp").exists()
+
+
+def test_copy_files_to_keeps_table_unchanged(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+
+    before = w.get_all_files()
+    w.copy_files_to([src], str(dest))
+
+    assert w.get_all_files() == before
+    assert w.rowCount() == 2
+
+
+def test_copy_files_to_emits_files_copied_signal(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+    sc = d / "img_001.xmp"
+
+    plans = []
+    w.files_copied.connect(plans.append)
+    w.copy_files_to([src], str(dest))
+
+    assert len(plans) == 1
+    pairs = set(plans[0])
+    assert (src, dest / "img_001.png") in pairs
+    assert (sc, dest / "img_001.xmp") in pairs
+
+
+def test_copy_files_to_same_directory_is_noop(populated_widget):
+    w, d = populated_widget
+    src = d / "img_001.png"
+
+    plans = []
+    w.files_copied.connect(plans.append)
+    w.copy_files_to([src], str(d))
+
+    assert plans == []
+    assert src.exists()
+
+
+def test_copy_files_to_unrelated_path_is_noop(populated_widget, tmp_path):
+    w, _d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    plans = []
+    w.files_copied.connect(plans.append)
+    w.copy_files_to([tmp_path / "unrelated.png"], str(dest))
+
+    assert plans == []
+
+
+def test_copy_files_to_conflict_shows_error_and_keeps_original(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_002.png"
+    (dest / "img_002.png").write_bytes(b"existing")
+
+    with patch.object(QMessageBox, "critical", return_value=None) as mock_crit:
+        w.copy_files_to([src], str(dest))
+
+    mock_crit.assert_called_once()
+    assert src.exists()
+    assert src in w.get_all_files()
+
+
+def test_copy_files_to_does_not_emit_files_moved(populated_widget, tmp_path):
+    w, d = populated_widget
+    dest = tmp_path / "dest"
+    dest.mkdir()
+    src = d / "img_001.png"
+
+    move_plans = []
+    copy_plans = []
+    w.files_moved.connect(move_plans.append)
+    w.files_copied.connect(copy_plans.append)
+    w.copy_files_to([src], str(dest))
+
+    assert move_plans == []
+    assert len(copy_plans) == 1
+
+
+# ---------------------------------------------------------------------------
+# move_external_files_to (drag from outside the app, e.g. a file manager)
+# ---------------------------------------------------------------------------
+
+
+def test_move_external_files_to_moves_file_and_sidecar(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+    sc = external / "outside.xmp"
+    sc.write_text("<meta/>")
+
+    w.move_external_files_to([src], str(d))
+
+    assert not src.exists()
+    assert not sc.exists()
+    assert (d / "outside.png").exists()
+    assert (d / "outside.xmp").exists()
+
+
+def test_move_external_files_to_refreshes_current_dir(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+
+    w.move_external_files_to([src], str(d))
+
+    assert (d / "outside.png") in w.get_all_files()
+
+
+def test_move_external_files_to_other_dir_no_refresh(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+    other_dest = tmp_path / "other_dest"
+    other_dest.mkdir()
+
+    before = w.get_all_files()
+    w.move_external_files_to([src], str(other_dest))
+
+    assert (other_dest / "outside.png").exists()
+    assert w.get_all_files() == before
+
+
+def test_move_external_files_to_skips_non_files(populated_widget, tmp_path):
+    w, d = populated_widget
+    external_dir = tmp_path / "external_dir"
+    external_dir.mkdir()
+    missing = tmp_path / "does_not_exist.png"
+
+    plans = []
+    w.files_moved_external.connect(plans.append)
+    w.move_external_files_to([external_dir, missing], str(d))
+
+    assert plans == []
+    assert external_dir.exists()
+
+
+def test_move_external_files_to_same_dir_is_noop(populated_widget, tmp_path):
+    w, d = populated_widget
+    already_here = d / "already_here.png"
+    _img(already_here)
+
+    plans = []
+    w.files_moved_external.connect(plans.append)
+    w.move_external_files_to([already_here], str(d))
+
+    assert plans == []
+    assert already_here.exists()
+
+
+def test_move_external_files_to_conflict_shows_error(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "img_001.png"  # same name as an existing file in d
+    _img(src)
+
+    with patch.object(QMessageBox, "critical", return_value=None) as mock_crit:
+        w.move_external_files_to([src], str(d))
+
+    mock_crit.assert_called_once()
+    assert src.exists()
+
+
+def test_move_external_files_to_does_not_emit_files_moved(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+
+    internal_plans = []
+    external_plans = []
+    w.files_moved.connect(internal_plans.append)
+    w.files_moved_external.connect(external_plans.append)
+    w.move_external_files_to([src], str(d))
+
+    assert internal_plans == []
+    assert len(external_plans) == 1
+
+
+# ---------------------------------------------------------------------------
+# copy_external_files_to (drag from outside the app, e.g. a file manager)
+# ---------------------------------------------------------------------------
+
+
+def test_copy_external_files_to_copies_file_and_sidecar_keeps_original(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+    sc = external / "outside.xmp"
+    sc.write_text("<meta/>")
+
+    w.copy_external_files_to([src], str(d))
+
+    assert src.exists()  # original kept
+    assert sc.exists()
+    assert (d / "outside.png").exists()
+    assert (d / "outside.xmp").exists()
+
+
+def test_copy_external_files_to_refreshes_current_dir(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+
+    w.copy_external_files_to([src], str(d))
+
+    assert (d / "outside.png") in w.get_all_files()
+
+
+def test_copy_external_files_to_other_dir_no_refresh(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+    other_dest = tmp_path / "other_dest"
+    other_dest.mkdir()
+
+    before = w.get_all_files()
+    w.copy_external_files_to([src], str(other_dest))
+
+    assert (other_dest / "outside.png").exists()
+    assert w.get_all_files() == before
+
+
+def test_copy_external_files_to_skips_non_files(populated_widget, tmp_path):
+    w, d = populated_widget
+    external_dir = tmp_path / "external_dir"
+    external_dir.mkdir()
+
+    plans = []
+    w.files_copied_external.connect(plans.append)
+    w.copy_external_files_to([external_dir], str(d))
+
+    assert plans == []
+
+
+def test_copy_external_files_to_same_dir_is_noop(populated_widget, tmp_path):
+    w, d = populated_widget
+
+    plans = []
+    w.files_copied_external.connect(plans.append)
+    w.copy_external_files_to([d / "img_001.png"], str(d))
+
+    assert plans == []
+
+
+def test_copy_external_files_to_conflict_shows_error_and_copies_nothing(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "img_001.png"  # same name as an existing file in d
+    _img(src)
+
+    with patch.object(QMessageBox, "critical", return_value=None) as mock_crit:
+        w.copy_external_files_to([src], str(d))
+
+    mock_crit.assert_called_once()
+    assert src.exists()
+
+
+def test_copy_external_files_to_oserror_shows_warning(populated_widget, tmp_path, monkeypatch):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+
+    def mock_copy2(_src, _dst):
+        raise OSError("device busy")
+
+    monkeypatch.setattr(shutil, "copy2", mock_copy2)
+    with patch.object(QMessageBox, "warning", return_value=None) as mock_warn:
+        w.copy_external_files_to([src], str(d))
+
+    mock_warn.assert_called_once()
+    assert src.exists()
+
+
+def test_copy_external_files_to_does_not_emit_other_signals(populated_widget, tmp_path):
+    w, d = populated_widget
+    external = tmp_path / "external"
+    external.mkdir()
+    src = external / "outside.png"
+    _img(src)
+
+    move_plans = []
+    copy_plans = []
+    w.files_moved_external.connect(move_plans.append)
+    w.files_copied_external.connect(copy_plans.append)
+    w.copy_external_files_to([src], str(d))
+
+    assert move_plans == []
+    assert len(copy_plans) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -1196,8 +1621,10 @@ def test_context_menu_invalid_row(qtbot, catalog_env, tmp_path, monkeypatch):
     w.contextMenuEvent(event)
 
 
-def test_start_drag(qtbot, catalog_env, sample_png, monkeypatch):
-    """Cover startDrag (lines 565-572)."""
+def test_start_drag_supports_both_actions_move_default(qtbot, catalog_env, sample_png):
+    """Both Copy and Move are offered so Qt's native drag loop live-tracks Ctrl/Shift and
+    updates the cursor itself; Move is the default when no modifier is held (Qt's own
+    Ctrl=copy/Shift=move mapping isn't overridable from application code)."""
     from PySide6.QtCore import Qt
 
     config = dict(DEFAULTS)
@@ -1212,8 +1639,10 @@ def test_start_drag(qtbot, catalog_env, sample_png, monkeypatch):
     with patch("pbpicat.ui.file_list_widget.QDrag") as mock_drag_cls:
         mock_drag = MagicMock()
         mock_drag_cls.return_value = mock_drag
-        w.startDrag(Qt.CopyAction)
-        mock_drag.exec.assert_called_once()
+        w.startDrag(Qt.MoveAction)
+        mock_drag.exec.assert_called_once_with(Qt.CopyAction | Qt.MoveAction, Qt.MoveAction)
+        mock_drag.setDragCursor.assert_called_once()
+        assert mock_drag.setDragCursor.call_args.args[1] == Qt.CopyAction
 
 
 def test_start_drag_no_selection(qtbot, catalog_env):

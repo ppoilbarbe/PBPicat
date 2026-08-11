@@ -163,6 +163,19 @@ msgid "Deletion error"
 msgstr "Error de eliminación"
 
 # ==AUTO== Automatically translated
+msgid "Move error"
+msgstr "Error al mover"
+
+# ==AUTO== Automatically translated
+msgid "Copy error"
+msgstr "Error al copiar"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Destination file(s) already exist: {names}"
+msgstr "El/los archivo(s) de destino ya existe(n): {names}"
+
+# ==AUTO== Automatically translated
 msgid "Template"
 msgstr "Plantilla"
 
@@ -755,12 +768,40 @@ msgstr "{n} archivo(s) renombrado(s) correctamente."
 
 # ==AUTO== Automatically translated
 #, python-brace-format
+msgid "{n} file(s) moved."
+msgstr "{n} archivo(s) movido(s)."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "{n} file(s) copied."
+msgstr "{n} archivo(s) copiado(s)."
+
+# ==AUTO== Automatically translated
+#, python-brace-format
 msgid "Undo rotation ({n})"
 msgstr "Deshacer rotación ({n})"
 
 # ==AUTO== Automatically translated
 msgid "Undo last rotation (restores original pixel data)"
 msgstr "Deshacer última rotación (restaura los datos de píxeles originales)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo move ({n})"
+msgstr "Deshacer movimiento ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last move (restores files to their original folder)"
+msgstr "Deshacer el último movimiento (restaura los archivos a su carpeta original)"
+
+# ==AUTO== Automatically translated
+#, python-brace-format
+msgid "Undo copy ({n})"
+msgstr "Deshacer copia ({n})"
+
+# ==AUTO== Automatically translated
+msgid "Undo last copy (deletes the copies, originals are untouched)"
+msgstr "Deshacer la última copia (elimina las copias, los originales no se modifican)"
 
 # ==AUTO== Automatically translated
 #, python-brace-format
@@ -786,6 +827,14 @@ msgstr "Rotación deshecha."
 # ==AUTO== Automatically translated
 msgid "EXIF orientation reset undone."
 msgstr "Restablecimiento de orientación EXIF deshecho."
+
+# ==AUTO== Automatically translated
+msgid "Last move undone."
+msgstr "Último movimiento deshecho."
+
+# ==AUTO== Automatically translated
+msgid "Last copy undone."
+msgstr "Última copia deshecha."
 
 # ==AUTO== Automatically translated
 msgid "Last rename undone."

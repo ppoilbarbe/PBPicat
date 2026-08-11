@@ -8,9 +8,11 @@ from pbpicat.renamer import (
     _fill_gap_numbers,
     build_rename_plan,
     build_renumber_plan,
+    execute_copy,
     execute_rename,
     execute_renumber,
     find_max_number,
+    undo_copy,
     undo_rename,
     undo_renumber,
     validate_schema,
@@ -914,3 +916,127 @@ def test_execute_renumber_rollback_phase2_tmp_oserror(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "rename", mock_rename)
     with pytest.raises(RuntimeError):
         execute_renumber([(f1, tmp_path / "abc_001.jpg"), (f2, tmp_path / "abc_002.jpg")])
+
+
+# ---------------------------------------------------------------------------
+# execute_copy
+# ---------------------------------------------------------------------------
+
+
+def test_execute_copy_copies_files(tmp_path):
+    src = tmp_path / "img.jpg"
+    src.write_text("data")
+    dst = tmp_path / "out" / "copied.jpg"
+    execute_copy([(src, dst)])
+    assert dst.exists()
+    assert src.exists()  # original untouched
+    assert dst.read_text() == "data"
+
+
+def test_execute_copy_aborts_on_existing_dest(tmp_path):
+    src = tmp_path / "img.jpg"
+    src.write_text("data")
+    dst = tmp_path / "copied.jpg"
+    dst.write_text("existing")
+    with pytest.raises(FileExistsError):
+        execute_copy([(src, dst)])
+    assert src.exists()
+
+
+def test_execute_copy_rollback_on_partial_failure(tmp_path):
+    src1 = tmp_path / "a.jpg"
+    src2 = tmp_path / "b.jpg"
+    src1.write_text("a")
+    src2.write_text("b")
+    dst1 = tmp_path / "out" / "a_copy.jpg"
+    dst2 = tmp_path / "out" / "b_copy.jpg"
+    dst2.parent.mkdir()
+    dst2.write_text("conflict")
+    with pytest.raises(FileExistsError):
+        execute_copy([(src1, dst1), (src2, dst2)])
+    assert src1.exists()
+    assert src2.exists()
+    assert not dst1.exists()  # nothing copied yet: pre-check runs before any copy
+
+
+def test_execute_copy_rollback_on_oserror(tmp_path):
+    src1 = tmp_path / "a.jpg"
+    src2 = tmp_path / "nonexistent.jpg"  # doesn't exist → OSError on the 2nd copy
+    src1.write_text("a")
+    dst1 = tmp_path / "out" / "a_copy.jpg"
+    dst2 = tmp_path / "out" / "b_copy.jpg"
+    with pytest.raises(RuntimeError):
+        execute_copy([(src1, dst1), (src2, dst2)])
+    assert src1.exists()
+    assert not dst1.exists()  # rolled back
+
+
+def test_execute_copy_rollback_inner_oserror(tmp_path, monkeypatch):
+    """Covers the silent OSError except in the execute_copy rollback loop."""
+    src1 = tmp_path / "a.jpg"
+    src2 = tmp_path / "nonexistent.jpg"
+    src1.write_text("a")
+    dst1 = tmp_path / "out" / "a_copy.jpg"
+    dst2 = tmp_path / "out" / "b_copy.jpg"
+
+    def mock_unlink(self, missing_ok=False):
+        raise OSError("busy")
+
+    monkeypatch.setattr(Path, "unlink", mock_unlink)
+    with pytest.raises(RuntimeError):
+        execute_copy([(src1, dst1), (src2, dst2)])
+
+
+# ---------------------------------------------------------------------------
+# undo_copy
+# ---------------------------------------------------------------------------
+
+
+def test_undo_copy_deletes_copy_keeps_original(tmp_path):
+    src = tmp_path / "original.jpg"
+    src.write_text("original")
+    dst = tmp_path / "out" / "copy.jpg"
+    dst.parent.mkdir()
+    dst.write_text("copy")
+    undo_copy([(src, dst)])
+    assert not dst.exists()
+    assert not dst.parent.exists()
+    assert src.exists()
+    assert src.read_text() == "original"
+
+
+def test_undo_copy_missing_dst(tmp_path):
+    src = tmp_path / "original.jpg"
+    src.write_text("original")
+    dst = tmp_path / "out" / "copy.jpg"
+    with pytest.raises(FileNotFoundError, match="introuvable"):
+        undo_copy([(src, dst)])
+    assert src.exists()
+
+
+def test_undo_copy_non_empty_dest_not_removed(tmp_path):
+    src = tmp_path / "original.jpg"
+    src.write_text("original")
+    dst = tmp_path / "out" / "copy.jpg"
+    dst.parent.mkdir()
+    dst.write_text("copy")
+    (dst.parent / "other.jpg").write_text("keep")
+    undo_copy([(src, dst)])
+    assert not dst.exists()
+    assert dst.parent.exists()
+
+
+def test_undo_copy_dest_dir_rmdir_oserror(tmp_path, monkeypatch):
+    """Covers the silent OSError except when cleaning up the destination directory."""
+    src = tmp_path / "original.jpg"
+    src.write_text("original")
+    dst = tmp_path / "out" / "copy.jpg"
+    dst.parent.mkdir()
+    dst.write_text("copy")
+
+    def mock_rmdir(self):
+        raise OSError("busy")
+
+    monkeypatch.setattr(Path, "rmdir", mock_rmdir)
+    undo_copy([(src, dst)])  # must not raise despite failed rmdir
+    assert not dst.exists()
