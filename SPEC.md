@@ -317,7 +317,7 @@ PyInstaller one-file build; artifact named `PBPicat-<version>-<os>-<arch>`.
 macOS builds as `.app` bundle.
 Version string: `tools/git_version.sh` locally (exact tag + clean tree → `x.y.z`, else `dev`);
 CI reads `github.ref_name` and sets `PBPICAT_VERSION` before calling PyInstaller.
-`make dist` runs `pip install -e .` first to ensure package metadata matches `pyproject.toml`.
+`make dist` runs `pixi install` first to ensure the editable install matches `pyproject.toml`.
 Build via: `make dist`
 
 ## File Structure
@@ -325,8 +325,8 @@ Build via: `make dist`
 PBPicat/
 ├── Makefile
 ├── pbpicat.spec
-├── environment.yml
-├── pyproject.toml
+├── pyproject.toml         # includes [tool.pixi.*] env/tasks config
+├── pixi.lock
 ├── SPEC.md
 └── src/pbpicat/
     ├── __main__.py        # CLI arg parsing (--dev-config-dir, optional positional catalog name, + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app), optionally switches catalog, before creating MainWindow

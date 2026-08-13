@@ -50,6 +50,49 @@ Repository = "https://github.com/ppoilbarbe/PBPicat"
 [tool.hatch.build.targets.wheel]
 packages = ["src/pbpicat"]
 
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+# pyexiv2 (PyPI) only ships macosx_14_0_arm64 wheels, hence the __osx=14.0 virtual
+# package on osx-arm64 below (past pixi's default of 13.0).
+platforms = [{ platform = "osx-arm64", "__osx" = "14.0" }, "linux-64", "win-64"]
+
+[tool.pixi.dependencies]
+python = "3.12.*"
+# GUI
+pyside6 = "*"
+# Fonts (bundled in the PyInstaller binary via pbpicat.spec)
+fonts-conda-ecosystem = "*"   # meta-package: Ubuntu, DejaVu, Inconsolata, SourceCodePro
+# Image support (Pillow fallback + HEIC/HEIF)
+pillow = "*"
+pillow-heif = "*"
+# Tests
+pytest = "*"
+pytest-qt = "*"
+pytest-cov = "*"
+# Independent EXIF read/write for building & verifying test fixtures (not used by app code)
+piexif = "*"
+# Lint / hooks
+ruff = "*"
+pre-commit = "*"
+# GitHub CLI
+gh = "*"
+# Packaging
+pyinstaller = "*"
+# i18n tools
+babel = "*"
+# Documentation (Sphinx, readthedocs)
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-autobuild = "*"
+# Build tooling (make needed on Windows runners)
+make = "*"
+
+[tool.pixi.pypi-dependencies]
+# EXIF/IPTC/XMP metadata reading (image viewer metadata panel) — not on conda-forge
+pyexiv2 = ">=2.14"
+# Dev install (editable) — pulls in [project.dependencies] and the "dev" extra
+pbpicat = { path = ".", editable = true, extras = ["dev"] }
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts   = ["--cov=pbpicat", "--cov-report=term-missing"]

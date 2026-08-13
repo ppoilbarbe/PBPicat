@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **Development environment migrated from conda to [pixi](https://pixi.sh)** — `pyproject.toml` now embeds the environment definition under `[tool.pixi.*]` (conda-forge dependencies plus the PyPI-only `pyexiv2`, with the project itself declared as an editable PyPI dependency), replacing `environment.yml` (removed). `pixi.lock` is committed for full cross-platform reproducibility. The Makefile (`CONDA_RUN` now runs `pixi run`; `make venv`/`make venv-update` bootstrap the `pixi` binary itself if absent) and CI (`prefix-dev/setup-pixi` replaces `conda-incubator/setup-miniconda` in all four jobs) were updated accordingly. `NOCONDA=1` still bypasses the wrapper for tools already on `PATH`.
+
+### Fixed
+
+- **`make docs` spuriously warned about failing to import `pbpicat.__main__`, `pbpicat.ui.main_window`, `pbpicat.ui.file_panel` and `pbpicat.ui.file_list_widget`** — a `QSize | None` parameter annotation in `file_list_widget.py` was evaluated eagerly against Sphinx's mocked `PySide6` stand-in (`autodoc_mock_imports`), whose mock objects don't support the `|` operator against `None`. Adding `from __future__ import annotations` to that module defers annotation evaluation and removes the warnings.
+
 ## [1.19.0] - 2026-08-11
 
 ### Added

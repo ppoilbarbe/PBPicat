@@ -155,17 +155,17 @@ Double-click on the image centers the viewport on the clicked point. Ctrl+click 
 
 ### Requirements
 
-- [conda](https://docs.conda.io/) (or any Python 3.12+ environment)
+- [pixi](https://pixi.sh) (or any Python 3.12+ environment)
 - PySide6 ≥ 6.6
 
 ### Installation
 
 ```bash
-make venv      # Create the 'pbpicat' conda environment
+make venv      # Install pixi (if absent) and sync the project environment
 make install   # Install the package (editable) and git hooks
 ```
 
-To bypass conda (tools must be in PATH):
+To bypass pixi (tools must be in PATH):
 
 ```bash
 make install NOCONDA=1

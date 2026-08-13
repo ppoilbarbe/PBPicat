@@ -1,8 +1,8 @@
-CONDA_ENV  := pbpicat
+PIXI       := $(HOME)/.pixi/bin/pixi
 ifdef NOCONDA
 CONDA_RUN  :=
 else
-CONDA_RUN  := conda run -n $(CONDA_ENV) --no-capture-output
+CONDA_RUN  := $(PIXI) run
 endif
 SRC        := src
 DOCS       := docs
@@ -36,21 +36,29 @@ help: ## Show this help (default target)
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS=":.*?## "}; {printf "  $(G)%-14s$(R) %s\n", $$1, $$2}'
 	@printf "\n$(Y)Variables:$(R)\n"
-	@printf "  $(G)NOCONDA$(R)        Bypass conda wrapping; tools must be in PATH\n"
+	@printf "  $(G)NOCONDA$(R)        Bypass pixi wrapping; tools must be in PATH\n"
 	@printf "                 e.g. $(C)make test NOCONDA=1$(R)  or  $(C)export NOCONDA=1$(R)\n"
 
-venv: ## Create the 'pbpicat' conda environment from environment.yml
-	@printf "$(C)Creating conda environment '$(CONDA_ENV)'...$(R)\n"
-	conda env create -f environment.yml
-	@printf "$(G)Done! Activate with:$(R) conda activate $(CONDA_ENV)\n"
+$(PIXI):
+	@printf "$(C)pixi not found, installing...$(R)\n"
+	curl -fsSL https://pixi.sh/install.sh | sh
 
-venv-update: ## Update the conda environment from environment.yml
-	@printf "$(C)Updating conda environment '$(CONDA_ENV)'...$(R)\n"
-	conda env update -f environment.yml --prune
+venv: $(PIXI) ## Install pixi (if absent) and sync the project environment
+	@printf "$(C)Syncing pixi environment...$(R)\n"
+	$(PIXI) install
+	@printf "$(G)Done! Run commands with:$(R) pixi run <cmd>  $(Y)or$(R)  pixi shell\n"
+
+venv-update: $(PIXI) ## Relock and update the pixi environment
+	@printf "$(C)Updating pixi environment...$(R)\n"
+	$(PIXI) update
 	@printf "$(G)Done.$(R)\n"
 
-install: ## Install the package in editable mode and register git hooks
-	$(CONDA_RUN) pip install -e ".[dev]"
+install: ## Sync the environment (editable install) and register git hooks
+ifdef NOCONDA
+	pip install -e ".[dev]"
+else
+	$(PIXI) install
+endif
 	$(CONDA_RUN) pre-commit install
 
 run: ## Launch PBPicat (pass extra flags with ARGS="...")
@@ -131,7 +139,11 @@ new-lang: ## Scaffold a new translation (usage: make new-lang LOCALE=de)
 dist: translate ## Build a standalone executable for the current platform
 	$(eval PBPICAT_VERSION := $(shell bash tools/git_version.sh))
 	@printf "$(C)PyInstaller — version: $(PBPICAT_VERSION) — platform: $(shell $(CONDA_RUN) python3 -c 'import sys; print(sys.platform)')$(R)\n"
-	$(CONDA_RUN) pip install -e . -q
+ifdef NOCONDA
+	pip install -e . -q
+else
+	$(PIXI) install
+endif
 	PBPICAT_VERSION=$(PBPICAT_VERSION) $(CONDA_RUN) pyinstaller --clean --noconfirm \
 	    --distpath dist --workpath build/pyinstaller \
 	    pbpicat.spec

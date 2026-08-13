@@ -4,11 +4,11 @@
 
 # Environment
 
-Always run tests and Python commands using the `pbpicat` conda environment:
-`conda run -n pbpicat <command>`
+Always run tests and Python commands via pixi:
+`pixi run <command>`
 
 If `.pre-commit-config.yaml` exists and `.git/hooks/pre-commit` does not, run:
-`conda run -n pbpicat pre-commit install`
+`pixi run pre-commit install`
 
 # Documentation
 

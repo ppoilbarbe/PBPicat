@@ -24,7 +24,7 @@ from pathlib import Path
 try:
     from babel.messages.pofile import read_po
 except ImportError:
-    sys.exit("babel is not installed.  Run: conda install -n pbpicat babel")
+    sys.exit("babel is not installed.  Run: pixi install")
 
 LOCALE_DIR = Path(__file__).parent.parent / "src" / "pbpicat" / "locale"
 ALL_LANGS = sorted(p.name for p in LOCALE_DIR.iterdir() if p.is_dir() and (p / "LC_MESSAGES" / "pbpicat.po").exists())

@@ -12,7 +12,7 @@ functional spec see [SPEC.md](SPEC.md).
 | GUI         | PySide6 (Qt 6 official Python binding)      |
 | Linter      | ruff (line-length 120, target py312)        |
 | Tests       | pytest + pytest-qt                          |
-| Package mgr | conda — **conda-forge only** (`nodefaults`) |
+| Package mgr | pixi — conda-forge + PyPI, `pixi.lock`      |
 | Build       | Hatchling (`pyproject.toml`)                |
 | Packaging   | PyInstaller (`pbpicat.spec`)                |
 | Docs        | Sphinx + sphinx-rtd-theme (ReadTheDocs)     |
@@ -50,8 +50,8 @@ PBPicat/
 ├── .github/workflows/ci.yml     CI pipeline
 ├── .readthedocs.yaml            ReadTheDocs build configuration
 ├── pbpicat.spec                 PyInstaller build spec
-├── environment.yml              conda environment declaration
-├── pyproject.toml               project metadata + tool configuration — sole source of the version
+├── pyproject.toml               project metadata + tool config + pixi env ([tool.pixi.*]) — sole source of the version
+├── pixi.lock                    pixi lockfile (committed — pins every platform)
 ├── Makefile                     development task runner
 ├── SPEC.md                      compact functional spec (kept up to date on every significant change)
 └── CHANGELOG.md                 Keep a Changelog — Added/Changed/Deprecated/Removed/Fixed/Security
@@ -60,21 +60,24 @@ PBPicat/
 ## Setup
 
 ```bash
-make venv            # create the 'pbpicat' conda environment
-conda activate pbpicat
-make install          # pip install -e ".[dev]"  +  pre-commit install
+make venv            # install pixi (if absent) and sync the project environment
+make install          # sync env (editable install)  +  pre-commit install
 ```
 
-### Running without conda
+`pixi` itself needs no activation step: `make <target>` runs commands through
+`pixi run` automatically. Use `pixi shell` for an interactive shell with the
+environment activated.
 
-Set `NOCONDA` to bypass conda wrapping; every tool must then be on `PATH`:
+### Running without pixi
+
+Set `NOCONDA` to bypass pixi wrapping; every tool must then be on `PATH`:
 
 ```bash
 make test NOCONDA=1
 export NOCONDA=1 && make lint test
 ```
 
-`make venv` and `make venv-update` always invoke `conda` directly and are
+`make venv` and `make venv-update` always invoke `pixi` directly and are
 unaffected by `NOCONDA`.
 
 ## Daily workflow
