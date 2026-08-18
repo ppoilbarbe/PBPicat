@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.19.1] - 2026-08-18
+
 ### Changed
 
 - **Development environment migrated from conda to [pixi](https://pixi.sh)** — `pyproject.toml` now embeds the environment definition under `[tool.pixi.*]` (conda-forge dependencies plus the PyPI-only `pyexiv2`, with the project itself declared as an editable PyPI dependency), replacing `environment.yml` (removed). `pixi.lock` is committed for full cross-platform reproducibility. The Makefile (`CONDA_RUN` now runs `pixi run`; `make venv`/`make venv-update` bootstrap the `pixi` binary itself if absent) and CI (`prefix-dev/setup-pixi` replaces `conda-incubator/setup-miniconda` in all four jobs) were updated accordingly. `NOCONDA=1` still bypasses the wrapper for tools already on `PATH`.
