@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **Drag-and-drop "move" cursor re-synced from PBIcons** — its badge was too similar to the "copy" cursor's, making the two hard to tell apart at a glance; re-running `tools/update_icons.py` pulls in PBIcons' fix.
+
 ## [1.19.1] - 2026-08-18
 
 ### Changed
