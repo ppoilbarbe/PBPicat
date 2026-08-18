@@ -41,7 +41,7 @@ from pbpicat.image_io import image_size, load_qimage
 from pbpicat.platform import open_default, open_with
 from pbpicat.renamer import execute_copy, execute_rename, validate_schema
 
-from .icons import get_icon
+from .icons import get_cursor_pixmap, get_icon
 from .image_viewer import ImageViewer
 
 
@@ -894,11 +894,13 @@ class FileListWidget(QTableWidget):
         # the cursor accordingly (Ctrl = copy, Shift = move — Qt's own cross-platform
         # modifier-to-action mapping, not overridable from application code). No modifier
         # held falls back to Qt.MoveAction, matching the app's default purpose (rename/move).
-        # Explicit cursor for the copy action: several window managers/compositors don't
+        # Explicit cursor for both actions: several window managers/compositors don't
         # render Qt's built-in per-action drag cursors distinctly (or at all), so without
-        # this the cursor can look identical regardless of the negotiated action. Move keeps
-        # Qt's default drag cursor; only Copy needs a pixmap that stands out from it.
-        drag.setDragCursor(get_icon("duplicate", "edit-copy").pixmap(24, 24), Qt.CopyAction)
+        # this the cursor can look identical regardless of the negotiated action.
+        # IgnoreAction is the cursor Qt shows over widgets that don't accept the drop.
+        drag.setDragCursor(get_cursor_pixmap("copy"), Qt.CopyAction)
+        drag.setDragCursor(get_cursor_pixmap("move"), Qt.MoveAction)
+        drag.setDragCursor(get_cursor_pixmap("not-allowed"), Qt.IgnoreAction)
         drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.MoveAction)
 
     def _delete_selection(self) -> None:

@@ -1641,8 +1641,9 @@ def test_start_drag_supports_both_actions_move_default(qtbot, catalog_env, sampl
         mock_drag_cls.return_value = mock_drag
         w.startDrag(Qt.MoveAction)
         mock_drag.exec.assert_called_once_with(Qt.CopyAction | Qt.MoveAction, Qt.MoveAction)
-        mock_drag.setDragCursor.assert_called_once()
-        assert mock_drag.setDragCursor.call_args.args[1] == Qt.CopyAction
+        assert mock_drag.setDragCursor.call_count == 3
+        actions = [call.args[1] for call in mock_drag.setDragCursor.call_args_list]
+        assert actions == [Qt.CopyAction, Qt.MoveAction, Qt.IgnoreAction]
 
 
 def test_start_drag_no_selection(qtbot, catalog_env):

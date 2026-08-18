@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Sync icons in src/pbpicat/resources/ from the PBIcons project.
 
-Two kinds of files live in that directory, both sourced from PBIcons:
+Three kinds of files live in that directory, all sourced from PBIcons:
 
 - The app icon files used by PyInstaller packaging: `pbpicat.ico` and
   `pbpicat.icns` (`_APP_ICON_FILES` below). The app's own GUI icon is
   `pbpicat.svg`, already covered by the SVG sync below.
 - Toolbar/action SVG icons (`delete.svg`, `movie.svg`, …) and `pbpicat.svg`
   itself: every `*.svg` already present in the resources directory.
+- Drag'n'drop cursor pixmaps (`copy@2x.png`, `move@2x.png`, `_CURSOR_FILES`
+  below), from PBIcons' `cursors` subdirectory — used by
+  `FileListWidget.startDrag()` via `icons.get_cursor_pixmap()`.
 
 Icons are looked up by filename (case-insensitive) within a fixed list of
 PBIcons subdirectories, `_ICON_DIRS`, tried in order — not a recursive search
@@ -66,7 +69,18 @@ _APP_ICON_FILES = (
 )
 
 # PBIcons subdirectories to search for an icon, in priority order.
-_ICON_DIRS = ("programs", "actions", "media")
+_ICON_DIRS = ("programs", "actions", "media", "cursors")
+
+# Drag'n'drop cursor pixmaps (PBIcons "cursors" dir), always synced regardless
+# of what's already on disk. Only the @2x variant is kept: it's loaded with
+# QPixmap.setDevicePixelRatio(2.0) so it renders crisp on both standard and
+# HiDPI screens (see FileListWidget.startDrag()) — the 1x/@3x files in
+# PBIcons aren't used and are intentionally not synced.
+_CURSOR_FILES = (
+    "copy@2x.png",
+    "move@2x.png",
+    "not-allowed@2x.png",
+)
 
 _GITHUB_REPO = "ppoilbarbe/PBIcons"
 _GITHUB_BRANCH = "main"
@@ -150,13 +164,18 @@ def resolve_icon(name: str, local_dir: Path | None, github_index: dict[str, str]
     if github_index is not None:
         repo_path = github_index.get(name.lower())
         if repo_path is not None:
-            return fetch_github_file(repo_path), f"github:{repo_path}"
+            try:
+                return fetch_github_file(repo_path), f"github:{repo_path}"
+            except RuntimeError:
+                # LFS-tracked (PNG/JPG): raw GitHub content is just the pointer text,
+                # not usable — fall through to "not found" like a genuine miss.
+                return None
     return None
 
 
 def default_names() -> list[str]:
     svgs = sorted(p.name for p in RESOURCES_DIR.glob("*.svg"))
-    return svgs + list(_APP_ICON_FILES)
+    return svgs + list(_APP_ICON_FILES) + list(_CURSOR_FILES)
 
 
 def main() -> None:

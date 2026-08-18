@@ -50,3 +50,15 @@ def get_icon(svg_name: str, theme_name: str = "", text_fallback: str = "") -> QI
         if not icon.isNull():
             return icon
     return _text_icon(text_fallback) if text_fallback else QIcon()
+
+
+def get_cursor_pixmap(name: str) -> QPixmap:
+    """Return a drag'n'drop cursor pixmap for `name` (e.g. "copy", "move").
+
+    Always loads the PBIcons `@2x` asset and marks it via
+    `setDevicePixelRatio(2.0)`, so Qt renders it crisp on both standard and
+    HiDPI screens regardless of the actual screen scale factor.
+    """
+    pix = QPixmap(str(_RESOURCE_DIR / f"{name}@2x.png"))
+    pix.setDevicePixelRatio(2.0)
+    return pix

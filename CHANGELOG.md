@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Changed
 
 - **Development environment migrated from conda to [pixi](https://pixi.sh)** — `pyproject.toml` now embeds the environment definition under `[tool.pixi.*]` (conda-forge dependencies plus the PyPI-only `pyexiv2`, with the project itself declared as an editable PyPI dependency), replacing `environment.yml` (removed). `pixi.lock` is committed for full cross-platform reproducibility. The Makefile (`CONDA_RUN` now runs `pixi run`; `make venv`/`make venv-update` bootstrap the `pixi` binary itself if absent) and CI (`prefix-dev/setup-pixi` replaces `conda-incubator/setup-miniconda` in all four jobs) were updated accordingly. `NOCONDA=1` still bypasses the wrapper for tools already on `PATH`.
+- **Drag-and-drop cursor now uses dedicated PBIcons cursor pixmaps for all three drag states** — Copy, Move, and the "not-allowed" cursor shown over drop targets that don't accept the drag are now explicit `QDrag.setDragCursor()` pixmaps loaded via the new `icons.get_cursor_pixmap()`, replacing the previous Copy-only pixmap borrowed from the "duplicate" toolbar icon. Cursor pixmaps are synced from PBIcons' `cursors` subdirectory via `tools/update_icons.py` (new `_CURSOR_FILES`) and always loaded at `@2x` with `setDevicePixelRatio(2.0)`, for crisp rendering on both standard and HiDPI screens.
 
 ### Fixed
 
