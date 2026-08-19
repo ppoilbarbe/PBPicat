@@ -60,8 +60,9 @@ _datas = copy_metadata("pbpicat") + [
     (str(mo), f"pbpicat/locale/{mo.parts[-3]}/LC_MESSAGES")
     for mo in sorted(_locale_root.glob("*/LC_MESSAGES/pbpicat.mo"))
 ] + [
-    (str(svg), "resources")
-    for svg in sorted(Path("src/pbpicat/resources").glob("*.svg"))
+    (str(f), "resources")
+    for pattern in ("*.svg", "*.png")
+    for f in sorted(Path("src/pbpicat/resources").glob(pattern))
 ]
 
 # Native per-platform icon (synced from PBIcons via tools/update_icons.py).

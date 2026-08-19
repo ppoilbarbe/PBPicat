@@ -6,9 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.19.2] - 2026-08-19
+
 ### Changed
 
 - **Drag-and-drop "move" cursor re-synced from PBIcons** — its badge was too similar to the "copy" cursor's, making the two hard to tell apart at a glance; re-running `tools/update_icons.py` pulls in PBIcons' fix.
+
+### Fixed
+
+- **Drag-and-drop cursors were missing in the PyInstaller executable** — `pbpicat.spec` only bundled `*.svg` files from `resources/`, so the `@2x.png` cursor pixmaps used by `icons.get_cursor_pixmap()` (Copy, Move, "not-allowed") were absent from the packaged app, silently falling back to an empty pixmap. The spec now also collects `*.png` from `resources/`.
 
 ## [1.19.1] - 2026-08-18
 
