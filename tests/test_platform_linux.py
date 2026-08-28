@@ -4,7 +4,17 @@ import pathlib
 import subprocess
 from unittest.mock import MagicMock
 
+import pytest
+
+import pbpicat.i18n as i18n
 from pbpicat.platform import _linux
+
+
+@pytest.fixture(autouse=True)
+def _stub_current_language(monkeypatch):
+    """Keep _desktop_name() locale-independent unless a test overrides it."""
+    monkeypatch.setattr(i18n, "current_language", lambda: "en")
+
 
 # ---------------------------------------------------------------------------
 # _parse_gio_output
@@ -83,30 +93,62 @@ def test_build_cmd_path_not_duplicated(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# _app_dirs
+# ---------------------------------------------------------------------------
+
+
+def test_app_dirs_defaults(monkeypatch):
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
+    monkeypatch.delenv("XDG_DATA_DIRS", raising=False)
+    monkeypatch.setattr(_linux.Path, "home", staticmethod(lambda: pathlib.Path("/home/u")))
+    assert _linux._app_dirs() == [
+        pathlib.Path("/home/u/.local/share/applications"),
+        pathlib.Path("/usr/local/share/applications"),
+        pathlib.Path("/usr/share/applications"),
+    ]
+
+
+def test_app_dirs_respects_xdg_data_dirs(monkeypatch):
+    monkeypatch.setenv("XDG_DATA_HOME", "/home/u/.data")
+    monkeypatch.setenv("XDG_DATA_DIRS", "/opt/apps/share:/usr/share")
+    assert _linux._app_dirs() == [
+        pathlib.Path("/home/u/.data/applications"),
+        pathlib.Path("/opt/apps/share/applications"),
+        pathlib.Path("/usr/share/applications"),
+    ]
+
+
+def test_app_dirs_deduplicates_and_skips_empty(monkeypatch):
+    monkeypatch.setenv("XDG_DATA_HOME", "/usr/share")
+    monkeypatch.setenv("XDG_DATA_DIRS", "/usr/share::/usr/share")
+    assert _linux._app_dirs() == [pathlib.Path("/usr/share/applications")]
+
+
+# ---------------------------------------------------------------------------
 # _scan_desktop_dirs
 # ---------------------------------------------------------------------------
 
 
 def test_scan_desktop_dirs_empty_dir(tmp_path, monkeypatch):
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._scan_desktop_dirs("image/png") == []
 
 
 def test_scan_desktop_dirs_missing_dir(tmp_path, monkeypatch):
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path / "nonexistent"])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path / "nonexistent"])
     assert _linux._scan_desktop_dirs("image/png") == []
 
 
 def test_scan_desktop_dirs_finds_app(tmp_path, monkeypatch):
     (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nName=GIMP\nMimeType=image/png;image/jpeg;\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     result = _linux._scan_desktop_dirs("image/png")
     assert "gimp.desktop" in result
 
 
 def test_scan_desktop_dirs_no_match(tmp_path, monkeypatch):
     (tmp_path / "vlc.desktop").write_text("[Desktop Entry]\nMimeType=video/mp4;\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._scan_desktop_dirs("image/png") == []
 
 
@@ -117,7 +159,7 @@ def test_scan_desktop_dirs_deduplicates_across_dirs(tmp_path, monkeypatch):
     d2.mkdir()
     d1.joinpath("gimp.desktop").write_text("MimeType=image/png;\n")
     d2.joinpath("gimp.desktop").write_text("MimeType=image/png;\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [d1, d2])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [d1, d2])
     assert _linux._scan_desktop_dirs("image/png").count("gimp.desktop") == 1
 
 
@@ -131,7 +173,7 @@ def test_scan_desktop_dirs_oserror(tmp_path, monkeypatch):
         return orig(self, *a, **kw)
 
     monkeypatch.setattr(pathlib.Path, "read_text", mock_read)
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._scan_desktop_dirs("image/png") == []
 
 
@@ -142,12 +184,12 @@ def test_scan_desktop_dirs_oserror(tmp_path, monkeypatch):
 
 def test_desktop_name_found(tmp_path, monkeypatch):
     (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nName=GIMP\nExec=gimp %f\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._desktop_name("gimp.desktop") == "GIMP"
 
 
 def test_desktop_name_not_found(tmp_path, monkeypatch):
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._desktop_name("nonexistent.desktop") == ""
 
 
@@ -161,8 +203,89 @@ def test_desktop_name_oserror(tmp_path, monkeypatch):
         return orig(self, *a, **kw)
 
     monkeypatch.setattr(pathlib.Path, "read_text", mock_read)
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._desktop_name("bad.desktop") == ""
+
+
+_LOCALIZED_DESKTOP = (
+    "[Desktop Entry]\n"
+    "Name=GNU Image Manipulation Program\n"
+    "Name[fr]=Programme de manipulation d'images GNU\n"
+    "Name[zh_CN]=GNU图像处理程序\n"
+    "[Desktop Action NewWindow]\n"
+    "Name=New Window\n"
+    "Name[fr]=Nouvelle fenêtre\n"
+)
+
+
+def test_desktop_name_uses_ui_language(tmp_path, monkeypatch):
+    (tmp_path / "gimp.desktop").write_text(_LOCALIZED_DESKTOP)
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
+    monkeypatch.setattr(i18n, "current_language", lambda: "fr")
+    assert _linux._desktop_name("gimp.desktop") == "Programme de manipulation d'images GNU"
+
+
+def test_desktop_name_falls_back_to_bare_language(tmp_path, monkeypatch):
+    (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nName=GIMP\nName[fr]=GIMP (fr)\n")
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
+    monkeypatch.setattr(i18n, "current_language", lambda: "fr_CA")
+    assert _linux._desktop_name("gimp.desktop") == "GIMP (fr)"
+
+
+def test_desktop_name_exact_locale_wins(tmp_path, monkeypatch):
+    (tmp_path / "gimp.desktop").write_text(_LOCALIZED_DESKTOP)
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
+    monkeypatch.setattr(i18n, "current_language", lambda: "zh_CN")
+    assert _linux._desktop_name("gimp.desktop") == "GNU图像处理程序"
+
+
+def test_desktop_name_unknown_language_falls_back_to_unlocalized(tmp_path, monkeypatch):
+    (tmp_path / "gimp.desktop").write_text(_LOCALIZED_DESKTOP)
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
+    monkeypatch.setattr(i18n, "current_language", lambda: "de")
+    assert _linux._desktop_name("gimp.desktop") == "GNU Image Manipulation Program"
+
+
+def test_desktop_name_ignores_desktop_action_group(tmp_path, monkeypatch):
+    (tmp_path / "gimp.desktop").write_text(_LOCALIZED_DESKTOP)
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
+    monkeypatch.setattr(i18n, "current_language", lambda: "en")
+    assert _linux._desktop_name("gimp.desktop") == "GNU Image Manipulation Program"
+
+
+# ---------------------------------------------------------------------------
+# _desktop_names / _pick_localized
+# ---------------------------------------------------------------------------
+
+
+def test_desktop_names_parses_entry_group_only():
+    text = (
+        "[Desktop Entry]\n"
+        "# a comment line\n"
+        "\n"
+        "Name=Main\n"
+        "Name[fr]=Principal\n"
+        "Comment=x\n"
+        "[Desktop Action Foo]\n"
+        "Name=Action\n"
+    )
+    assert _linux._desktop_names(text) == {"": "Main", "fr": "Principal"}
+
+
+def test_desktop_names_value_with_equals_sign():
+    assert _linux._desktop_names("[Desktop Entry]\nName=a=b=c\n") == {"": "a=b=c"}
+
+
+def test_desktop_names_no_entry_group():
+    assert _linux._desktop_names("[Desktop Action Foo]\nName=Action\n") == {}
+
+
+def test_pick_localized_prefers_exact_then_bare_then_default():
+    names = {"": "d", "pt": "p", "pt_BR": "pb"}
+    assert _linux._pick_localized(names, "pt_BR") == "pb"
+    assert _linux._pick_localized(names, "pt_PT") == "p"
+    assert _linux._pick_localized(names, "ru") == "d"
+    assert _linux._pick_localized({"fr": "f"}, "de") == ""
 
 
 # ---------------------------------------------------------------------------
@@ -232,20 +355,20 @@ def test_registered_apps_via_gio(monkeypatch):
 def test_registered_apps_gio_fails_fallback_scan(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", lambda *a, **kw: (_ for _ in ()).throw(FileNotFoundError()))
     (tmp_path / "gimp.desktop").write_text("MimeType=image/png;\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     apps = _linux._registered_apps("image/png")
     assert "gimp.desktop" in apps
 
 
 def test_registered_apps_gio_empty_fallback_scan(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", lambda *a, **kw: _mock_run_result(0, ""))
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._registered_apps("image/png") == []
 
 
 def test_registered_apps_gio_timeout_fallback(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", lambda *a, **kw: (_ for _ in ()).throw(subprocess.TimeoutExpired("gio", 3)))
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     assert _linux._registered_apps("image/png") == []
 
 
@@ -263,7 +386,7 @@ def test_apps_for_path_with_name(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["gimp.desktop"])
     (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nName=GIMP\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     apps = _linux._apps_for_path(tmp_path / "test.png")
     assert apps == [("GIMP", "gimp.desktop")]
 
@@ -271,7 +394,7 @@ def test_apps_for_path_with_name(tmp_path, monkeypatch):
 def test_apps_for_path_no_name_uses_stem(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["eog.desktop"])
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [])
     apps = _linux._apps_for_path(tmp_path / "test.png")
     assert apps == [("eog", "eog.desktop")]
 
@@ -279,7 +402,7 @@ def test_apps_for_path_no_name_uses_stem(tmp_path, monkeypatch):
 def test_apps_for_path_deduplicates(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["gimp.desktop", "gimp.desktop"])
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [])
     apps = _linux._apps_for_path(tmp_path / "test.png")
     assert len(apps) == 1
 
@@ -385,7 +508,7 @@ def test_launch_fallback_to_exec_via_desktop(tmp_path, monkeypatch):
 
 def test_exec_via_desktop_with_exec(tmp_path, monkeypatch):
     (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nExec=gimp %f\n")
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     popen_calls = []
     monkeypatch.setattr(subprocess, "Popen", lambda cmd: popen_calls.append(cmd))
     _linux._exec_via_desktop("gimp.desktop", tmp_path / "test.png")
@@ -393,7 +516,7 @@ def test_exec_via_desktop_with_exec(tmp_path, monkeypatch):
 
 
 def test_exec_via_desktop_file_not_found(tmp_path, monkeypatch):
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     _linux._exec_via_desktop("nonexistent.desktop", tmp_path / "test.png")
 
 
@@ -407,7 +530,7 @@ def test_exec_via_desktop_oserror(tmp_path, monkeypatch):
         return orig(self, *a, **kw)
 
     monkeypatch.setattr(pathlib.Path, "read_text", mock_read)
-    monkeypatch.setattr(_linux, "_XDG_APP_DIRS", [tmp_path])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
     _linux._exec_via_desktop("bad.desktop", tmp_path / "test.png")
 
 

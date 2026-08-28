@@ -18,14 +18,24 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-_XDG_APP_DIRS: list[Path] = [
-    Path.home() / ".local/share/applications",
-    Path("/usr/share/applications"),
-    Path("/usr/local/share/applications"),
-]
-
 # Run subprocesses with English output to avoid locale-dependent parsing.
 _C_ENV = {**os.environ, "LANG": "C", "LC_ALL": "C"}
+
+
+def _app_dirs() -> list[Path]:
+    """Application directories per the XDG Base Directory spec, highest priority first."""
+    data_home = os.environ.get("XDG_DATA_HOME") or str(Path.home() / ".local/share")
+    data_dirs = os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share"
+    dirs: list[Path] = []
+    seen: set[Path] = set()
+    for base in [data_home, *data_dirs.split(":")]:
+        if not base:
+            continue
+        d = Path(base) / "applications"
+        if d not in seen:
+            seen.add(d)
+            dirs.append(d)
+    return dirs
 
 
 def config_dir() -> Path:
@@ -129,7 +139,7 @@ def _scan_desktop_dirs(mime: str) -> list[str]:
     """Fallback: scan .desktop files for matching MimeType entry."""
     apps: list[str] = []
     seen: set[str] = set()
-    for d in _XDG_APP_DIRS:
+    for d in _app_dirs():
         if not d.is_dir():
             continue
         for fp in d.glob("*.desktop"):
@@ -148,17 +158,53 @@ def _scan_desktop_dirs(mime: str) -> list[str]:
 
 
 def _desktop_name(desktop_file: str) -> str:
-    for d in _XDG_APP_DIRS:
+    from pbpicat.i18n import current_language
+
+    lang = current_language()
+    for d in _app_dirs():
         fp = d / desktop_file
         if not fp.is_file():
             continue
         try:
-            for line in fp.read_text(encoding="utf-8", errors="replace").splitlines():
-                if line.startswith("Name="):
-                    return line[5:].strip()
+            text = fp.read_text(encoding="utf-8", errors="replace")
         except OSError:
-            pass
+            continue
+        names = _desktop_names(text)
+        if names:
+            return _pick_localized(names, lang)
     return ""
+
+
+def _desktop_names(text: str) -> dict[str, str]:
+    """Map locale suffix -> Name value from the [Desktop Entry] group ('' = unlocalized)."""
+    names: dict[str, str] = {}
+    in_entry = False
+    for line in text.splitlines():
+        s = line.strip()
+        if s.startswith("["):
+            if in_entry:
+                break  # left [Desktop Entry] for the next group
+            in_entry = s == "[Desktop Entry]"
+            continue
+        if not in_entry:
+            continue
+        key, sep, value = s.partition("=")
+        if not sep:
+            continue
+        key = key.strip()
+        if key == "Name":
+            names[""] = value.strip()
+        elif key.startswith("Name[") and key.endswith("]"):
+            names[key[5:-1]] = value.strip()
+    return names
+
+
+def _pick_localized(names: dict[str, str], lang: str) -> str:
+    """Best Name for lang: exact locale, then bare language, then unlocalized."""
+    for key in (lang, lang.split("_")[0]):
+        if names.get(key):
+            return names[key]
+    return names.get("", "")
 
 
 # ---------------------------------------------------------------------------
@@ -176,7 +222,7 @@ def _launch(desktop_file: str, path: Path) -> None:
 
 
 def _exec_via_desktop(desktop_file: str, path: Path) -> None:
-    for d in _XDG_APP_DIRS:
+    for d in _app_dirs():
         fp = d / desktop_file
         if not fp.is_file():
             continue

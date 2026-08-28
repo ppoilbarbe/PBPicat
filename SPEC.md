@@ -178,7 +178,7 @@ Multi-selection (ExtendedSelection).
 
 **Context menu (right-click on a file):**
 - **Open** (Ctrl+O): opens the file with the default application via `platform.open_default`.
-- **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio`/`.desktop` files; macOS: app name prompt; Windows: "Open as" dialog).
+- **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio mime` + `.desktop` scan over the XDG app dirs — `$XDG_DATA_HOME` then each `$XDG_DATA_DIRS` entry, `/applications` appended, deduped; app labels use the `.desktop` `Name[<lang>]=` key for `i18n.current_language()` (exact locale → bare language → unlocalized `Name=`), read from the `[Desktop Entry]` group only; macOS: app name prompt; Windows: "Open as" dialog).
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
 - **Delete** (Del): permanently deletes the file and its sidecars (confirmation dialog if `confirm_deletions=true`). If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
 - **Rotate 90° CCW / CW / 180° / Apply EXIF / Reset EXIF**: rotation actions (see below).

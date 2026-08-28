@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **"Open with…" on Linux now shows application names in the UI language** — `_desktop_name()` reads the localized `Name[<lang>]=` key from the `.desktop` file matching the interface language returned by `i18n.current_language()`, trying the exact locale (e.g. `Name[zh_CN]`) then the bare language (`Name[zh]`), and falling back to the unlocalized `Name=` as before. Only the `[Desktop Entry]` group is considered, so `[Desktop Action …]` names are never picked up.
+
+### Fixed
+
+- **"Open with…" on Linux missed locally-installed applications** — the application chooser scanned a hardcoded list of three directories (`~/.local/share/applications`, `/usr/share/applications`, `/usr/local/share/applications`), ignoring the XDG Base Directory spec. Apps whose `.desktop` file lives in a directory advertised through `$XDG_DATA_HOME` / `$XDG_DATA_DIRS` (AppImages with a custom `share/applications`, Flatpak export dirs, distro-specific paths) were never found, so `_desktop_name()` fell back to the raw `.desktop` filename and `_exec_via_desktop()` could not resolve them. The directory list is now derived from `$XDG_DATA_HOME` (default `~/.local/share`) followed by every `$XDG_DATA_DIRS` entry (default `/usr/local/share:/usr/share`), each with `/applications` appended, deduplicated while preserving priority order.
+
 ## [1.19.2] - 2026-08-19
 
 ### Changed
