@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Added
+
+- **"Open with…" on Linux now remembers the application order per MIME type** — the chooser dialog lists applications as a most-recently-used list persisted in `$XDG_CONFIG_HOME/pbpicat/open_with.json` (catalog-independent). Applications picked before, and still registered for the file's MIME type, appear first in most-recently-used order; applications that have appeared since the last run are appended in the system's own order; applications that have disappeared are dropped from the list. On confirmation, the picked `.desktop` file moves to the front and the reconciled list for that MIME type is saved (`_order_by_lru()` / `_remember_choice()` in `platform/_linux.py`, `load_open_with_lru()` / `save_open_with_lru()` in `config.py`). A missing, unparseable, or wrong-shaped `open_with.json` is silently treated as an empty list, exactly as if the file did not exist.
+
 ### Changed
 
 - **"Open with…" on Linux now shows application names in the UI language** — `_desktop_name()` reads the localized `Name[<lang>]=` key from the `.desktop` file matching the interface language returned by `i18n.current_language()`, trying the exact locale (e.g. `Name[zh_CN]`) then the bare language (`Name[zh]`), and falling back to the unlocalized `Name=` as before. Only the `[Desktop Entry]` group is considered, so `[Desktop Action …]` names are never picked up.

@@ -318,6 +318,43 @@ def save_global_config(config: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# "Open with…" MRU lists (open_with.json) — one .desktop-name list per MIME type
+# ---------------------------------------------------------------------------
+
+
+def _open_with_path() -> Path:
+    return _BASE_DIR / "open_with.json"
+
+
+def load_open_with_lru() -> dict[str, list[str]]:
+    """Return the MRU-ordered ``.desktop`` file lists keyed by MIME type.
+
+    Stored in ``<config_dir>/open_with.json``, independent of the active catalog.
+    Any parse or shape error (invalid JSON, wrong types, …) is swallowed and an
+    empty mapping is returned, exactly as if the file did not exist.
+    """
+    path = _open_with_path()
+    if path.exists():
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict) and all(
+                isinstance(k, str) and isinstance(v, list) and all(isinstance(x, str) for x in v)
+                for k, v in data.items()
+            ):
+                return data
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+    return {}
+
+
+def save_open_with_lru(data: dict[str, list[str]]) -> None:
+    _BASE_DIR.mkdir(parents=True, exist_ok=True)
+    with open(_open_with_path(), "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------------------
 # History (history.json) — one list of strings per field key
 # ---------------------------------------------------------------------------
 

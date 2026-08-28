@@ -47,12 +47,13 @@ def open_default(path: Path) -> None:
 
 
 def open_with(path: Path, parent=None) -> None:
-    apps = _apps_for_path(path)
+    mime, apps = _apps_for_path(path)
     dialog = _AppChooserDialog(apps, parent)
     if dialog.exec() != QDialog.Accepted:
         return
     desktop_file = dialog.selected_desktop_file()
     if desktop_file:
+        _remember_choice(mime, desktop_file, [df for _, df in apps])
         _launch(desktop_file, path)
 
 
@@ -85,7 +86,9 @@ def _mime_type(path: Path) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _apps_for_path(path: Path) -> list[tuple[str, str]]:
+def _apps_for_path(path: Path) -> tuple[str, list[tuple[str, str]]]:
+    """Return ``(mime, apps)`` where *apps* is the ``(name, desktop_file)`` list
+    for the file's MIME type, ordered most-recently-used first (see ``_order_by_lru``)."""
     mime = _mime_type(path)
     desktop_files = _registered_apps(mime) if mime else []
 
@@ -97,7 +100,37 @@ def _apps_for_path(path: Path) -> list[tuple[str, str]]:
         seen.add(df)
         name = _desktop_name(df) or df.removesuffix(".desktop")
         apps.append((name, df))
-    return apps
+    return mime, _order_by_lru(mime, apps)
+
+
+def _order_by_lru(mime: str, apps: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Reorder *apps* by the saved MRU list for *mime*: remembered apps that are
+    still available come first (in saved order), newly-appeared apps keep their
+    system order at the end. Apps that vanished since last run are simply absent."""
+    if not mime:
+        return apps
+    from pbpicat.config import load_open_with_lru
+
+    remembered = load_open_with_lru().get(mime, [])
+    by_df: dict[str, tuple[str, str]] = {df: (name, df) for name, df in apps}
+    ordered = [by_df.pop(df) for df in remembered if df in by_df]
+    ordered.extend((name, df) for name, df in apps if df in by_df)
+    return ordered
+
+
+def _remember_choice(mime: str, desktop_file: str, available: list[str]) -> None:
+    """Persist *desktop_file* at the front of the MRU list for *mime*, keeping the
+    other currently-available apps (dropped: those that disappeared)."""
+    if not mime:
+        return
+    from pbpicat.config import load_open_with_lru, save_open_with_lru
+
+    data = load_open_with_lru()
+    data[mime] = [desktop_file] + [df for df in available if df != desktop_file]
+    try:
+        save_open_with_lru(data)
+    except OSError:
+        pass
 
 
 def _registered_apps(mime: str) -> list[str]:

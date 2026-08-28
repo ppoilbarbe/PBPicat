@@ -179,6 +179,7 @@ Multi-selection (ExtendedSelection).
 **Context menu (right-click on a file):**
 - **Open** (Ctrl+O): opens the file with the default application via `platform.open_default`.
 - **Open with…** (Ctrl+Shift+O): shows an application chooser dialog (Linux: `gio mime` + `.desktop` scan over the XDG app dirs — `$XDG_DATA_HOME` then each `$XDG_DATA_DIRS` entry, `/applications` appended, deduped; app labels use the `.desktop` `Name[<lang>]=` key for `i18n.current_language()` (exact locale → bare language → unlocalized `Name=`), read from the `[Desktop Entry]` group only; macOS: app name prompt; Windows: "Open as" dialog).
+  - Linux: the list is ordered per MIME type as a most-recently-used list persisted in `open_with.json` (`_order_by_lru()`): apps used before, still registered, come first in MRU order; apps that appeared since last run are appended in system order; apps that vanished are dropped. On confirmation, `_remember_choice()` rewrites that MIME's list with the picked `.desktop` at the front followed by the other still-available apps. A missing, unparseable, or wrong-shaped `open_with.json` is treated as an empty mapping (`load_open_with_lru()`), never an error.
 - **Template**: infers field values from the file stem and parent directory components, by matching against field histories. Shows a confirmation dialog; if confirmed, applies values via `SchemaFrame.set_fields()` (without pushing to history). If no match found, shows an info message.
 - **Delete** (Del): permanently deletes the file and its sidecars (confirmation dialog if `confirm_deletions=true`). If the right-clicked file is among the selection, all selected files (and their sidecars) are deleted together. After deletion, empty source directories are removed recursively up the tree. Selects the next file automatically.
 - **Rotate 90° CCW / CW / 180° / Apply EXIF / Reset EXIF**: rotation actions (see below).
@@ -292,6 +293,7 @@ Menu **Settings → Histories…**
 | Last source dir (`source/last_dir`), video marker pos (`schema/video_marker_pos`) | `$XDG_CONFIG_HOME/pbpicat/<catalog>/ui.conf` (QSettings IniFormat) |
 | Window geometry for all windows except About; ImageViewer metadata panel visibility (`image_viewer/metadata_panel_visible`) and splitter state (`image_viewer/metadata_splitter_state`) | `$XDG_CONFIG_HOME/pbpicat/app.conf` (QSettings IniFormat, via `app_qsettings()`) |
 | Program-level settings (default sidecars, language) | `$XDG_CONFIG_HOME/pbpicat/global_settings.json` |
+| "Open with…" per-MIME MRU `.desktop` lists (Linux) | `$XDG_CONFIG_HOME/pbpicat/open_with.json` (catalog-independent; `load_open_with_lru()`/`save_open_with_lru()`) |
 
 `$XDG_CONFIG_HOME` defaults to `~/.config` if unset.
 `config.py` handles one-shot migration from legacy QSettings if `history.json` is absent.
@@ -331,7 +333,7 @@ PBPicat/
 └── src/pbpicat/
     ├── __main__.py        # CLI arg parsing (--dev-config-dir, optional positional catalog name, + Qt flags via argparse_qt); calls init_catalogs() then i18n.setup(app), optionally switches catalog, before creating MainWindow
     ├── argparse_qt.py     # add_qt_arguments(parser): Qt flags as --double-dash options, collected in args.qt_args
-    ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf, app_qsettings() → app.conf
+    ├── config.py          # catalog mgmt + load/save config+history (JSON), qsettings() → ui.conf, app_qsettings() → app.conf, load/save_open_with_lru() → open_with.json
     ├── i18n.py            # gettext bootstrap
     ├── renamer.py         # pure logic (no Qt)
     ├── image_io.py        # load_qimage/load_pixmap/image_size (Qt decode, shared QImageReader lock)
@@ -344,7 +346,7 @@ PBPicat/
     │   └── zoom_{fit,original,width,height,in,out}.svg
     ├── platform/
     │   ├── __init__.py       # dispatches to _linux / _macos / _windows at import time
-    │   ├── _linux.py         # XDG: xdg-mime, gio, gtk-launch, .desktop file parsing
+    │   ├── _linux.py         # XDG: xdg-mime, gio, gtk-launch, .desktop file parsing, per-MIME MRU app ordering
     │   ├── _macos.py         # subprocess open -a
     │   └── _windows.py       # os.startfile / os.startfile(…, "openas")
     └── ui/

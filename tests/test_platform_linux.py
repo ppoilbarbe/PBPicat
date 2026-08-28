@@ -16,6 +16,14 @@ def _stub_current_language(monkeypatch):
     monkeypatch.setattr(i18n, "current_language", lambda: "en")
 
 
+@pytest.fixture(autouse=True)
+def _isolate_config_dir(tmp_path_factory, monkeypatch):
+    """Redirect open_with.json I/O away from the real user config directory."""
+    import pbpicat.config as cfg
+
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path_factory.mktemp("cfg"))
+
+
 # ---------------------------------------------------------------------------
 # _parse_gio_output
 # ---------------------------------------------------------------------------
@@ -379,7 +387,7 @@ def test_registered_apps_gio_timeout_fallback(tmp_path, monkeypatch):
 
 def test_apps_for_path_no_mime(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "")
-    assert _linux._apps_for_path(tmp_path / "test.xyz") == []
+    assert _linux._apps_for_path(tmp_path / "test.xyz") == ("", [])
 
 
 def test_apps_for_path_with_name(tmp_path, monkeypatch):
@@ -387,7 +395,8 @@ def test_apps_for_path_with_name(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["gimp.desktop"])
     (tmp_path / "gimp.desktop").write_text("[Desktop Entry]\nName=GIMP\n")
     monkeypatch.setattr(_linux, "_app_dirs", lambda: [tmp_path])
-    apps = _linux._apps_for_path(tmp_path / "test.png")
+    mime, apps = _linux._apps_for_path(tmp_path / "test.png")
+    assert mime == "image/png"
     assert apps == [("GIMP", "gimp.desktop")]
 
 
@@ -395,7 +404,7 @@ def test_apps_for_path_no_name_uses_stem(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["eog.desktop"])
     monkeypatch.setattr(_linux, "_app_dirs", lambda: [])
-    apps = _linux._apps_for_path(tmp_path / "test.png")
+    _, apps = _linux._apps_for_path(tmp_path / "test.png")
     assert apps == [("eog", "eog.desktop")]
 
 
@@ -403,8 +412,64 @@ def test_apps_for_path_deduplicates(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
     monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["gimp.desktop", "gimp.desktop"])
     monkeypatch.setattr(_linux, "_app_dirs", lambda: [])
-    apps = _linux._apps_for_path(tmp_path / "test.png")
+    _, apps = _linux._apps_for_path(tmp_path / "test.png")
     assert len(apps) == 1
+
+
+def test_apps_for_path_orders_by_saved_lru(tmp_path, monkeypatch):
+    import pbpicat.config as cfg
+
+    cfg.save_open_with_lru({"image/png": ["eog.desktop", "gone.desktop"]})
+    monkeypatch.setattr(_linux, "_mime_type", lambda p: "image/png")
+    monkeypatch.setattr(_linux, "_registered_apps", lambda mime: ["gimp.desktop", "eog.desktop"])
+    monkeypatch.setattr(_linux, "_app_dirs", lambda: [])
+    _, apps = _linux._apps_for_path(tmp_path / "test.png")
+    # eog (remembered) first, gimp (newly appeared) at the end, gone.desktop dropped.
+    assert [df for _, df in apps] == ["eog.desktop", "gimp.desktop"]
+
+
+# ---------------------------------------------------------------------------
+# _order_by_lru / _remember_choice
+# ---------------------------------------------------------------------------
+
+
+def test_order_by_lru_no_mime_is_identity():
+    apps = [("GIMP", "gimp.desktop"), ("EOG", "eog.desktop")]
+    assert _linux._order_by_lru("", apps) == apps
+
+
+def test_order_by_lru_empty_saved_list_keeps_system_order(monkeypatch):
+    monkeypatch.setattr("pbpicat.config.load_open_with_lru", lambda: {})
+    apps = [("GIMP", "gimp.desktop"), ("EOG", "eog.desktop")]
+    assert _linux._order_by_lru("image/png", apps) == apps
+
+
+def test_order_by_lru_remembered_first_new_last(monkeypatch):
+    monkeypatch.setattr(
+        "pbpicat.config.load_open_with_lru",
+        lambda: {"image/png": ["eog.desktop", "krita.desktop"]},
+    )
+    apps = [("GIMP", "gimp.desktop"), ("EOG", "eog.desktop"), ("Krita", "krita.desktop")]
+    assert [df for _, df in _linux._order_by_lru("image/png", apps)] == [
+        "eog.desktop",
+        "krita.desktop",
+        "gimp.desktop",
+    ]
+
+
+def test_remember_choice_moves_selection_to_front_and_prunes(tmp_path, monkeypatch):
+    import pbpicat.config as cfg
+
+    cfg.save_open_with_lru({"image/png": ["old.desktop"]})
+    _linux._remember_choice("image/png", "gimp.desktop", ["gimp.desktop", "eog.desktop"])
+    assert cfg.load_open_with_lru() == {"image/png": ["gimp.desktop", "eog.desktop"]}
+
+
+def test_remember_choice_no_mime_is_noop(tmp_path):
+    import pbpicat.config as cfg
+
+    _linux._remember_choice("", "gimp.desktop", ["gimp.desktop"])
+    assert cfg.load_open_with_lru() == {}
 
 
 # ---------------------------------------------------------------------------
@@ -428,7 +493,7 @@ def test_open_default_calls_xdg_open(tmp_path, monkeypatch):
 def test_open_with_dialog_cancelled(tmp_path, monkeypatch):
     from PySide6.QtWidgets import QDialog
 
-    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: [])
+    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: ("", []))
 
     class _CancelDialog:
         def exec(self):
@@ -444,7 +509,7 @@ def test_open_with_dialog_cancelled(tmp_path, monkeypatch):
 def test_open_with_app_selected(tmp_path, monkeypatch):
     from PySide6.QtWidgets import QDialog
 
-    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: [("GIMP", "gimp.desktop")])
+    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: ("image/png", [("GIMP", "gimp.desktop")]))
     launched = []
 
     class _AcceptDialog:
@@ -458,12 +523,16 @@ def test_open_with_app_selected(tmp_path, monkeypatch):
     monkeypatch.setattr(_linux, "_launch", lambda df, p: launched.append(df))
     _linux.open_with(tmp_path / "test.png")
     assert launched == ["gimp.desktop"]
+    # The selection is recorded in the MRU list for that MIME type.
+    import pbpicat.config as cfg
+
+    assert cfg.load_open_with_lru() == {"image/png": ["gimp.desktop"]}
 
 
 def test_open_with_no_file_selected(tmp_path, monkeypatch):
     from PySide6.QtWidgets import QDialog
 
-    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: [("GIMP", "gimp.desktop")])
+    monkeypatch.setattr(_linux, "_apps_for_path", lambda p: ("image/png", [("GIMP", "gimp.desktop")]))
 
     class _AcceptNoFile:
         def exec(self):

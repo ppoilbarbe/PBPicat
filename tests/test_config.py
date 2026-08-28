@@ -557,6 +557,59 @@ def test_save_global_config(tmp_path, monkeypatch):
     assert data["default_sidecar_extensions"] == [".dop"]
 
 
+# ---------------------------------------------------------------------------
+# load_open_with_lru / save_open_with_lru
+# ---------------------------------------------------------------------------
+
+
+def test_load_open_with_lru_no_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    assert cfg.load_open_with_lru() == {}
+
+
+def test_open_with_lru_round_trip(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    data = {"image/png": ["gimp.desktop", "org.gnome.eog.desktop"], "text/plain": ["gedit.desktop"]}
+    cfg.save_open_with_lru(data)
+    assert cfg.load_open_with_lru() == data
+    assert (tmp_path / "open_with.json").is_file()
+
+
+def test_load_open_with_lru_invalid_json_is_empty(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    (tmp_path / "open_with.json").write_text("{ not json")
+    assert cfg.load_open_with_lru() == {}
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '["gimp.desktop"]',  # top level is a list, not a mapping
+        '{"image/png": "gimp.desktop"}',  # value is a string, not a list
+        '{"image/png": [1, 2]}',  # list items are not strings
+        '{"image/png": {"a": 1}}',  # value is a mapping
+        "null",
+    ],
+)
+def test_load_open_with_lru_bad_shape_is_empty(tmp_path, monkeypatch, payload):
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    (tmp_path / "open_with.json").write_text(payload)
+    assert cfg.load_open_with_lru() == {}
+
+
+def test_load_open_with_lru_oserror_is_empty(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "_BASE_DIR", tmp_path)
+    (tmp_path / "open_with.json").mkdir()  # directory → OSError on open
+    assert cfg.load_open_with_lru() == {}
+
+
+def test_save_open_with_lru_creates_base_dir(tmp_path, monkeypatch):
+    base = tmp_path / "pbpicat"
+    monkeypatch.setattr(cfg, "_BASE_DIR", base)
+    cfg.save_open_with_lru({"image/png": ["gimp.desktop"]})
+    assert (base / "open_with.json").is_file()
+
+
 def test_init_catalogs_does_not_overwrite_existing(tmp_path, monkeypatch):
     base = tmp_path / "pbpicat"
     base.mkdir()
