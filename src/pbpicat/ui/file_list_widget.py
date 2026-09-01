@@ -20,7 +20,7 @@ from PySide6.QtCore import (
     QUrl,
     Signal,
 )
-from PySide6.QtGui import QDrag, QFont, QImage, QPixmap
+from PySide6.QtGui import QCursor, QDrag, QFont, QImage, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDialog,
@@ -797,7 +797,16 @@ class FileListWidget(QTableWidget):
         paths = self.get_selected_files()
         if not paths:
             return  # transient empty selection during double-click clear+reselect cycle
-        self._image_viewer.set_selection(paths)
+        # Show the row the selection change landed on (the freshly added file when
+        # extending the selection); otherwise keep the file the viewer already
+        # shows if it's still selected, else fall back to the first one.
+        current = None
+        row = self.currentRow()
+        if 0 <= row < len(self._display_data) and self._display_data[row][0] in paths:
+            current = self._display_data[row][0]
+        elif self._image_viewer.current_path in paths:
+            current = self._image_viewer.current_path
+        self._image_viewer.set_selection(paths, current=current)
 
     def viewportEvent(self, event: QEvent) -> bool:  # noqa: N802
         if event.type() == QEvent.Type.ToolTip and self._get_schema_fields is not None:
@@ -844,13 +853,33 @@ class FileListWidget(QTableWidget):
             finally:
                 self._auto_selecting = False
 
+    def event(self, e: QEvent) -> bool:
+        # Tab (and Shift+Tab) toggle focus to the directory tree.
+        if e.type() == QEvent.Type.KeyPress and e.key() in (Qt.Key_Tab, Qt.Key_Backtab):
+            if self._dir_tree is not None:
+                self._dir_tree.setFocus()
+            return True
+        return super().event(e)
+
     def keyPressEvent(self, event) -> None:  # noqa: N802
-        if event.key() in (Qt.Key_Left, Qt.Key_Right) and self._dir_tree is not None:
-            self._dir_tree.setFocus()
-        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+        key = event.key()
+        if key in (Qt.Key_Return, Qt.Key_Enter):
             rows = {idx.row() for idx in self.selectedIndexes()}
-            if len(rows) == 1:
-                self._on_double_click(next(iter(rows)), self._NAME_COL)
+            if rows:
+                # Open the viewer on the current row (falling back to the first
+                # selected row); a multi-row selection opens with the strip.
+                row = self.currentRow() if self.currentRow() in rows else min(rows)
+                self._on_double_click(row, self._NAME_COL)
+        elif key == Qt.Key_Home and self._display_data:
+            self.selectRow(0)
+            self.scrollToItem(self.item(0, self._NAME_COL))
+        elif key == Qt.Key_End and self._display_data:
+            last = len(self._display_data) - 1
+            self.selectRow(last)
+            self.scrollToItem(self.item(last, self._NAME_COL))
+        elif key in (Qt.Key_Left, Qt.Key_Right):
+            # Only Up/Down move the selection in the file list.
+            event.accept()
         else:
             super().keyPressEvent(event)
 
@@ -1247,8 +1276,15 @@ class FileListWidget(QTableWidget):
         open_with(path, self)
 
     def _open_text_sidecars(self, sidecars: list[Path]) -> None:
+        if len(sidecars) == 1:
+            open_default(sidecars[0])
+            return
+        # Several sidecars share the stem: let the user pick which one to open
+        # instead of launching an editor for every extension at once.
+        menu = QMenu(self)
         for sc in sidecars:
-            open_default(sc)
+            menu.addAction(sc.name, lambda _checked=False, p=sc: open_default(p))
+        menu.exec(QCursor.pos())
 
     def closeEvent(self, event) -> None:  # noqa: N802
         self._refresh_debounce.stop()

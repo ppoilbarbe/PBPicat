@@ -262,8 +262,8 @@ msgstr "Mouse"
 msgid "file list"
 msgstr "file list"
 
-msgid "tree leaf"
-msgstr "tree leaf"
+msgid "directory tree"
+msgstr "directory tree"
 
 msgid "Refresh"
 msgstr "Refresh"
@@ -298,11 +298,17 @@ msgstr "Rename selected files according to the schema"
 msgid "Force EXIF orientation to 0°"
 msgstr "Force EXIF orientation to 0°"
 
-msgid "Move focus to the directory tree"
-msgstr "Move focus to the directory tree"
+msgid "Switch focus between directory tree and file list"
+msgstr "Switch focus between directory tree and file list"
 
-msgid "Move focus to the file list"
-msgstr "Move focus to the file list"
+msgid "Navigate directories"
+msgstr "Navigate directories"
+
+msgid "Select previous / next file"
+msgstr "Select previous / next file"
+
+msgid "Jump to first / last entry"
+msgstr "Jump to first / last entry"
 
 msgid "Fit window"
 msgstr "Fit window"

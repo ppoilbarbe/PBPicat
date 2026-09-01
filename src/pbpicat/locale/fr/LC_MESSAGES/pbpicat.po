@@ -263,9 +263,8 @@ msgstr "Souris"
 msgid "file list"
 msgstr "liste de fichiers"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "feuille de l'arbre"
+msgid "directory tree"
+msgstr "arborescence des répertoires"
 
 msgid "Refresh"
 msgstr "Actualiser"
@@ -302,11 +301,17 @@ msgstr "Renomme les fichiers sélectionnés selon le schéma"
 msgid "Force EXIF orientation to 0°"
 msgstr "Forcer l'orientation EXIF à 0°"
 
-msgid "Move focus to the directory tree"
-msgstr "Déplacer le focus vers l'arborescence de dossiers"
+msgid "Switch focus between directory tree and file list"
+msgstr "Basculer le focus entre l'arborescence et la liste des fichiers"
 
-msgid "Move focus to the file list"
-msgstr "Déplacer le focus vers la liste de fichiers"
+msgid "Navigate directories"
+msgstr "Se déplacer dans les répertoires"
+
+msgid "Select previous / next file"
+msgstr "Sélectionner le fichier précédent / suivant"
+
+msgid "Jump to first / last entry"
+msgstr "Aller au premier / dernier élément"
 
 msgid "Fit window"
 msgstr "Adapter à la fenêtre"

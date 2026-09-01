@@ -330,9 +330,8 @@ msgstr "Maus"
 msgid "file list"
 msgstr "Dateiliste"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "Baumblatt"
+msgid "directory tree"
+msgstr "Verzeichnisbaum"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "Ausgewaehlte Dateien gemaess dem Schema umbenennen"
 msgid "Force EXIF orientation to 0°"
 msgstr "EXIF-Ausrichtung auf 0° erzwingen"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "Fokus auf die Verzeichnisstruktur verschieben"
+msgid "Switch focus between directory tree and file list"
+msgstr "Fokus zwischen Verzeichnisbaum und Dateiliste umschalten"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "Fokus auf die Dateiliste verschieben"
+msgid "Navigate directories"
+msgstr "Durch Verzeichnisse navigieren"
+
+msgid "Select previous / next file"
+msgstr "Vorherige / nächste Datei auswählen"
+
+msgid "Jump to first / last entry"
+msgstr "Zum ersten / letzten Eintrag springen"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

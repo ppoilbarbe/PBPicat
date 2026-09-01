@@ -114,8 +114,11 @@ class _ShortcutsDialog(QDialog):
 
         key_del = key(Qt.Key.Key_Delete)
         key_esc = key(Qt.Key.Key_Escape)
+        key_tab = key(Qt.Key.Key_Tab)
+        key_home = key(Qt.Key.Key_Home)
+        key_end = key(Qt.Key.Key_End)
         file_list = _("file list")
-        tree_leaf = _("tree leaf")
+        dir_tree = _("directory tree")
 
         ctrl = key(Qt.Modifier.CTRL | Qt.Key.Key_A)[:-1]
 
@@ -136,8 +139,10 @@ class _ShortcutsDialog(QDialog):
                 row("F8", _("Rotate 90° CW")),
                 row("F9", _("Apply EXIF orientation")),
                 row("F10", _("Force EXIF orientation to 0°")),
-                row(f"← / → ({file_list})", _("Move focus to the directory tree")),
-                row(f"→ ({tree_leaf})", _("Move focus to the file list")),
+                row(key_tab, _("Switch focus between directory tree and file list")),
+                row(f"← ↑ → ↓ ({dir_tree})", _("Navigate directories")),
+                row(f"↑ / ↓ ({file_list})", _("Select previous / next file")),
+                row(f"{key_home} / {key_end}", _("Jump to first / last entry")),
             ]
         )
 

@@ -96,14 +96,17 @@ The main window has four vertical zones:
 
    * Double-click a thumbnail or filename opens the image viewer (images)
      or the system player (videos).
-   * Double-click a sidecar indicator opens text sidecars in the system
-     editor; if no sidecar exists, one is created.
+   * Double-click a sidecar indicator opens the sidecar in the system
+     editor; if several sidecars exist, a small menu lets you pick which
+     one to open; if no sidecar exists, one is created.
    * Right-click a file opens a context menu (same actions as the
      **Images** menu, see below).
    * Hovering over a filename shows a preview of the resulting name.
-   * Keyboard navigation: Left/Right arrows in the file list move focus to
-     the directory tree; Right arrow on a tree leaf moves focus back to
-     the file list. Return/Enter opens the selected file.
+   * Keyboard navigation: Tab (and Shift+Tab) toggles focus between the
+     directory tree and the file list. In the tree, the four arrow keys
+     navigate directories only. In the file list, Up/Down move the
+     selection. In both panels, Home/End jump to the first/last entry.
+     Return/Enter opens the selected file.
 4. **Button bar** — **Undo last rename** (Ctrl+Z, multi-level, shows
    N/total pending), a sidecar content filter, **Rename selection**, and
    **Renumber from 1**.

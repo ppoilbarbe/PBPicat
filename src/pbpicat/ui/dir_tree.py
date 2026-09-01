@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QDir, Qt, QTimer, QUrl, Signal
+from PySide6.QtCore import QDir, QEvent, Qt, QTimer, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QAbstractItemView, QFileSystemModel, QMenu, QTreeView
 
@@ -115,15 +115,14 @@ class DirTree(QTreeView):
         if action is open_action:
             QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
-    def keyPressEvent(self, event) -> None:  # noqa: N802
-        if event.key() == Qt.Key_Right:
-            idx = self.currentIndex()
-            super().keyPressEvent(event)
-            # Transfer focus if Qt didn't navigate to a child (leaf, or unscanned dir with no loaded children yet)
-            if self.currentIndex() == idx and self._model.rowCount(idx) == 0 and self._file_list is not None:
+    def event(self, e) -> bool:
+        # Tab (and Shift+Tab) toggle focus to the file list; the four arrow keys
+        # are left entirely to QTreeView for directory navigation.
+        if e.type() == QEvent.Type.KeyPress and e.key() in (Qt.Key_Tab, Qt.Key_Backtab):
+            if self._file_list is not None:
                 self._file_list.setFocus()
-            return
-        super().keyPressEvent(event)
+            return True
+        return super().event(e)
 
     def _on_current_changed(self, current, _previous):
         if current.isValid():

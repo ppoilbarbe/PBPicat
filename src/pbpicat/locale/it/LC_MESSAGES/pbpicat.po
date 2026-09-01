@@ -330,9 +330,8 @@ msgstr "Mouse"
 msgid "file list"
 msgstr "elenco file"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "foglia dell'albero"
+msgid "directory tree"
+msgstr "albero delle directory"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "Rinomina i file selezionati secondo lo schema"
 msgid "Force EXIF orientation to 0°"
 msgstr "Forza orientamento EXIF a 0°"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "Sposta il focus sull'albero delle directory"
+msgid "Switch focus between directory tree and file list"
+msgstr "Sposta il focus tra l'albero delle directory e l'elenco dei file"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "Sposta il focus sulla lista dei file"
+msgid "Navigate directories"
+msgstr "Naviga tra le directory"
+
+msgid "Select previous / next file"
+msgstr "Seleziona il file precedente / successivo"
+
+msgid "Jump to first / last entry"
+msgstr "Vai alla prima / ultima voce"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

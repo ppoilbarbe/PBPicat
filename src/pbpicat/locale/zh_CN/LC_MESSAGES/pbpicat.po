@@ -330,9 +330,8 @@ msgstr "鼠标"
 msgid "file list"
 msgstr "文件列表"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "树叶节点"
+msgid "directory tree"
+msgstr "目录树"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "根据方案重命名所选文件"
 msgid "Force EXIF orientation to 0°"
 msgstr "强制将 EXIF 方向设为 0°"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "将焦点移至目录树"
+msgid "Switch focus between directory tree and file list"
+msgstr "在目录树和文件列表之间切换焦点"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "将焦点移至文件列表"
+msgid "Navigate directories"
+msgstr "浏览目录"
+
+msgid "Select previous / next file"
+msgstr "选择上一个 / 下一个文件"
+
+msgid "Jump to first / last entry"
+msgstr "跳转到第一个 / 最后一个条目"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

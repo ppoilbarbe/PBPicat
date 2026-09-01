@@ -330,9 +330,8 @@ msgstr "Ratón"
 msgid "file list"
 msgstr "lista de archivos"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "hoja del árbol"
+msgid "directory tree"
+msgstr "árbol de directorios"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "Renombrar los archivos seleccionados según el esquema"
 msgid "Force EXIF orientation to 0°"
 msgstr "Forzar orientación EXIF a 0°"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "Mover el foco al árbol de directorios"
+msgid "Switch focus between directory tree and file list"
+msgstr "Cambiar el foco entre el árbol de directorios y la lista de archivos"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "Mover el foco a la lista de archivos"
+msgid "Navigate directories"
+msgstr "Navegar por los directorios"
+
+msgid "Select previous / next file"
+msgstr "Seleccionar el archivo anterior / siguiente"
+
+msgid "Jump to first / last entry"
+msgstr "Ir a la primera / última entrada"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from PIL import Image as _PilImage
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QItemSelectionModel, QSize, Qt
 from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QMessageBox
 
@@ -1039,13 +1039,50 @@ def test_keypressevent_return_opens_single(qtbot, base_config, tmp_path):
         mock_dbl.assert_called_once()
 
 
-def test_keypressevent_left_focuses_dir_tree(qtbot, base_config, tmp_path):
+def test_keypressevent_return_opens_multi_selection(qtbot, base_config, tmp_path):
+    for i in range(3):
+        _img(tmp_path / f"img{i}.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.selectAll()
+    w.selectionModel().setCurrentIndex(w.model().index(1, w._NAME_COL), QItemSelectionModel.SelectionFlag.NoUpdate)
+    assert len({idx.row() for idx in w.selectedIndexes()}) == 3
+    with patch.object(w, "_on_double_click") as mock_dbl:
+        qtbot.keyClick(w, Qt.Key_Return)
+        mock_dbl.assert_called_once_with(1, w._NAME_COL)
+
+
+def test_keypressevent_tab_focuses_dir_tree(qtbot, base_config, tmp_path):
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    mock_tree = MagicMock()
+    w.set_dir_tree(mock_tree)
+    qtbot.keyClick(w, Qt.Key_Tab)
+    mock_tree.setFocus.assert_called_once()
+
+
+def test_keypressevent_left_right_do_not_focus_dir_tree(qtbot, base_config, tmp_path):
     w = FileListWidget(base_config)
     qtbot.addWidget(w)
     mock_tree = MagicMock()
     w.set_dir_tree(mock_tree)
     qtbot.keyClick(w, Qt.Key_Left)
-    mock_tree.setFocus.assert_called_once()
+    qtbot.keyClick(w, Qt.Key_Right)
+    mock_tree.setFocus.assert_not_called()
+
+
+def test_keypressevent_home_end_jump_to_first_last_row(qtbot, base_config, tmp_path):
+    for i in range(4):
+        _img(tmp_path / f"img{i}.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    w.selectRow(1)
+    qtbot.keyClick(w, Qt.Key_End)
+    assert {idx.row() for idx in w.selectedIndexes()} == {w.rowCount() - 1}
+    qtbot.keyClick(w, Qt.Key_Home)
+    assert {idx.row() for idx in w.selectedIndexes()} == {0}
 
 
 def test_keypressevent_return_no_selection(qtbot, base_config, tmp_path):
@@ -1262,6 +1299,30 @@ def test_on_double_click_sidecar_with_sidecars(qtbot, base_config, tmp_path):
         mock_open.assert_called_once()
 
 
+def test_on_double_click_sidecar_multiple_shows_chooser(qtbot, base_config, tmp_path):
+    _img(tmp_path / "img.png")
+    (tmp_path / "img.xmp").write_text("<meta/>")
+    (tmp_path / "img.pp3").write_text("data")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    with (
+        patch("pbpicat.ui.file_list_widget.open_default") as mock_open,
+        patch("pbpicat.ui.file_list_widget.QMenu") as mock_menu_cls,
+    ):
+        menu = mock_menu_cls.return_value
+        w._on_double_click(0, w._SIDECAR_COL)
+        # A chooser is shown and nothing is opened until the user picks an entry.
+        mock_open.assert_not_called()
+        menu.exec.assert_called_once()
+        assert menu.addAction.call_count == 2
+        # Triggering the first entry opens only that sidecar.
+        label, callback = menu.addAction.call_args_list[0].args
+        assert label == "img.xmp"
+        callback()
+        mock_open.assert_called_once_with(tmp_path / "img.xmp")
+
+
 def test_on_double_click_sidecar_create_new(qtbot, base_config, tmp_path):
     _img(tmp_path / "img.png")
     w = FileListWidget(base_config)
@@ -1289,11 +1350,59 @@ def test_on_selection_changed_multiple(populated_widget, catalog_env):
     w, d = populated_widget
     mock_viewer = MagicMock()
     mock_viewer.isVisible.return_value = True
+    mock_viewer.current_path = None
     w._image_viewer = mock_viewer
     w.selectAll()
+    w.setCurrentCell(1, w._NAME_COL, QItemSelectionModel.SelectionFlag.NoUpdate)
     mock_viewer.reset_mock()  # clear calls triggered by selectAll signal
     w._on_selection_changed()
-    mock_viewer.set_selection.assert_called_once_with(w.get_selected_files())
+    mock_viewer.set_selection.assert_called_once_with(w.get_selected_files(), current=d / "img_002.png")
+
+
+def test_on_selection_changed_extend_selects_new_file(populated_widget, catalog_env):
+    w, d = populated_widget
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    mock_viewer.current_path = d / "img_001.png"
+    w._image_viewer = mock_viewer
+    w.selectRow(0)
+    # Extend the selection onto row 1: it becomes the current row, so the viewer
+    # must display that freshly added file rather than jumping back to row 0.
+    w.selectionModel().select(
+        w.model().index(1, w._NAME_COL),
+        QItemSelectionModel.SelectionFlag.Select | QItemSelectionModel.SelectionFlag.Rows,
+    )
+    w.selectionModel().setCurrentIndex(w.model().index(1, w._NAME_COL), QItemSelectionModel.SelectionFlag.NoUpdate)
+    mock_viewer.reset_mock()
+    w._on_selection_changed()
+    mock_viewer.set_selection.assert_called_once_with([d / "img_001.png", d / "img_002.png"], current=d / "img_002.png")
+
+
+def test_on_selection_changed_remove_keeps_current_view(qtbot, base_config, tmp_path):
+    """Removing a row from a multi-selection must not raise (`current_path` is a
+    property, not a callable) and must keep the viewer on the image it already
+    shows when that image is still selected."""
+    for i in range(3):
+        _img(tmp_path / f"img{i}.png")
+    w = FileListWidget(base_config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    mock_viewer.current_path = tmp_path / "img1.png"
+    w._image_viewer = mock_viewer
+    w.selectAll()
+    w.selectionModel().setCurrentIndex(w.model().index(2, w._NAME_COL), QItemSelectionModel.SelectionFlag.NoUpdate)
+    # Deselect row 2 (the current row); the viewer still shows img1 (row 1).
+    w.selectionModel().select(
+        w.model().index(2, w._NAME_COL),
+        QItemSelectionModel.SelectionFlag.Deselect | QItemSelectionModel.SelectionFlag.Rows,
+    )
+    mock_viewer.reset_mock()
+    w._on_selection_changed()
+    mock_viewer.set_selection.assert_called_once_with(
+        [tmp_path / "img0.png", tmp_path / "img1.png"], current=tmp_path / "img1.png"
+    )
 
 
 def test_on_selection_changed_rebuilding(populated_widget):
@@ -1549,10 +1658,11 @@ def test_on_selection_changed_image(qtbot, catalog_env, sample_png):
     w.load_directory(str(d))
     mock_viewer = MagicMock()
     mock_viewer.isVisible.return_value = True
+    mock_viewer.current_path = None
     w._image_viewer = mock_viewer
     w.selectRow(0)
     w._on_selection_changed()
-    mock_viewer.set_selection.assert_called_once_with([sample_png])
+    mock_viewer.set_selection.assert_called_once_with([sample_png], current=sample_png)
 
 
 def test_refresh_preserve_selection(qtbot, catalog_env, tmp_path):
@@ -1775,11 +1885,12 @@ def test_load_directory_selects_first_image_and_updates_open_viewer(qtbot, base_
 
     viewer = MagicMock()
     viewer.isVisible.return_value = True
+    viewer.current_path = None
     w._image_viewer = viewer
 
     w.load_directory(str(tmp_path))
 
-    viewer.set_selection.assert_called_once_with([tmp_path / "a.png"])
+    viewer.set_selection.assert_called_once_with([tmp_path / "a.png"], current=tmp_path / "a.png")
 
 
 def test_focus_in_event_does_not_trigger_viewer(qtbot, base_config, tmp_path):

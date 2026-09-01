@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- **Main-window keyboard navigation reworked** — in the directory tree the four arrow keys now navigate directories and nothing else (the previous "→ on a leaf node moves focus to the file list" behaviour is gone). In the file list only Up/Down move the selection; Left/Right are now inert instead of moving focus to the tree. In both panels Home goes to the first entry and End to the last (`FileListWidget` handles these explicitly so a `QTableWidget` does not just move the column cursor; `DirTree` uses the native behaviour). Tab (and Shift+Tab) now toggle focus between the directory tree and the file list, intercepted via an `event()` override before Qt's focus-chain machinery. The Shortcuts window (F1) and `SPEC.md` were updated accordingly.
+- **Return/Enter in the file list now also opens the image viewer for a multi-row selection** — previously it only acted when exactly one row was selected. It now opens the viewer on the current row, and a multi-row selection opens it with the selection strip, exactly like a Shift+double-click.
+- **Extending the file-list selection while the image viewer is open now displays the freshly added file** — `_on_selection_changed()` passes the row the selection change landed on as the viewer's `current`, so the added image is highlighted in the selection strip instead of the viewer staying on the first file. Removing an unrelated row from a multi-selection leaves the displayed image unchanged.
+- **Double-clicking the sidecar column when a file has several sidecars now shows a chooser** — instead of launching an editor for every sidecar extension at once, a small `QMenu` (one entry per sidecar filename, shown at the cursor) opens only the selected one. A file with a single sidecar still opens it directly.
+
 ## [1.20.0] - 2026-08-28
 
 ### Added

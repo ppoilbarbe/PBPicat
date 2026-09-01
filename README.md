@@ -55,6 +55,18 @@ different extension (e.g. `.xmp`, `.dop`, `.pp3`). PBPicat renames
 sidecar files automatically alongside their parent file. Sidecar
 extensions are configurable in **Settings → Catalog configuration**.
 
+A newly created sidecar is written as an empty file, so that it is
+removed again on the next directory scan if you close the editor without
+saving anything into it. One side effect on Linux: `xdg-open` resolves an
+empty file as `application/x-zerosize` rather than by its extension, so
+the very first time a brand-new sidecar is opened it may launch the
+application associated with that type instead of your usual text editor.
+Once the file has content it opens with the normal editor for its
+extension. To avoid the first-open mismatch, either point
+`application/x-zerosize` at your editor
+(`xdg-mime default <editor>.desktop application/x-zerosize`) or open the
+new sidecar once, type a character and save.
+
 ### Video support
 
 A configurable text marker can be inserted at a chosen position in the
@@ -80,10 +92,10 @@ The main window has four vertical zones:
 
 3. **File panel** — Left side: directory tree. Right side: file list showing a thumbnail, filename, and a sidecar indicator for each file.
    - Double-click a thumbnail or filename → opens the image viewer (images) or the system player (videos).
-   - Double-click a sidecar indicator → opens text sidecars in the system editor; if no sidecar exists, creates a new one.
+   - Double-click a sidecar indicator → opens the sidecar in the system editor; if several sidecars exist, a small menu lets you pick which one to open; if no sidecar exists, creates a new one.
    - Right-click a file → context menu (same actions as the **Images** menu, see below).
    - Hover over a filename → shows a preview of the resulting name.
-   - **Keyboard navigation**: Left/Right arrows in the file list move focus to the directory tree; Right arrow on a tree leaf moves focus back to the file list. Return/Enter opens the selected file.
+   - **Keyboard navigation**: Tab (and Shift+Tab) toggles focus between the directory tree and the file list. In the tree, the four arrow keys navigate directories only. In the file list, Up/Down move the selection. In both panels, Home/End jump to the first/last entry. Return/Enter opens the selected file.
 
 4. **Button bar** — **Undo last rename** (Ctrl+Z, multi-level, shows N/total pending), a **sidecar content filter**, **Rename selection**, and **Renumber from 1**.
 

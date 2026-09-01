@@ -330,9 +330,8 @@ msgstr "Мышь"
 msgid "file list"
 msgstr "список файлов"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "лист дерева"
+msgid "directory tree"
+msgstr "дерево каталогов"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "Переименовать выбранные файлы согласн�
 msgid "Force EXIF orientation to 0°"
 msgstr "Принудительно установить ориентацию EXIF на 0°"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "Переместить фокус в дерево каталогов"
+msgid "Switch focus between directory tree and file list"
+msgstr "Переключить фокус между деревом каталогов и списком файлов"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "Переместить фокус в список файлов"
+msgid "Navigate directories"
+msgstr "Перемещение по каталогам"
+
+msgid "Select previous / next file"
+msgstr "Выбрать предыдущий / следующий файл"
+
+msgid "Jump to first / last entry"
+msgstr "Перейти к первому / последнему элементу"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

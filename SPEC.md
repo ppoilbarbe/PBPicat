@@ -151,11 +151,14 @@ History persisted in `history.json`. Marker position in `ui.conf` (`schema/video
 #### Keyboard navigation between panels
 | Location | Key | Effect |
 |----------|-----|--------|
-| FileListWidget | ← or → | Focus moves to DirTree |
-| FileListWidget | Return / Enter | Opens current file in the image viewer (images and videos); no effect on sidecar column |
-| DirTree (leaf node) | → | Focus moves to FileListWidget; selects row 0 if nothing was selected |
+| DirTree / FileListWidget | Tab / Shift+Tab | Toggle focus between the two panels (`event()` override intercepts `Key_Tab`/`Key_Backtab` before Qt's focus-chain machinery) |
+| DirTree | ← ↑ → ↓ | Directory navigation only (native `QTreeView`); no focus transfer |
+| DirTree / FileListWidget | Home / End | Go to first / last entry |
+| FileListWidget | ↑ / ↓ | Move selection to previous / next row (native) |
+| FileListWidget | ← / → | Swallowed (no-op) — only Up/Down move the selection |
+| FileListWidget | Return / Enter | Opens the current row in the image viewer (images and videos); with a multi-row selection the viewer opens on the current row with the selection strip; no effect on sidecar column |
 
-A leaf node is a directory with no loaded subdirectories (`rowCount == 0` after Qt processes the key). `QFileSystemModel` loads lazily, so this also handles unscanned directories in a single keypress.
+`FileListWidget` Home/End are handled explicitly (`selectRow(0)` / `selectRow(last)` + `scrollToItem`) because a `QTableWidget` would otherwise move the cursor within the row's columns. `DirTree` Home/End are native.
 
 When `FileListWidget` receives focus and has no selected row, row 0 is selected automatically.
 
@@ -164,9 +167,9 @@ When `FileListWidget` receives focus and has no selected row, row 0 is selected 
 |-----|---------|--------------|-------|
 | Preview | Async thumbnail (QThread) or `resources/movie.svg` icon (scaled/centered via `QIcon.pixmap`, keeps aspect ratio) for video | Opens/activates the ImageViewer, image or video (`_show_in_viewer()`) | — |
 | Name | Filename | Opens/activates the ImageViewer, image or video (`_show_in_viewer()`) | Tooltip: previewed final name (number = 1) |
-| Sidecar | `●` + extensions if present, `○` otherwise | If sidecar exists: opens text sidecars (QDesktopServices). If no sidecar: opens `<stem><sidecar_new_extension>` in the default editor (file need not exist). | — |
+| Sidecar | `●` + extensions if present, `○` otherwise | One sidecar: opens it (`open_default`). Several sidecars: `QMenu` chooser at `QCursor.pos()`, one entry per sidecar filename, opens only the picked one. No sidecar: creates `<stem><sidecar_new_extension>` (empty `touch()`, tracked in `_sidecars_pending_edit`) and opens it (`open_default`). | — |
 
-Return/Enter acts like a double-click on the Name column (ignores the sidecar logic).
+Return/Enter acts like a double-click on the Name column of the current row (ignores the sidecar logic); it works for a single or multi-row selection — a multi-row selection opens the viewer on the current row with the selection strip, exactly like a Shift+double-click.
 
 Multi-selection (ExtendedSelection).
 
@@ -241,7 +244,7 @@ When switching zoom mode or loading a new image, the viewport is centered; in CU
 
 **Video display**: `ImageViewer.display(path)` dispatches by extension (`video_extensions` ctor kwarg) to `load_image()` or `show_video()`. `show_video()` shows the `movie` icon (`get_icon("movie")`) scaled/centered like Fit-window zoom, and locks the viewer in "video mode": the 4 zoom-mode buttons, zoom in/out, and the 3 rotate buttons + EXIF/0° buttons are all disabled, the zoom mode is forced to `FIT_WINDOW` (`_set_mode`/`_apply_custom`/`_zoom_to_point` all no-op while `_video_mode` is set, except re-selecting Fit window itself), and the zoom label is blank. Returning to an image via `load_image()` restores normal control state.
 
-**Multi-file selection**: `ImageViewer.set_selection(paths, current=None)` — called by `FileListWidget._on_selection_changed()` on every selection change (always `current=None`, i.e. `paths[0]`), and by `_show_in_viewer(path, selection=...)` on double-click, which passes the full current table selection with `current=path` so a Shift+double-click that keeps a multi-row selection displays/highlights the double-clicked file rather than resetting to the first row. `current` not in `paths` (or omitted) falls back to `paths[0]`. With 2+ paths, a horizontal thumbnail strip (`_SelectionStrip`, `QScrollArea`) appears along the full width of the window, below the splitter (outside it, in the outer `QVBoxLayout`, so the metadata panel just gets less vertical space and its own `QTextBrowser` scrolls as needed) — the currently displayed file is highlighted with a solid border (`_STRIP_HIGHLIGHT_STYLE`) and kept scrolled into view. Clicking a thumbnail (`_ClickableLabel`, `thumbnail_clicked` signal → `_act_selection_goto()`) jumps straight to that file. Left/Right move `_selection_index` within `_selection_paths` (clamped, no wraparound) the same way; both paths are entirely internal to `ImageViewer` — they never touch the file list's table selection. Up/Down (`navigate_prev`/`navigate_next` → `FileListWidget._navigate_viewer()`) naturally become inert during a multi-selection since that handler already requires exactly one selected table row. With a single file selected, the strip is hidden.
+**Multi-file selection**: `ImageViewer.set_selection(paths, current=None)` — called by `FileListWidget._on_selection_changed()` on every selection change and by `_show_in_viewer(path, selection=...)` on double-click, which passes the full current table selection with `current=path` so a Shift+double-click that keeps a multi-row selection displays/highlights the double-clicked file rather than resetting to the first row. `current` not in `paths` (or omitted) falls back to `paths[0]`. `_on_selection_changed()` picks `current` so that **extending the selection displays the freshly added file**: it passes the table's current row when that row is in the selection, otherwise the viewer's own `current_path` (a `@property`, not a callable) when it is still selected — so removing an unrelated row from a multi-selection leaves the displayed image unchanged — otherwise `None` (→ `paths[0]`). With 2+ paths, a horizontal thumbnail strip (`_SelectionStrip`, `QScrollArea`) appears along the full width of the window, below the splitter (outside it, in the outer `QVBoxLayout`, so the metadata panel just gets less vertical space and its own `QTextBrowser` scrolls as needed) — the currently displayed file is highlighted with a solid border (`_STRIP_HIGHLIGHT_STYLE`) and kept scrolled into view. Clicking a thumbnail (`_ClickableLabel`, `thumbnail_clicked` signal → `_act_selection_goto()`) jumps straight to that file. Left/Right move `_selection_index` within `_selection_paths` (clamped, no wraparound) the same way; both paths are entirely internal to `ImageViewer` — they never touch the file list's table selection. Up/Down (`navigate_prev`/`navigate_next` → `FileListWidget._navigate_viewer()`) naturally become inert during a multi-selection since that handler already requires exactly one selected table row. With a single file selected, the strip is hidden.
 
 **Metadata panel** (`ui/metadata_panel.py`, checkable **Metadata** toolbar button, own separator group — deliberately set apart from the other groups):
 - A `QSplitter(Qt.Horizontal)` holds the image `QScrollArea` and a `MetadataPanel` (read-only `QTextBrowser`, HTML-formatted). Side (`metadata_panel_side` config, "left"/"right") picks the widget order; `ImageViewer.set_metadata_panel_side()` reorders it live if the setting changes while the viewer is open (`FileListWidget.reconfigure()`).

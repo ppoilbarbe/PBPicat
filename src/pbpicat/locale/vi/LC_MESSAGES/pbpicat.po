@@ -330,9 +330,8 @@ msgstr "Chuột"
 msgid "file list"
 msgstr "danh sách tệp"
 
-# ==AUTO== Automatically translated
-msgid "tree leaf"
-msgstr "nút lá cây"
+msgid "directory tree"
+msgstr "cây thư mục"
 
 # ==AUTO== Automatically translated
 msgid "Refresh"
@@ -378,13 +377,17 @@ msgstr "Đổi tên các tệp đã chọn theo lược đồ"
 msgid "Force EXIF orientation to 0°"
 msgstr "Buộc hướng EXIF về 0°"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the directory tree"
-msgstr "Chuyển tiêu điểm đến cây thư mục"
+msgid "Switch focus between directory tree and file list"
+msgstr "Chuyển tiêu điểm giữa cây thư mục và danh sách tệp"
 
-# ==AUTO== Automatically translated
-msgid "Move focus to the file list"
-msgstr "Chuyển tiêu điểm đến danh sách tệp"
+msgid "Navigate directories"
+msgstr "Di chuyển trong các thư mục"
+
+msgid "Select previous / next file"
+msgstr "Chọn tệp trước / kế tiếp"
+
+msgid "Jump to first / last entry"
+msgstr "Nhảy đến mục đầu / cuối"
 
 # ==AUTO== Automatically translated
 msgid "Fit window"

@@ -212,26 +212,36 @@ def test_do_scroll_hidden(tree_with_model, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# keyPressEvent
+# keyboard navigation
 # ---------------------------------------------------------------------------
 
 
-def test_key_press_right_no_file_list(tree_with_model, qtbot):
+def test_tab_moves_focus_to_file_list(tree_with_model, qtbot):
     tree, mock_fl = tree_with_model
-    qtbot.keyClick(tree, Qt.Key_Right)
+    qtbot.keyClick(tree, Qt.Key_Tab)
+    mock_fl.setFocus.assert_called_once()
 
 
-def test_key_press_other_key(tree_with_model):
-    tree, _ = tree_with_model
+def test_backtab_moves_focus_to_file_list(tree_with_model):
+    tree, mock_fl = tree_with_model
     from PySide6.QtGui import QKeyEvent
 
-    event = QKeyEvent(QKeyEvent.Type.KeyPress, Qt.Key_Down, Qt.NoModifier)
-    tree.keyPressEvent(event)
+    event = QKeyEvent(QKeyEvent.Type.KeyPress, Qt.Key_Backtab, Qt.ShiftModifier)
+    tree.event(event)
+    mock_fl.setFocus.assert_called_once()
 
 
-def test_key_press_right_with_file_list(tree_with_model, qtbot):
+def test_arrow_keys_do_not_transfer_focus(tree_with_model, qtbot):
     tree, mock_fl = tree_with_model
-    qtbot.keyClick(tree, Qt.Key_Right)
+    for k in (Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down):
+        qtbot.keyClick(tree, k)
+    mock_fl.setFocus.assert_not_called()
+
+
+def test_tab_no_file_list_does_not_crash(qtbot):
+    tree = DirTree()
+    qtbot.addWidget(tree)
+    qtbot.keyClick(tree, Qt.Key_Tab)
 
 
 # ---------------------------------------------------------------------------
