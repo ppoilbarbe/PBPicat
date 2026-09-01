@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-09-01
+
 ### Changed
 
 - **Main-window keyboard navigation reworked** — in the directory tree the four arrow keys now navigate directories and nothing else (the previous "→ on a leaf node moves focus to the file list" behaviour is gone). In the file list only Up/Down move the selection; Left/Right are now inert instead of moving focus to the tree. In both panels Home goes to the first entry and End to the last (`FileListWidget` handles these explicitly so a `QTableWidget` does not just move the column cursor; `DirTree` uses the native behaviour). Tab (and Shift+Tab) now toggle focus between the directory tree and the file list, intercepted via an `event()` override before Qt's focus-chain machinery. The Shortcuts window (F1) and `SPEC.md` were updated accordingly.
