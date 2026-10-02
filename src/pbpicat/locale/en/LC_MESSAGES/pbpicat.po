@@ -238,6 +238,12 @@ msgstr "Show metadata panel"
 msgid "Cannot load image."
 msgstr "Cannot load image."
 
+msgid "Switch to linear navigation (stop at the ends of the list)"
+msgstr "Switch to linear navigation (stop at the ends of the list)"
+
+msgid "Switch to circular navigation (wrap around at the ends of the list)"
+msgstr "Switch to circular navigation (wrap around at the ends of the list)"
+
 msgid " (max)"
 msgstr " (max)"
 

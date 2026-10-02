@@ -1637,6 +1637,42 @@ def test_navigate_viewer_forward(qtbot, catalog_env, tmp_path):
     assert w.currentIndex().row() == 1
 
 
+def _three_png_widget(qtbot, tmp_path, circular):
+    from PIL import Image
+
+    config = dict(DEFAULTS)
+    config["image_extensions"] = [".png"]
+    for name in ["a.png", "b.png", "c.png"]:
+        Image.new("RGB", (1, 1)).save(str(tmp_path / name))
+    w = FileListWidget(config)
+    qtbot.addWidget(w)
+    w.load_directory(str(tmp_path))
+    mock_viewer = MagicMock()
+    mock_viewer.isVisible.return_value = True
+    mock_viewer.circular_navigation = circular
+    w._image_viewer = mock_viewer
+    return w
+
+
+def test_navigate_viewer_linear_stops_at_ends(qtbot, catalog_env, tmp_path):
+    w = _three_png_widget(qtbot, tmp_path, circular=False)
+    w.selectRow(2)
+    w._navigate_viewer(+1)
+    assert w.currentIndex().row() == 2
+    w.selectRow(0)
+    w._navigate_viewer(-1)
+    assert w.currentIndex().row() == 0
+
+
+def test_navigate_viewer_circular_wraps(qtbot, catalog_env, tmp_path):
+    w = _three_png_widget(qtbot, tmp_path, circular=True)
+    w.selectRow(2)
+    w._navigate_viewer(+1)
+    assert w.currentIndex().row() == 0
+    w._navigate_viewer(-1)
+    assert w.currentIndex().row() == 2
+
+
 def test_navigate_viewer_no_selection(qtbot, catalog_env, tmp_path):
     config = dict(DEFAULTS)
     config["confirm_deletions"] = False

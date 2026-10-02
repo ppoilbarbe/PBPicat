@@ -773,6 +773,46 @@ def test_selection_next_prev_clamped(qtbot, catalog_env, sample_png, tmp_path):
     assert viewer.current_path == sample_png
 
 
+def test_selection_next_prev_wraps_in_circular_mode(qtbot, catalog_env, sample_png, tmp_path):
+    other = tmp_path / "other.png"
+    Image.new("RGB", (5, 5)).save(str(other))
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._act_toggle_circular()
+    viewer.set_selection([sample_png, other])
+
+    viewer._act_selection_prev()  # index 0 → wraps to last
+    assert viewer._selection_index == 1
+    assert viewer.current_path == other
+
+    viewer._act_selection_next()  # last → wraps to first
+    assert viewer._selection_index == 0
+    assert viewer.current_path == sample_png
+
+
+def test_circular_mode_defaults_to_linear(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    assert viewer.circular_navigation is False
+    assert "circular" in viewer._circular_btn.toolTip()
+
+
+def test_toggle_circular_updates_button_and_persists(qtbot, catalog_env, sample_png):
+    viewer = ImageViewer(sample_png)
+    qtbot.addWidget(viewer)
+    viewer._circular_btn.click()
+    assert viewer.circular_navigation is True
+    assert "linear" in viewer._circular_btn.toolTip()
+
+    reopened = ImageViewer(sample_png)
+    qtbot.addWidget(reopened)
+    assert reopened.circular_navigation is True
+
+    reopened._circular_btn.click()
+    assert reopened.circular_navigation is False
+    assert "circular" in reopened._circular_btn.toolTip()
+
+
 def test_selection_next_noop_for_single_file(qtbot, catalog_env, sample_png):
     viewer = ImageViewer(sample_png)
     qtbot.addWidget(viewer)

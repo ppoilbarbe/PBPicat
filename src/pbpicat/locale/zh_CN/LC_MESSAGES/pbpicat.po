@@ -298,6 +298,12 @@ msgstr "显示元数据面板"
 msgid "Cannot load image."
 msgstr "无法加载图像。"
 
+msgid "Switch to linear navigation (stop at the ends of the list)"
+msgstr "切换到线性浏览（在列表两端停止）"
+
+msgid "Switch to circular navigation (wrap around at the ends of the list)"
+msgstr "切换到循环浏览（到达列表一端时跳到另一端）"
+
 # ==AUTO== Automatically translated
 msgid " (max)"
 msgstr "（最大）"

@@ -780,14 +780,20 @@ class FileListWidget(QTableWidget):
         if len(rows) != 1:
             return
         media_exts = self._image_exts | self._video_exts
-        row = next(iter(rows)) + direction
-        while 0 <= row < len(self._display_data):
+        count = len(self._display_data)
+        circular = self._image_viewer is not None and self._image_viewer.circular_navigation
+        start = next(iter(rows))
+        for step in range(1, count):
+            row = start + step * direction
+            if circular:
+                row %= count
+            elif not 0 <= row < count:
+                return
             path, _ = self._display_data[row]
             if path.suffix.lower() in media_exts:
                 self.selectRow(row)
                 self.scrollToItem(self.item(row, self._NAME_COL))
                 return
-            row += direction
 
     def _on_selection_changed(self) -> None:
         if self._rebuilding or self._auto_selecting:

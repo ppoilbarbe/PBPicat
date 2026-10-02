@@ -298,6 +298,12 @@ msgstr "Metadatenbereich anzeigen"
 msgid "Cannot load image."
 msgstr "Bild kann nicht geladen werden."
 
+msgid "Switch to linear navigation (stop at the ends of the list)"
+msgstr "Zur linearen Navigation wechseln (an den Listenenden anhalten)"
+
+msgid "Switch to circular navigation (wrap around at the ends of the list)"
+msgstr "Zur zirkulären Navigation wechseln (an den Listenenden umlaufen)"
+
 # ==AUTO== Automatically translated
 msgid " (max)"
 msgstr " (max)"

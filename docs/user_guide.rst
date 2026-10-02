@@ -209,6 +209,11 @@ action buttons (**Open**, **Open with**, **Template**, **Delete**).
 Double-click on the image centers the viewport on the clicked point.
 Ctrl+click zooms to the clicked point.
 
+The navigation-mode button (after the metadata button) toggles between
+*linear* navigation, where ↑ / ↓ and ← / → (within a multi-file selection)
+stop at the ends of the list, and *circular* navigation, where moving past
+one end wraps around to the other. The chosen mode is remembered.
+
 Settings
 --------
 

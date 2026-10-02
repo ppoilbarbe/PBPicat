@@ -238,6 +238,12 @@ msgstr "Afficher le panneau des métadonnées"
 msgid "Cannot load image."
 msgstr "Impossible de charger l'image."
 
+msgid "Switch to linear navigation (stop at the ends of the list)"
+msgstr "Passer en navigation linéaire (arrêt aux extrémités de la liste)"
+
+msgid "Switch to circular navigation (wrap around at the ends of the list)"
+msgstr "Passer en navigation circulaire (bouclage aux extrémités de la liste)"
+
 msgid " (max)"
 msgstr " (max)"
 

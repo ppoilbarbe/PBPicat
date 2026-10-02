@@ -162,6 +162,8 @@ class ImageViewer(QWidget):
         self._rotate_auto_btn: QToolButton | None = None
         self._reset_exif_btn: QToolButton | None = None
         self._metadata_btn: QToolButton | None = None
+        self._circular_btn: QToolButton | None = None
+        self._circular = bool(app_qsettings().value("image_viewer/circular_navigation", False, type=bool))
         self._auto_rotate = auto_rotate
         self._current_path: Path | None = None
         self._sidecar_extensions = sidecar_extensions or []
@@ -339,6 +341,12 @@ class ImageViewer(QWidget):
         self._metadata_btn.toggled.connect(self._on_metadata_toggled)
         tb.addWidget(self._metadata_btn)
 
+        self._circular_btn = QToolButton()
+        self._circular_btn.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
+        self._circular_btn.clicked.connect(self._act_toggle_circular)
+        self._update_circular_button()
+        tb.addWidget(self._circular_btn)
+
         tb.addStretch()
         self._zoom_label = QLabel()
         self._zoom_label.setMinimumWidth(180)
@@ -459,18 +467,23 @@ class ImageViewer(QWidget):
                 self._strip.refresh_thumbnail(index, path, self._video_extensions)
 
     def _act_selection_prev(self) -> None:
-        if len(self._selection_paths) < 2:
-            return
-        self._selection_index = max(0, self._selection_index - 1)
-        self._strip.set_current_index(self._selection_index)
-        self.display(self._selection_paths[self._selection_index])
+        self._step_selection(-1)
 
     def _act_selection_next(self) -> None:
-        if len(self._selection_paths) < 2:
+        self._step_selection(+1)
+
+    def _step_selection(self, direction: int) -> None:
+        """Move within the selection: wraps around in circular mode, stops at the ends otherwise."""
+        count = len(self._selection_paths)
+        if count < 2:
             return
-        self._selection_index = min(len(self._selection_paths) - 1, self._selection_index + 1)
-        self._strip.set_current_index(self._selection_index)
-        self.display(self._selection_paths[self._selection_index])
+        index = self._selection_index + direction
+        index = index % count if self._circular else max(0, min(count - 1, index))
+        if index == self._selection_index:
+            return
+        self._selection_index = index
+        self._strip.set_current_index(index)
+        self.display(self._selection_paths[index])
 
     def _act_selection_goto(self, index: int) -> None:
         if not (0 <= index < len(self._selection_paths)):
@@ -482,6 +495,25 @@ class ImageViewer(QWidget):
     @property
     def current_path(self) -> Path | None:
         return self._current_path
+
+    @property
+    def circular_navigation(self) -> bool:
+        """True when navigation wraps from one end of the list to the other."""
+        return self._circular
+
+    def _act_toggle_circular(self) -> None:
+        self._circular = not self._circular
+        app_qsettings().setValue("image_viewer/circular_navigation", self._circular)
+        self._update_circular_button()
+
+    def _update_circular_button(self) -> None:
+        # The button shows the mode a click switches to, not the current one.
+        if self._circular:
+            self._circular_btn.setIcon(get_icon("list-linear", text_fallback="→|"))
+            self._circular_btn.setToolTip(_("Switch to linear navigation (stop at the ends of the list)"))
+        else:
+            self._circular_btn.setIcon(get_icon("list-circular", text_fallback="↻"))
+            self._circular_btn.setToolTip(_("Switch to circular navigation (wrap around at the ends of the list)"))
 
     def set_metadata_panel_side(self, side: str) -> None:
         if side == self._metadata_side:

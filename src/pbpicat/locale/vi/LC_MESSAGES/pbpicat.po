@@ -298,6 +298,12 @@ msgstr "Hiển thị bảng siêu dữ liệu"
 msgid "Cannot load image."
 msgstr "Không thể tải hình ảnh."
 
+msgid "Switch to linear navigation (stop at the ends of the list)"
+msgstr "Chuyển sang điều hướng tuyến tính (dừng ở hai đầu danh sách)"
+
+msgid "Switch to circular navigation (wrap around at the ends of the list)"
+msgstr "Chuyển sang điều hướng vòng tròn (quay vòng ở hai đầu danh sách)"
+
 # ==AUTO== Automatically translated
 msgid " (max)"
 msgstr " (tối đa)"
