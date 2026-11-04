@@ -3,7 +3,7 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
-from PySide6.QtCore import QLoggingCategory
+from PySide6.QtCore import QLoggingCategory, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
@@ -91,6 +91,27 @@ def _load_bundled_fonts(app: object) -> None:
         )
 
 
+PBRENAMER_RELEASES_URL = "https://github.com/ppoilbarbe/PBRenamer/releases"
+
+
+def _show_obsolete_notice() -> None:
+    """Tell the user that PBPicat is obsolete and point them to PBRenamer."""
+    box = QMessageBox()
+    box.setIcon(QMessageBox.Warning)
+    box.setWindowTitle(_("PBPicat is obsolete"))
+    box.setTextFormat(Qt.RichText)
+    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setText(
+        _(
+            "PBPicat is obsolete and is no longer maintained.<br><br>"
+            "Please download PBRenamer (version {version} or later), which replaces it:<br>"
+            '<a href="{url}">{url}</a>'
+        ).format(version="2.0", url=PBRENAMER_RELEASES_URL)
+    )
+    box.setStandardButtons(QMessageBox.Ok)
+    box.exec()
+
+
 def main() -> None:
     args = _parse_args()
     if args.dev_config_dir:
@@ -112,6 +133,8 @@ def main() -> None:
 
     init_catalogs()
     i18n.setup(app)
+
+    _show_obsolete_notice()
 
     if args.catalog is not None:
         if args.catalog in list_catalogs(include_hidden=True):

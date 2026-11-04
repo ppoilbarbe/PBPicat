@@ -18,6 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "PBPicat is obsolete"
+msgstr "PBPicat ist veraltet"
+
+#, python-brace-format
+msgid "PBPicat is obsolete and is no longer maintained.<br><br>Please download PBRenamer (version {version} or later), which replaces it:<br><a href=\"{url}\">{url}</a>"
+msgstr "PBPicat ist veraltet und wird nicht mehr gepflegt.<br><br>Bitte laden Sie PBRenamer (Version {version} oder neuer) herunter, das es ersetzt:<br><a href=\"{url}\">{url}</a>"
+
 # ==AUTO== Automatically translated
 msgid "Catalog not found"
 msgstr "Katalog nicht gefunden"

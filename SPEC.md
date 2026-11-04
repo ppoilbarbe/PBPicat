@@ -3,6 +3,9 @@
 ## Goal
 Rename image/video files + their sidecars according to a structured schema.
 
+## Obsolescence notice
+PBPicat is obsolete, replaced by PBRenamer ≥ 2.0. At every launch, `main()` calls `_show_obsolete_notice()` (after `i18n.setup()`, before the catalog arg check and `MainWindow`): modal warning `QMessageBox`, rich text with clickable link to `PBRENAMER_RELEASES_URL` (https://github.com/ppoilbarbe/PBRenamer/releases). Closing it (OK) continues normal startup.
+
 ## Sidecar files
 Same stem as the image, sidecar extension appended (from config). E.g. `photo.jpg` → `photo.xmp`, `photo.prompt.txt`. Extensions may contain multiple dots. Always use `parent / (stem + ext)`, never `with_suffix`.
 

@@ -6,7 +6,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-11-04
+
 ### Added
+
+- **Obsolescence notice at startup** — PBPicat is now obsolete and replaced by PBRenamer (version 2.0 or later). Every launch shows a modal warning dialog saying so, with a clickable link to the PBRenamer releases page (<https://github.com/ppoilbarbe/PBRenamer/releases>). Closes #1. Closing the dialog continues the normal startup.
 
 - **Circular / linear navigation toggle in the image viewer** — a new toolbar button (after the metadata button) switches between linear navigation (Up/Down in the file list and Left/Right in a multi-file selection stop at the ends of the list, the previous behaviour and the default) and circular navigation (moving past one end wraps around to the other). The button shows the icon of the mode a click switches to (`list-linear.svg` in circular mode, `list-circular.svg` in linear mode, both from PBIcons) with a matching tooltip. The mode persists in `app.conf` (`image_viewer/circular_navigation`).
 

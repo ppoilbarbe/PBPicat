@@ -18,6 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "PBPicat is obsolete"
+msgstr "PBPicat 已过时"
+
+#, python-brace-format
+msgid "PBPicat is obsolete and is no longer maintained.<br><br>Please download PBRenamer (version {version} or later), which replaces it:<br><a href=\"{url}\">{url}</a>"
+msgstr "PBPicat 已过时，不再维护。<br><br>请下载取代它的 PBRenamer（{version} 或更高版本）：<br><a href=\"{url}\">{url}</a>"
+
 # ==AUTO== Automatically translated
 msgid "Catalog not found"
 msgstr "未找到目录"
