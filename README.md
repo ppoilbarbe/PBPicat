@@ -4,6 +4,13 @@ Graphical tool for renaming image and video files along with their
 sidecar files according to a structured naming schema. Built with
 Python 3.12 and PySide6.
 
+> [!WARNING]
+> **This program is obsolete.** All of its features have been integrated
+> into [PBRenamer](https://github.com/ppoilbarbe/PBRenamer). From now on,
+> please download the executables from the
+> [PBRenamer releases page](https://github.com/ppoilbarbe/PBRenamer/releases).
+> This repository is archived on GitHub and is now read-only.
+
 ## Documentation
 
 📖 Full documentation is available on [Read the Docs](https://pbpicat.readthedocs.io).
